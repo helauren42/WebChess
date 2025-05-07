@@ -1,0 +1,13 @@
+*.log
+*.o
+*test*
+.vscode
+*secrets*
+*temp*
+TESTER
+*.swp
+__pycache__
+*.env
+venv
+node_modules
+
