@@ -1,0 +1,52 @@
+#navbar {
+  width: 100%;
+  background-color: var(--primary-color);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#navbar * {
+  padding: 0.5rem 0;
+  /* padding: 1rem; */
+}
+
+#nav-title {
+  margin-left: 1rem;
+}
+
+#nav-title:hover {
+  cursor: pointer;
+  transform: scale(1.1);
+}
+
+#nav-title:active {
+  transform: scale(0.95);
+}
+
+#nav-links {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+#nav-links li {
+  list-style: none;
+}
+
+#nav-links li:hover {
+  cursor: pointer;
+  transform: scale(1.1);
+}
+
+#nav-links li:active {
+  transform: scale(0.95);
+}
+
+#nav-login {
+  padding: 0.5rem;
+  font-family: 'Chewy';
+  margin-right: 1rem;
+}

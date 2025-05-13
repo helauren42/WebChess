@@ -1,0 +1,43 @@
+@font-face {
+  font-family: 'Chewy';
+  src: url('../Fonts/Chewy/Chewy-Regular.ttf');
+}
+
+:root {
+  --primary-color: #797D87;
+  --secondary-color: #c9cbcf;
+  --border-color: #242528;
+}
+
+* {
+  margin: 0;
+  border: 0;
+  box-sizing: border-box;
+}
+
+button {
+  padding: 10rem;
+  border-radius: 1rem;
+  border-style: solid;
+  border-width: 0.1rem;
+  border-color: var(--border-color);
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+button:hover {
+  cursor: pointer;
+  transform: scale(1.1);
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+body {
+  height: 100%;
+  width: 100%;
+  color: white;
+  background-color: var(--secondary-color);
+  font-family: "Chewy";
+}

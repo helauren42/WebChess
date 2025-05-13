@@ -1,0 +1,13 @@
+import { useState, useEffect, useContext } from "react";
+import { AppContext } from "./App.js"
+
+export const HomePage = () => {
+  const [signedIn, setSignedIn] = useContext(AppContext)
+  return (
+    <>
+      <h1>You are {signedIn ? "signed in" : "not signed in"}</h1>
+      <h1> Everyone has the right to freedom</h1>
+    </>
+  )
+}
+
