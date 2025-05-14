@@ -1,8 +1,13 @@
 import { useState, useEffect, useContext, createContext } from 'react';
-import { NavBar } from './NavBar';
+import { Routes, Route } from 'react-router-dom'
 
 import '../CSS/App.css'
 import { HomePage } from "./HomePage.js"
+import { NavBar } from './NavBar';
+import { GamePage } from './Game.js'
+import { SigninPage } from './Signin.js'
+import { SocialPage } from './Social.js'
+import { AccountPage } from './Account.js'
 
 export const AppContext = createContext()
 
@@ -11,7 +16,13 @@ const App = () => {
   return (
     <AppContext.Provider value={[signedIn, setSignedIn]}>
       <NavBar />
-      <HomePage></HomePage>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/game" element={<GamePage />} />
+        <Route path="/social" element={<SocialPage />} />
+        <Route path="/signin" element={<SigninPage />} />
+        <Route path="/account" element={<AccountPage />} />
+      </Routes>
     </AppContext.Provider>
   )
 }

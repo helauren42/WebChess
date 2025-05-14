@@ -5,6 +5,10 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  border-style: solid;
+  border-bottom-width: 0.1rem;
+  box-shadow: 0rem 0.1rem 0.5rem black;
+  border-color: var(--border-color);
 }
 
 #navbar * {
@@ -15,6 +19,7 @@
 #nav-title {
   margin-left: 1rem;
 }
+
 
 #nav-title:hover {
   cursor: pointer;
