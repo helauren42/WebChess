@@ -15,7 +15,7 @@ export const NavBar = () => {
         <li><Link to="/game">Play</Link></li>
         <li><Link to="/social">Social</Link></li>
       </ul>
-      <button ><Link id="nav-login" to="/signin">{signedIn ? 'account' : 'signin'}</Link></button>
+      <button ><Link id="nav-login" to={signedIn ? "/account" : "/login"}>{signedIn ? 'account' : 'login'}</Link></button>
     </div >
   )
 }
