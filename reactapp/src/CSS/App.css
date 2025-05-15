@@ -35,6 +35,7 @@ button {
   background-color: var(--secondary-color);
   /* color: white; */
   color: var(--navbar-text-color);
+  font-family: 'Chewy';
 }
 
 button:hover {
