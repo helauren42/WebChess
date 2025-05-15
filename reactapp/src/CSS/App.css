@@ -58,3 +58,9 @@ body {
   height: 100%;
   width: 100%;
 }
+
+.centerx-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}

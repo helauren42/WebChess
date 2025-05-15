@@ -18,6 +18,10 @@
   align-items: center;
 }
 
+.account-title {
+  margin: 1rem;
+}
+
 .input-block {
   display: flex;
   flex-direction: row;
@@ -34,8 +38,11 @@
   border-color: var(--border-color);
 }
 
-.account-submitform-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
+.account-submit-btn {
+  margin: 1rem;
+}
+
+.account-signin-redirect {
+  margin: 0 auto;
+  font-size: 0.6rem;
 }
