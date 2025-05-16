@@ -1,11 +1,13 @@
 from datetime import datetime
-from logging import log
+import logging
+import mysql
 import mysql.connector
 from mysql.connector.abstracts import MySQLCursorAbstract
 import sys
 import subprocess
 from typing import Optional
 import os
+from schemas import LoginRequest, SignupRequest
 
 CWD = os.getcwd()
 ENV_PATH = os.path.join(CWD, ".env")
@@ -80,13 +82,9 @@ class AbstractDb():
         self.cursor.execute(f"SELECT password FROM users WHERE username=%s", (user,))
         fetched = self.cursor.fetchone()
         found = fetched[0]
-        if found  == password:
+        if found == password:
             return True
         return False
-    def insertNewUser(self):
-        print("adding user to db")
-        # insert into users tables
-        # insert into ranking tables
     def userExists(self, username):
         self.cursor.execute("SELECT username FROM users WHERE username=%s", (username,))
         fetched = self.cursor.fetchone()
@@ -105,7 +103,26 @@ class AbstractDb():
         print("columns: ", columns)
         if columns == None:
            return None
+    def insertNewUser(self, req: SignupRequest):
+        query = "INSERT INTO users (username, password, email) VALUES(%s, %s, %s)"
+        values = (req.username, req.password, req.email)
+        self.cursor.execute(query, values)
 
 class Database(AbstractDb):
     def __init__(self):
         super().__init__()
+    def signupUser(self, req: SignupRequest) -> bool:
+        print("adding user to db: ", req.username)
+        if self.userExists(req.username):
+            raise Exception(409, "Username already taken")
+        try:
+            self.insertNewUser(req=req)
+        except Exception as e:
+            logging.critical(f"Could not write to db: e.__str__()")
+            raise Exception(500, "Server failed to create user")
+        return True
+    def loginUser(self, req: LoginRequest) -> bool:
+        if not self.userExists(req):
+            raise Exception()
+        return True
+
