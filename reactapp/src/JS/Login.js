@@ -10,7 +10,6 @@ export const LoginPage = () => {
     return e.target.value
   }
   const submitLogin = async (e) => {
-    e.preventDefault()
     console.log("submitting login: ", e)
     console.log(username)
     console.log(password)
