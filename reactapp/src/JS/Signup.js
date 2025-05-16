@@ -1,24 +1,32 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from 'react-router-dom'
 import { SOCKET_ADDRESS } from "./Const";
 
 export const SignupPage = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const [confirmpassword, setConfirmPassword] = useState("")
-  const [confirmPasswordRef, setConfirmPasswordRef] = useRef(null)
+  const [confirmPassword, setConfirmPassword] = useState("")
   const [email, setEmail] = useState("")
   const [errorMessage, setErrorMessage] = useState("")
   const inputChange = (e) => {
     return e.target.value
   }
-  // const checkPasswordMatch = ()
+  const checkPasswordMatch = (() => {
+    if (password != confirmPassword) {
+      setErrorMessage("Passwords do not match")
+      return false
+    }
+    setErrorMessage("")
+    return true
+  })
   const submitSignup = async (e) => {
     e.preventDefault()
     console.log("submitting login: ", e)
     console.log(username)
     console.log(password)
     console.log(email)
+    if (checkPasswordMatch() == false)
+      return
     const endpoint = `${SOCKET_ADDRESS}/signup`
     const body = JSON.stringify({ username, password, email })
     const data = await fetch(endpoint,
@@ -59,14 +67,14 @@ export const SignupPage = () => {
           </div>
           <div className='input-block'>
             <h2 className='input-header'>password</h2>
-            <input className='input-input' required type="password" min={8} pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}" title="Password must have min 8 characters, a lowercase, an uppercase, a digit and a special character" onChange={(e) => setPassword(inputChange(e))} />
-            {/* <input className='input-input' required type="text" pattern="^[\w]+$" minLength={5} title="Username must be at least 5 characters long and can only container alphanumerical characters or underscore" onChange={(e) => setUsername(inputChange(e))} /> */}
+            {/* <input className='input-input' required type="password" min={8} pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}" title="Password must have min 8 characters, a lowercase, an uppercase, a digit and a special character" onChange={(e) => setPassword(inputChange(e))} /> */}
+            <input className='input-input' required type="text" pattern="^[\w]+$" minLength={5} title="Username must be at least 5 characters long and can only container alphanumerical characters or underscore" onChange={(e) => setPassword(inputChange(e))} />
           </div>
-          {/* <div className='input-block'> */}
-          {/*   <h2 className='input-header'>confirm password</h2> */}
-          {/*   <input className='input-input' ref={confirmPasswordRef} required type="password" min={8} pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}" title="Passwords do not match" onChange={(e) => setConfirmPassword(inputChange(e))} /> */}
-          {/*   {/* <input className='input-input' required type="text" pattern="^[\w]+$" minLength={5} title="Username must be at least 5 characters long and can only container alphanumerical characters or underscore" onChange={(e) => setUsername(inputChange(e))} /> */} */}
-          {/* </div> */}
+          <div className='input-block'>
+            <h2 className='input-header'>confirm password</h2>
+            {/* <input className='input-input' required type="password" min={8} pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}" title="Password must have min 8 characters, a lowercase, an uppercase, a digit and a special character" onChange={(e) => setConfirmPassword(inputChange(e))} /> */}
+            <input className='input-input' required type="text" pattern="^[\w]+$" minLength={5} title="Username must be at least 5 characters long and can only container alphanumerical characters or underscore" onChange={(e) => setConfirmPassword(inputChange(e))} />
+          </div>
           <div className='input-block'>
             <h2 className='input-header'>email</h2>
             <input className='input-input' pattern="[a-z0-9._+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$" required type="email" onChange={(e) => setEmail(inputChange(e))} title="This is not a valid email address" />

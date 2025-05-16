@@ -8,6 +8,8 @@
   --secondary-color: #c9cbcf;
   --border-color: #3d3f44;
   --navbar-text-color: #18191b;
+  --secondary-text-color: #0a0a0b;
+  --secondary-text-color: #212225;
 }
 
 html {
@@ -27,6 +29,7 @@ a {
 }
 
 button {
+  display: block;
   padding: 0.5rem;
   border-radius: 1rem;
   border-style: solid;
