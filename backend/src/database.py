@@ -86,8 +86,10 @@ class AbstractDb():
             return True
         return False
     def userExists(self, username):
+        print("username: ", username)
         self.cursor.execute("SELECT username FROM users WHERE username=%s", (username,))
         fetched = self.cursor.fetchone()
+        print("fetched: ", fetched)
         if fetched == None:
             return False
         return True
@@ -113,7 +115,9 @@ class Database(AbstractDb):
         super().__init__()
     def signupUser(self, req: SignupRequest) -> bool:
         print("adding user to db: ", req.username)
-        if self.userExists(req.username):
+        usernameAlreadyTaken = self.userExists(req.username)
+        print(usernameAlreadyTaken)
+        if usernameAlreadyTaken:
             raise Exception(409, "Username already taken")
         try:
             self.insertNewUser(req=req)
