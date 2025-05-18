@@ -45,7 +45,7 @@ export const LoginPage = () => {
             <button className='account-submit-btn'>submit</button>
           </div>
         </form>
-        <Link to={"/signup"}>
+        <Link to={"/signup/signupform"}>
           <div className='centerx-container'>
             <h3 className='account-signin-redirect'>Sign up instead</h3>
           </div>

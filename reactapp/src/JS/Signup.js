@@ -1,6 +1,8 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, createContext, useContext } from "react";
 import { Link } from 'react-router-dom'
 import { SOCKET_ADDRESS } from "./Const";
+
+export const SignupContext = createContext()
 
 export const SignupPage = () => {
   const [username, setUsername] = useState("")
@@ -19,17 +21,75 @@ export const SignupPage = () => {
     setErrorMessage("")
     return true
   })
-  const submitSignup = async (e) => {
+
+  const sendVerificationEmail = async () => {
+    const body = JSON.stringify({ username, email })
+    const resp = await fetch(`${SOCKET_ADDRESS}/sendVerificationEmail`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: 'include',
+      body: body
+    }).catch((error) => {
+      setErrorMessage("Could not connect to server")
+      console.log("Could not connect to server: ", error)
+      return null
+    })
+    if (resp == null)
+      return false
+    if (resp.status != 200) {
+      const data = await resp.json()
+      console.log(data)
+      setErrorMessage(data["message"])
+      return false
+    }
+    console.log("sent verification email")
+    return true
+  }
+
+  const validForm = async () => {
+    const body = JSON.stringify({ username, password, email })
+    let resp = await fetch(`${SOCKET_ADDRESS}/signup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: 'include',
+      body: body
+    }).catch((error) => {
+      setErrorMessage("Could not connect to server")
+      console.log("Could not connect to server: ", error)
+      return null
+    })
+    if (resp == null)
+      return false
+    if (resp.status != 200) {
+      const data = await resp.json()
+      console.log(data)
+      return false
+    }
+    console.log("input validated")
+    return true
+  }
+
+  const signupProcess = async (e) => {
     e.preventDefault()
-    console.log("submitting login: ", e)
-    console.log(username)
-    console.log(password)
-    console.log(email)
+    console.log("submitting signup: ", e)
     if (checkPasswordMatch() == false)
       return
-    const endpoint = `${SOCKET_ADDRESS}/signup`
+
+    // validate the form make sure input is valid and non conflictual
+    console.log("validating form")
+    if (validForm() == false)
+      return
+    // send verification email
+    console.log("sending verification email")
+    const verification_email_sent = await sendVerificationEmail()
+    if (verification_email_sent == false) {
+      setErrorMessage("Verification email failed to send")
+      return
+    }
+
+    // and finally if all went well create account
     const body = JSON.stringify({ username, password, email })
-    const data = await fetch(endpoint,
+    const resp = await fetch(`${SOCKET_ADDRESS}/createAccount`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -37,13 +97,23 @@ export const SignupPage = () => {
         body: body
       }
     ).then((resp) => {
-      return resp.json()
+      console.log("response received: ", resp.status)
+      return resp
     }).catch((error) => {
       setErrorMessage("Could not connect to server")
       console.log("Could not connect to server: ", error)
+      return null
     })
-    console.log(endpoint)
+    const data = await resp.json()
+    const msg = data["message"]
     console.log(data)
+    console.log(msg)
+    if (resp == null)
+      return
+    if (resp.status != 200) {
+      setErrorMessage(msg)
+      return
+    }
     setUsername("")
     setPassword("")
     setEmail("")
@@ -57,42 +127,63 @@ export const SignupPage = () => {
       elem.style.display = "block"
   }, [errorMessage])
   return (
-    <div className="account-base-container">
-      <div className="account-block">
-        <h1 className='account-title'>Signup</h1>
-        <form className="account-form" onSubmit={(e) => { submitSignup(e) }}>
-          <div className='input-block'>
-            <h2 className='input-header'>username</h2>
-            <input className='input-input' required type="text" pattern="^[\w]+$" minLength={5} title="Username must be at least 5 characters long and can only container alphanumerical characters or underscore" onChange={(e) => setUsername(inputChange(e))} />
-          </div>
-          <div className='input-block'>
-            <h2 className='input-header'>password</h2>
-            {/* <input className='input-input' required type="password" min={8} pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}" title="Password must have min 8 characters, a lowercase, an uppercase, a digit and a special character" onChange={(e) => setPassword(inputChange(e))} /> */}
-            <input className='input-input' required type="text" pattern="^[\w]+$" minLength={5} title="Username must be at least 5 characters long and can only container alphanumerical characters or underscore" onChange={(e) => setPassword(inputChange(e))} />
-          </div>
-          <div className='input-block'>
-            <h2 className='input-header'>confirm password</h2>
-            {/* <input className='input-input' required type="password" min={8} pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}" title="Password must have min 8 characters, a lowercase, an uppercase, a digit and a special character" onChange={(e) => setConfirmPassword(inputChange(e))} /> */}
-            <input className='input-input' required type="text" pattern="^[\w]+$" minLength={5} title="Username must be at least 5 characters long and can only container alphanumerical characters or underscore" onChange={(e) => setConfirmPassword(inputChange(e))} />
-          </div>
-          <div className='input-block'>
-            <h2 className='input-header'>email</h2>
-            <input className='input-input' pattern="[a-z0-9._+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$" required type="email" onChange={(e) => setEmail(inputChange(e))} title="This is not a valid email address" />
-          </div>
-          <div className='centerx-container'>
-            <button className='account-submit-btn'>submit</button>
-          </div>
-          <div className='centerx-container'>
-            <p id="signup-error-message" className='account-error-message'>{errorMessage}</p>
-          </div>
-        </form>
-        <Link to={"/login"}>
-          <div className='centerx-container'>
-            <h3 className='account-signin-redirect'>login instead</h3>
-          </div>
-        </Link>
+    <SignupContext.Provider value={{
+      username, setUsername,
+      password, setPassword,
+      confirmPassword, setConfirmPassword,
+      email, setEmail,
+      errorMessage, setErrorMessage,
+      signupProcess, inputChange
+    }}>
+      <div className="account-base-container">
+        <SignupForm />
       </div>
-    </div >
+    </SignupContext.Provider >
   )
 }
 
+export const SignupForm = () => {
+  const { username, setUsername,
+    password, setPassword,
+    confirmPassword, setConfirmPassword,
+    email, setEmail,
+    errorMessage, setErrorMessage,
+    signupProcess, inputChange
+  } = useContext(SignupContext)
+  return (
+    <div className="account-block">
+      <h1 className='account-title'>Signup</h1>
+      <form className="account-form" onSubmit={(e) => { signupProcess(e) }}>
+        <div className='input-block'>
+          <h2 className='input-header'>username</h2>
+          <input className='input-input' required type="text" pattern="^[\w]+$" minLength={5} title="Username must be at least 5 characters long and can only container alphanumerical characters or underscore" onChange={(e) => setUsername(inputChange(e))} />
+        </div>
+        <div className='input-block'>
+          <h2 className='input-header'>password</h2>
+          {/* <input className='input-input' required type="password" min={8} pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}" title="Password must have min 8 characters, a lowercase, an uppercase, a digit and a special character" onChange={(e) => setPassword(inputChange(e))} /> */}
+          <input className='input-input' required type="text" pattern="^[\w]+$" minLength={5} title="Username must be at least 5 characters long and can only container alphanumerical characters or underscore" onChange={(e) => setPassword(inputChange(e))} />
+        </div>
+        <div className='input-block'>
+          <h2 className='input-header'>confirm password</h2>
+          {/* <input className='input-input' required type="password" min={8} pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}" title="Password must have min 8 characters, a lowercase, an uppercase, a digit and a special character" onChange={(e) => setConfirmPassword(inputChange(e))} /> */}
+          <input className='input-input' required type="text" pattern="^[\w]+$" minLength={5} title="Username must be at least 5 characters long and can only container alphanumerical characters or underscore" onChange={(e) => setConfirmPassword(inputChange(e))} />
+        </div>
+        <div className='input-block'>
+          <h2 className='input-header'>email</h2>
+          <input className='input-input' pattern="[a-z0-9._+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$" required type="email" onChange={(e) => setEmail(inputChange(e))} title="This is not a valid email address" />
+        </div>
+        <div className='centerx-container'>
+          <button className='account-submit-btn'>submit</button>
+        </div>
+        <div className='centerx-container'>
+          <p id="signup-error-message" className='account-error-message'>{errorMessage}</p>
+        </div>
+      </form>
+      <Link to={"/login"}>
+        <div className='centerx-container'>
+          <h3 className='account-signin-redirect'>login instead</h3>
+        </div>
+      </Link>
+    </div>
+  )
+}

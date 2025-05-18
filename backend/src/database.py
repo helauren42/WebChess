@@ -113,12 +113,15 @@ class AbstractDb():
 class Database(AbstractDb):
     def __init__(self):
         super().__init__()
-    def signupUser(self, req: SignupRequest) -> bool:
-        print("adding user to db: ", req.username)
+    def validateSignupForm(self, req: SignupRequest):
         usernameAlreadyTaken = self.userExists(req.username)
-        print(usernameAlreadyTaken)
         if usernameAlreadyTaken:
+            logging.debug(f"username {req.username} already taken")
             raise Exception(409, "Username already taken")
+        else:
+            logging.debug(f"username {req.username} available")
+    def createAccount(self, req: SignupRequest) -> bool:
+        print("adding user to db: ", req.username)
         try:
             self.insertNewUser(req=req)
         except Exception as e:

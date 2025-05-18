@@ -8,6 +8,7 @@ class EmailManager():
         self.senderEmail = ""
         self.appPassword = ""
         self.fetchSenderCredentials()
+
     def fetchSenderCredentials(self):
         with open(".env", "r") as file:
             lines = file.readlines()
@@ -18,7 +19,7 @@ class EmailManager():
                 if split_line[0] == "APP_PASSWORD":
                     self.appPassword = split_line[1].strip()
 
-    def confirmationEmail(self, username, clientEmail):
+    def sendVerificationEmail(self, username, clientEmail):
         code = random.randint(23645, 89789)
         subject = "WebChess email confirmation"
         body = f"Hello {username},\n\n"
@@ -36,4 +37,4 @@ class EmailManager():
 
 if __name__ == "__main__":
     obj = EmailManager()
-    obj.confirmationEmail("bob", "helauren42@gmail.com")
+    obj.confirmationEmail("bob", obj.senderEmail)
