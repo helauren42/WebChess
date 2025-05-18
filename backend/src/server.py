@@ -26,12 +26,12 @@ app.add_middleware(
 
 ''' ------------------------------------------------------- ACCOUNT ------------------------------------------------------- '''
 
-@app.get("/validateForm")
+@app.post("/validateForm")
 async def validateForm(req: SignupRequest):
     print("validateForm request received")
     print(req)
     try:
-        db.validateSignupForm()
+        db.validateSignupForm(req)
     except Exception as e:
         status_code = e.args[0]
         message= e.args[1]
@@ -41,11 +41,15 @@ async def validateForm(req: SignupRequest):
 @app.post("/sendVerificationEmail")
 async def sendVerificationEmail(req: VerifyEmailRequest):
     print("sendVerificationEmail request received")
-    emailManager.sendVerificationEmail(req.username, req.email)
+    code = emailManager.sendVerificationEmail(req.username, req.email)
+    db.insertValidationCode(req.email, code)
 
-@app.post("/verifyEmailCode")
-async def verifyEmailCode(req: VerifyCodeRequest):
-    print("verifyEmailCode request received")
+@app.post("/validateCode")
+async def validateCode(req: VerifyCodeRequest):
+    print("validateCode request received")
+    if db.validateCode(req.email, req.code):
+      return fastapi.responses.JSONResponse(status_code=200, content={"message":"code is valid"})
+    return fastapi.responses.JSONResponse(status_code=401, content={"message":"code is invalid"})
 
 @app.post("/createAccount")
 async def createAccount(req: SignupRequest):

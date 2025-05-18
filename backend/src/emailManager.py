@@ -19,7 +19,7 @@ class EmailManager():
                 if split_line[0] == "APP_PASSWORD":
                     self.appPassword = split_line[1].strip()
 
-    def sendVerificationEmail(self, username, clientEmail):
+    def sendVerificationEmail(self, username, clientEmail) -> int:
         code = random.randint(23645, 89789)
         subject = "WebChess email confirmation"
         body = f"Hello {username},\n\n"
@@ -34,7 +34,8 @@ class EmailManager():
         server.starttls()
         server.login(self.senderEmail, self.appPassword)
         server.sendmail(self.senderEmail, clientEmail, mimeText.as_string())
+        return code
 
 if __name__ == "__main__":
     obj = EmailManager()
-    obj.confirmationEmail("bob", obj.senderEmail)
+    obj.sendVerificationEmail("bob", obj.senderEmail)

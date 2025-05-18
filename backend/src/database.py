@@ -117,6 +117,24 @@ class AbstractDb():
 class Database(AbstractDb):
     def __init__(self):
         super().__init__()
+    def insertValidationCode(self, email, code):
+        self.cursor.execute(f"DELETE FROM {self.table_email_verification} WHERE email=%s", (email, ))
+        query = f"INSERT INTO {self.table_email_verification} (email, code) VALUES(%s, %s)"
+        values = (email, code)
+        self.cursor.execute(query, values)
+    def validateCode(self, email, code) -> bool:
+        print(1)
+        query = f"SELECT code FROM {self.table_email_verification} WHERE email=%s"
+        print(2)
+        values = (email, )
+        print(3)
+        self.cursor.execute(query, values)
+        print(4)
+        found = self.cursor.fetchone()
+        print("found code: ", found[0])
+        if found != None and found[0] == code:
+            return True
+        return False
     def validateSignupForm(self, req: SignupRequest):
         usernameAlreadyTaken = self.userExists(req.username)
         if usernameAlreadyTaken:
