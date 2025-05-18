@@ -1,6 +1,7 @@
 import uvicorn
 import fastapi
 import logging
+from uuid import uuid4
 
 from utils import HOST, PORT, ORIGIN
 from fastapi.middleware.cors import CORSMiddleware
@@ -56,17 +57,24 @@ async def createAccount(req: SignupRequest):
     print("createAccount request received")
     try:
         db.createAccount(req)
+        sessionToken = str(uuid4())
+        db.addSessionToken(req.username, sessionToken)
     except Exception as e:
-        status_code = e.args[0]
-        message = e.args[1]
-        return fastapi.responses.JSONResponse(status_code=status_code, content={"message":message})
-    return fastapi.responses.JSONResponse(status_code=200, content={"message": "added user to db"})
+        if len(e.args) >= 2:
+            status_code = e.args[0]
+            message = e.args[1]
+            return fastapi.responses.JSONResponse(status_code=status_code, content={"message":message})
+        else:
+            return fastapi.responses.JSONResponse(status_code=500, content={"message":e.__str__()})
+    return fastapi.responses.JSONResponse(status_code=200, content={"message": "added user to db", "sessionToken": sessionToken})
 
 @app.post("/login")
 async def login(req: LoginRequest):
     print("login request received")
     print(req)
     return "login"
+    sessionToken = str(uuid4())
+    db.addSessionToken(req.username, sessionToken)
 
 if __name__ == "__main__":
     uvicorn.run("server:app", host=HOST, port=PORT, reload=True)

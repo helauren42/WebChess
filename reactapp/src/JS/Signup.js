@@ -88,8 +88,8 @@ const CodeValidationElement = ({ username, password, email, errorMessage, setErr
     const msg = data["message"]
     console.log(data)
     console.log(msg)
+    setErrorMessage(msg)
     if (resp.status != 200) {
-      setErrorMessage(msg)
       console.log("error: ", msg)
       return
     }
@@ -109,8 +109,8 @@ const CodeValidationElement = ({ username, password, email, errorMessage, setErr
       console.log("response received: ", resp.status)
       return resp
     }).catch((error) => {
-      setErrorMessage("Could not connect to server")
-      console.log("Could not connect to server: ", error)
+      setErrorMessage("Account creation failed: Could not connect to server")
+      console.log("Account Creation failed, could not connect to server: ", error)
       return null
     })
     const data = await resp.json()
@@ -123,6 +123,8 @@ const CodeValidationElement = ({ username, password, email, errorMessage, setErr
       setErrorMessage(msg)
       return
     }
+    console.log("setting sessionToken cookie")
+    document.cookie = `chessSessionToken=${data["sessionToken"]} path=/`
   }
   const updateCode = (e) => {
     setCode(e.target.value)
@@ -215,6 +217,7 @@ export const SignupPage = () => {
 
   const signupProcess = async (e) => {
     e.preventDefault()
+    e.target.reset()
     console.log("submitting signup: ", e)
     if (checkPasswordMatch() == false)
       return
@@ -234,11 +237,6 @@ export const SignupPage = () => {
 
     // verify email verification code entered is valid and then create account if valid in code validation form
     setElem("code")
-    // reset form
-    // setUsername("")
-    // setPassword("")
-    // setEmail("")
-    e.target.reset()
   }
   const errorMessageDisplay = (() => {
     const elem = document.getElementById('signup-error-message')

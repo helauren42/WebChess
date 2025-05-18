@@ -7,6 +7,7 @@ import sys
 import subprocess
 from typing import Optional
 import os
+
 from schemas import LoginRequest, SignupRequest
 
 CWD = os.getcwd()
@@ -117,6 +118,10 @@ class AbstractDb():
 class Database(AbstractDb):
     def __init__(self):
         super().__init__()
+    def addSessionToken(self, username, sessionToken):
+        query = f'''UPDATE users SET session_token=%s WHERE username=%s'''
+        values = (sessionToken, username)
+        self.cursor.execute(query, values)
     def insertValidationCode(self, email, code):
         self.cursor.execute(f"DELETE FROM {self.table_email_verification} WHERE email=%s", (email, ))
         query = f"INSERT INTO {self.table_email_verification} (email, code) VALUES(%s, %s)"
