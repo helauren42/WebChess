@@ -23,6 +23,7 @@ class AbstractDb():
         self.password:str = ""
         self.name:str = ""
         self.table_users:str = ""
+        self.table_email_verification:str = ""
         self.fetchCredentials()
         self.createDb()
         self.setupCursor()
@@ -42,6 +43,7 @@ class AbstractDb():
                 lines[i] = lines[i].replace("DB_PASSWORD", self.password)
                 lines[i] = lines[i].replace("DB_NAME", self.name)
                 lines[i] = lines[i].replace("DB_TABLE_USERS", self.table_users)
+                lines[i] = lines[i].replace("DB_TABLE_EMAIL_VERIFICATION", self.table_email_verification)
         with open(f"{DB_DIR}build.sql", "w") as writeFile:
             for line in lines:
                 writeFile.write(line)
@@ -70,6 +72,8 @@ class AbstractDb():
                         self.name = value
                     elif key == "DB_TABLE_USERS":
                         self.table_users = value
+                    elif key == "DB_TABLE_EMAIL_VERIFICATION":
+                        self.table_email_verification = value
     def validLoginUsername(self, user):
         print("checking valid login username: ", user)
         self.cursor.execute(f"SELECT username FROM users WHERE username=%s", (user,))
