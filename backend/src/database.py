@@ -123,17 +123,14 @@ class Database(AbstractDb):
         values = (email, code)
         self.cursor.execute(query, values)
     def validateCode(self, email, code) -> bool:
-        print(1)
         query = f"SELECT code FROM {self.table_email_verification} WHERE email=%s"
-        print(2)
         values = (email, )
-        print(3)
         self.cursor.execute(query, values)
-        print(4)
         found = self.cursor.fetchone()
-        print("found code: ", found[0])
         if found != None and found[0] == code:
+            print("found code: ", found[0])
             return True
+        print("did not find code found = ", found)
         return False
     def validateSignupForm(self, req: SignupRequest):
         usernameAlreadyTaken = self.userExists(req.username)
