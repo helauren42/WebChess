@@ -27,16 +27,17 @@ app.add_middleware(
 
 ''' ------------------------------------------------------- ACCOUNT ------------------------------------------------------- '''
 
-@app.get("/fetchUsername")
+@app.post("/fetchUsername")
 async def fetchUsername(req: fastapi.Request):
-    sessionToken = req.cookies.get("chessSessionToken")
+    data = await req.json()
+    sessionToken = data["sessionToken"]
     print("fetchUsername request: ", sessionToken)
-    print(req.cookies)
+    print(data)
     username = db.fetchUsername(sessionToken)
-    print("username: ", username)
+    print("found username: ", username)
     if username == None:
         return fastapi.responses.JSONResponse(status_code=401, content={})
-    return fastapi.responses.JSONResponse(status_code=401, content={"username":username})
+    return fastapi.responses.JSONResponse(status_code=200, content={"username":username})
 
 @app.post("/validateForm")
 async def validateForm(req: SignupRequest):

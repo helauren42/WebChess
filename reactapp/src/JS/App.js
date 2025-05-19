@@ -23,21 +23,24 @@ function getCookie(name) {
 const App = () => {
   const [signedIn, setSignedIn] = useState(getCookie("chessSessionToken") == null ? false : true)
   const [accountUsername, setAccountUsername] = useState("")
-  console.log("cookie:")
-  console.log(getCookie("chessSessionToken"))
+  const sessionToken = getCookie("chessSessionToken")
+  console.log("cookie: ", sessionToken)
   console.log("signedin: ", signedIn)
   const fetchUsername = async () => {
     console.log("fetching username")
+    const body = JSON.stringify({ sessionToken })
     const resp = await fetch(`${SOCKET_ADDRESS}/fetchUsername`, {
-      method: "GET",
-      credentials: "include"
+      method: "POST",
+      credentials: "include",
+      body: body
     }).then((resp) => {
       return resp
     }).catch((e) => {
       console.log("could not fetch username from cookie: ", e)
+      return null
     })
-    console.log("resp: ", resp)
-    if (resp.status == 200) {
+    if (resp != null && resp.status == 200) {
+      console.log("resp: ", resp)
       const data = await resp.json()
       setAccountUsername(data["username"])
     }
