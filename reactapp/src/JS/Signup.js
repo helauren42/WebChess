@@ -1,5 +1,5 @@
-import { useEffect, useState, createContext, useContext } from "react";
-import { Link } from 'react-router-dom'
+import { useState, createContext, useContext } from "react";
+import { Link, useNavigate } from 'react-router-dom'
 import { SOCKET_ADDRESS } from "./Const";
 
 export const SignupContext = createContext()
@@ -52,6 +52,7 @@ export const SignupForm = () => {
 
 const CodeValidationElement = ({ username, password, email, errorMessage, setErrorMessage }) => {
   const [code, setCode] = useState("")
+  const navigate = useNavigate()
   console.log("first email: ", email)
   const errorMessageDisplay = (() => {
     const elem = document.getElementById('signup-error-message')
@@ -124,7 +125,8 @@ const CodeValidationElement = ({ username, password, email, errorMessage, setErr
       return
     }
     console.log("setting sessionToken cookie")
-    document.cookie = `chessSessionToken=${data["sessionToken"]} path=/`
+    document.cookie = `chessSessionToken=${data["sessionToken"]}; path=/; SameSite=None; Secure`;
+    navigate("/")
   }
   const updateCode = (e) => {
     setCode(e.target.value)

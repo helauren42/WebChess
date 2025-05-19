@@ -118,6 +118,14 @@ class AbstractDb():
 class Database(AbstractDb):
     def __init__(self):
         super().__init__()
+    def getUsername(self, sessionToken) -> Optional[str]:
+        query = f"SELECT username FROM users WHERE session_token=%s"
+        values = (sessionToken,)
+        self.cursor.execute(query, values)
+        found = self.cursor.fetchone()
+        if found == None:
+            return None
+        return found[0]
     def addSessionToken(self, username, sessionToken):
         query = f'''UPDATE users SET session_token=%s WHERE username=%s'''
         values = (sessionToken, username)
