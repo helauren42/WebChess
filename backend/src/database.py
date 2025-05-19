@@ -25,6 +25,7 @@ class AbstractDb():
         self.name:str = ""
         self.table_users:str = ""
         self.table_email_verification:str = ""
+        self.table_session_token:str = ""
         self.fetchCredentials()
         self.createDb()
         self.setupCursor()
@@ -45,6 +46,7 @@ class AbstractDb():
                 lines[i] = lines[i].replace("DB_NAME", self.name)
                 lines[i] = lines[i].replace("DB_TABLE_USERS", self.table_users)
                 lines[i] = lines[i].replace("DB_TABLE_EMAIL_VERIFICATION", self.table_email_verification)
+                lines[i] = lines[i].replace("DB_TABLE_SESSION_TOKEN", self.table_session_token)
         with open(f"{DB_DIR}build.sql", "w") as writeFile:
             for line in lines:
                 writeFile.write(line)
@@ -75,16 +77,10 @@ class AbstractDb():
                         self.table_users = value
                     elif key == "DB_TABLE_EMAIL_VERIFICATION":
                         self.table_email_verification = value
-    def validLoginUsername(self, user):
-        print("checking valid login username: ", user)
-        self.cursor.execute(f"SELECT username FROM users WHERE username=%s", (user,))
-        fetched = self.cursor.fetchone()
-        print("valid username fetched: ", fetched)
-        if fetched != None:
-            return True
-        return False
+                    elif key == "DB_TABLE_SESSION_TOKEN":
+                        self.table_session_token = value
     def validLoginPassword(self, user, password):
-        self.cursor.execute(f"SELECT password FROM users WHERE username=%s", (user,))
+        self.cursor.execute(f"SELECT password FROM {self.table_users} WHERE username=%s", (user,))
         fetched = self.cursor.fetchone()
         found = fetched[0]
         if found == password:
@@ -92,42 +88,51 @@ class AbstractDb():
         return False
     def userExists(self, username):
         print("username: ", username)
-        self.cursor.execute("SELECT username FROM users WHERE username=%s", (username,))
+        self.cursor.execute(f"SELECT username FROM {self.table_users} WHERE username=%s", (username,))
         fetched = self.cursor.fetchone()
         print("fetched: ", fetched)
         if fetched == None:
             return False
         return True
     def fetchUserData(self, username):
-        self.cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
+        self.cursor.execute(f"SELECT * FROM {self.table_users} WHERE username=%s", (username,))
         columns = self.cursor.fetchone()
         # userData = UserData(username, columns[4], columns[5], columns[6], columns[1])
         # return userData
     def fetchUserFromToken(self, token:str):
         print("searching for token: ", token)
-        self.cursor.execute("SELECT * FROM users WHERE sessionToken=%s", (token,))
+        self.cursor.execute(f"SELECT * FROM {self.table_users} WHERE sessionToken=%s", (token,))
         columns = self.cursor.fetchone()
         print("columns: ", columns)
         if columns == None:
            return None
     def insertNewUser(self, req: SignupRequest):
-        query = "INSERT INTO users (username, password, email) VALUES(%s, %s, %s)"
+        query = f"INSERT INTO {self.table_users} (username, password, email) VALUES (%s, %s, %s)"
         values = (req.username, req.password, req.email)
+        print("query: ", query)
+        print("values: ", values)
         self.cursor.execute(query, values)
+        print("end")
 
 class Database(AbstractDb):
     def __init__(self):
         super().__init__()
-    def getUsername(self, sessionToken) -> Optional[str]:
-        query = f"SELECT username FROM users WHERE session_token=%s"
+    def fetchUsername(self, sessionToken) -> Optional[str]:
+        query = f"SELECT username FROM {self.table_session_token} WHERE session_token=%s"
         values = (sessionToken,)
+        print("query: ", query)
+        print("values: ", values)
         self.cursor.execute(query, values)
         found = self.cursor.fetchone()
         if found == None:
             return None
         return found[0]
+    def fetchSessionToken(self, username):
+        query = f"SELECT username FROM {self.table_session_token} where username=%s"
+        values = (username, )
+        self.cursor.execute(query, values)
     def addSessionToken(self, username, sessionToken):
-        query = f'''UPDATE users SET session_token=%s WHERE username=%s'''
+        query = f'''INSERT INTO {self.table_session_token} (session_token, username) VALUES(%s, %s)'''
         values = (sessionToken, username)
         self.cursor.execute(query, values)
     def insertValidationCode(self, email, code):
@@ -158,11 +163,17 @@ class Database(AbstractDb):
         try:
             self.insertNewUser(req=req)
         except Exception as e:
-            logging.critical(f"Could not write to db: e.__str__()")
+            logging.critical(f"Could not write to db: {e.__str__()}")
             raise Exception(500, "Server failed to create user")
         return True
     def loginUser(self, req: LoginRequest) -> bool:
-        if not self.userExists(req):
-            raise Exception()
-        return True
+        print(1)
+        if not self.userExists(req.username):
+            print("user does not exist")
+            raise Exception("wrong credentials")
+        print(2)
+        if self.validLoginPassword(req.username, req.password):
+            return True
+        print("entered password is wrong")
+        raise Exception("wrong credentials")
 

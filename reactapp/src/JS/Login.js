@@ -1,29 +1,56 @@
-import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useContext, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { SOCKET_ADDRESS } from './Const'
+import { AppContext } from './App'
 import '../CSS/Login.css'
 
 export const LoginPage = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const [errorMessage, setErrorMessage] = useState("")
+  const [signedIn, setSignedIn] = useContext(AppContext)
+  const navigate = useNavigate()
   const inputChange = (e) => {
     return e.target.value
   }
+  const errorMessageDisplay = (() => {
+    const elem = document.getElementById('signup-error-message')
+    if (errorMessage == "")
+      elem.style.display = "none"
+    else
+      elem.style.display = "block"
+  }, [errorMessage])
   const submitLogin = async (e) => {
+    e.preventDefault()
     console.log("submitting login: ", e)
     console.log(username)
     console.log(password)
     const endpoint = `${SOCKET_ADDRESS}/login`
     const body = JSON.stringify({ 'username': username, 'password': password })
-    const data = await fetch(endpoint,
+    console.log(body)
+    const resp = await fetch(endpoint,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: 'include',
         body: body
       }
-    )
-    console.log(endpoint)
+    ).then((resp) => {
+      return resp
+    }).catch((e) => {
+      setErrorMessage(e)
+      return null
+    })
+    if (resp == null)
+      return
+    const data = await resp.json()
+    setErrorMessage(data["message"])
+    if (resp.status != 200)
+      return
+    console.log("setting sessionToken cookie")
+    document.cookie = `chessSessionToken=${data["sessionToken"]}; path=/; SameSite=None; Secure`;
+    navigate("/")
+    setSignedIn(true)
     setUsername("")
     setPassword("")
     e.target.reset()
@@ -43,6 +70,9 @@ export const LoginPage = () => {
           </div>
           <div className='centerx-container'>
             <button className='account-submit-btn'>submit</button>
+          </div>
+          <div className='centerx-container'>
+            <p id="signup-error-message" className='account-error-message'>{errorMessage}</p>
           </div>
         </form>
         <Link to={"/signup"}>

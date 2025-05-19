@@ -32,7 +32,7 @@ async def fetchUsername(req: fastapi.Request):
     sessionToken = req.cookies.get("chessSessionToken")
     print("fetchUsername request: ", sessionToken)
     print(req.cookies)
-    username = db.getUsername(sessionToken)
+    username = db.fetchUsername(sessionToken)
     print("username: ", username)
     if username == None:
         return fastapi.responses.JSONResponse(status_code=401, content={})
@@ -81,11 +81,14 @@ async def createAccount(req: SignupRequest):
 
 @app.post("/login")
 async def login(req: LoginRequest):
-    print("login request received")
-    print(req)
-    return "login"
-    sessionToken = str(uuid4())
-    db.addSessionToken(req.username, sessionToken)
+    print("login request received: ")
+    try:
+        db.loginUser(req)
+        sessionToken = str(uuid4())
+        db.addSessionToken(req.username, sessionToken)
+        return fastapi.responses.JSONResponse(status_code=200, content={"message":"login success", "sessionToken":sessionToken})
+    except Exception as e:
+        return fastapi.responses.JSONResponse(status_code=401, content={"message":"wrong credentials"})
 
 if __name__ == "__main__":
     uvicorn.run("server:app", host=HOST, port=PORT, reload=True)
