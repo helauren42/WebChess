@@ -27,11 +27,15 @@ const App = () => {
   const [signedIn, setSignedIn] = useState(getCookie("chessSessionToken") != null ? true : getCookie("persistentToken") != null ? true : false)
   const [accountUsername, setAccountUsername] = useState("")
   const sessionToken = getCookie("chessSessionToken")
-  console.log("cookie: ", sessionToken)
+  const persistentToken = getCookie("persistentToken")
+  console.log("session cookie: ", sessionToken)
+  console.log("persistent cookie: ", persistentToken)
   console.log("signedin: ", signedIn)
   const fetchUsername = async () => {
     console.log("fetching username")
-    const body = JSON.stringify({ sessionToken })
+    const token = sessionToken ? sessionToken : persistentToken
+    console.log("token:", token)
+    const body = JSON.stringify({ "token": token })
     console.log(body)
     const resp = await fetch(`${SOCKET_ADDRESS}/fetchUsername`, {
       method: "POST",
@@ -54,7 +58,7 @@ const App = () => {
   useEffect(() => {
     if (signedIn == false) {
       document.cookie = `${COOKIE_SESSION}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-      document.cookie = `chessSessionToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      document.cookie = `${COOKIE_PERSISTENT}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
     }
     else {
       fetchUsername()

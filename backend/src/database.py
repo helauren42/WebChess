@@ -121,16 +121,21 @@ class AbstractDb():
 class Database(AbstractDb):
     def __init__(self):
         super().__init__()
-    def fetchUsername(self, sessionToken) -> Optional[str]:
+    def fetchUsername(self, token) -> Optional[str]:
         query = f"SELECT username FROM {self.table_session_token} WHERE session_token=%s"
-        values = (sessionToken,)
+        values = (token,)
         print("query: ", query)
         print("values: ", values)
         self.cursor.execute(query, values)
         found = self.cursor.fetchone()
-        if found == None:
-            return None
-        return found[0]
+        if found != None:
+            return found[0]
+        query = f"SELECT username FROM {self.table_persistent_token} WHERE persistent_token=%s"
+        self.cursor.execute(query, values)
+        found = self.cursor.fetchone()
+        if found != None:
+            return found[0]
+        return None
     def addSessionToken(self, username, sessionToken):
         query = f'''INSERT INTO {self.table_session_token} (session_token, username) VALUES(%s, %s)'''
         values = (sessionToken, username)

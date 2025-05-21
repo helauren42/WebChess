@@ -21,3 +21,6 @@ class VerifyCodeRequest(BaseModel):
 
 class SessionToken(BaseModel):
     sessionToken:str
+
+class Token(BaseModel):
+    token:str

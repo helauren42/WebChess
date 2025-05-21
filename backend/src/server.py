@@ -8,7 +8,7 @@ from uuid import uuid4
 from utils import HOST, PORT, ORIGIN
 from fastapi.middleware.cors import CORSMiddleware
 from database import Database
-from schemas import LoginRequest, SignupRequest, VerifyCodeRequest, VerifyEmailRequest, SessionToken
+from schemas import LoginRequest, SignupRequest, VerifyCodeRequest, VerifyEmailRequest, SessionToken, Token
 from emailManager import EmailManager
 
 logging.basicConfig(filename="logs.log", encoding='utf-8', level=logging.DEBUG)
@@ -42,11 +42,11 @@ async def getPersistentToken(req:SessionToken):
   return fastapi.responses.JSONResponse(status_code=200, content={"persistentToken":persistentToken})
 
 @app.post("/fetchUsername")
-async def fetchUsername(req:SessionToken):
+async def fetchUsername(req:Token):
     print(req)
-    sessionToken = req.sessionToken
-    print("fetchUsername request: ", sessionToken)
-    username = db.fetchUsername(sessionToken)
+    token = req.token
+    print("fetchUsername request: ", token)
+    username = db.fetchUsername(token)
     print("found username: ", username)
     if username == None:
         return fastapi.responses.JSONResponse(status_code=401, content={})
