@@ -12,6 +12,7 @@ import { AccountPage } from './Account.js'
 import { SOCKET_ADDRESS } from './Const';
 
 export const AppContext = createContext()
+export const AccountContext = createContext()
 
 const COOKIE_SESSION = "chessSessionToken"
 const COOKIE_PERSISTENT = "persistentToken"
@@ -23,6 +24,7 @@ function getCookie(name) {
     return parts.pop().split(';').shift();
   return null
 }
+
 const App = () => {
   const [signedIn, setSignedIn] = useState(getCookie("chessSessionToken") != null ? true : getCookie("persistentToken") != null ? true : false)
   const [accountUsername, setAccountUsername] = useState("")
@@ -31,6 +33,9 @@ const App = () => {
   console.log("session cookie: ", sessionToken)
   console.log("persistent cookie: ", persistentToken)
   console.log("signedin: ", signedIn)
+  useEffect(() => {
+    console.log('updated account username: ', accountUsername);
+  }, [accountUsername]); // Runs whenever accountUsername changes
   const fetchUsername = async () => {
     console.log("fetching username")
     const token = sessionToken ? sessionToken : persistentToken
@@ -48,9 +53,11 @@ const App = () => {
       return null
     })
     if (resp != null && resp.status == 200) {
-      console.log("resp: ", resp)
       const data = await resp.json()
-      setAccountUsername(data["username"])
+      console.log(data)
+      const username = data["username"]
+      console.log("found username: ", username)
+      setAccountUsername(username)
     }
     else
       setSignedIn(false)
@@ -67,16 +74,18 @@ const App = () => {
 
   return (
     <AppContext.Provider value={[signedIn, setSignedIn]}>
-      <NavBar />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/game" element={<GamePage />} />
-        <Route path="/social" element={<SocialPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/account" element={<AccountPage />} />
-      </Routes>
-    </AppContext.Provider>
+      <AccountContext.Provider value={[accountUsername, setAccountUsername]}>
+        <NavBar />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/game" element={<GamePage />} />
+          <Route path="/social" element={<SocialPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/account" element={<AccountPage />} />
+        </Routes>
+      </AccountContext.Provider>
+    </AppContext.Provider >
   )
 }
 
