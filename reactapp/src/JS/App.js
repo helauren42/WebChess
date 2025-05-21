@@ -10,6 +10,7 @@ import { SignupPage } from './Signup.js'
 import { SocialPage } from './Social.js'
 import { AccountPage } from './Account.js'
 import { SOCKET_ADDRESS } from './Const';
+import { WS } from './WebSocket.js'
 
 export const AppContext = createContext()
 export const AccountContext = createContext()
@@ -27,6 +28,7 @@ function getCookie(name) {
 
 const App = () => {
   const [signedIn, setSignedIn] = useState(getCookie("chessSessionToken") != null ? true : getCookie("persistentToken") != null ? true : false)
+  const [websocket, setWebsocket] = useState(null)
   const [accountUsername, setAccountUsername] = useState("")
   const sessionToken = getCookie("chessSessionToken")
   const persistentToken = getCookie("persistentToken")
@@ -73,7 +75,7 @@ const App = () => {
   }, [signedIn])
 
   return (
-    <AppContext.Provider value={[signedIn, setSignedIn]}>
+    <AppContext.Provider value={[signedIn, setSignedIn, websocket, setWebsocket]}>
       <AccountContext.Provider value={[accountUsername, setAccountUsername]}>
         <NavBar />
         <Routes>

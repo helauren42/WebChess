@@ -17,11 +17,9 @@ class Pieces(Enum):
     BLACK_KING = 12
 
 class Cell():
-    def __init__(self, posX:int, posY:int, _file:str, _rank:int, _piece: Pieces) -> None:
+    def __init__(self, posX:int, posY:int, _piece: Pieces) -> None:
         self.x: int = posX
         self.y: int = posY
-        self.file:str = _file
-        self.rank:int = _rank
         self.piece: Pieces = _piece
     def __str__(self) -> str:
         return str(self.piece)
@@ -31,7 +29,6 @@ class Board():
         self.board = self.initialize_board()
     def initialize_board(self):
         board = []
-        files = 'abcdefgh'
         white_pieces = [
             Pieces.WHITE_ROOK, Pieces.WHITE_KNIGHT, Pieces.WHITE_BISHOP,
             Pieces.WHITE_QUEEN, Pieces.WHITE_KING,
@@ -56,8 +53,7 @@ class Board():
                     piece = white_pieces[x]
                 elif y == 7:
                     piece = black_pieces[x]
-                file = files[x]
-                row.append(Cell(x, y, file, y+1, piece))
+                row.append(Cell(x, y, piece))
             board.append(row)
         return board
 

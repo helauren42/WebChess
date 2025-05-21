@@ -2,8 +2,10 @@ import uuid
 from pydantic import BaseModel
 import uvicorn
 import fastapi
+from fastapi import WebSocket
 import logging
 from uuid import uuid4
+from websocket import WebsocketManager
 
 from utils import HOST, PORT, ORIGIN
 from fastapi.middleware.cors import CORSMiddleware
@@ -16,6 +18,7 @@ logging.basicConfig(filename="logs.log", encoding='utf-8', level=logging.DEBUG)
 app = fastapi.FastAPI()
 db = Database()
 emailManager = EmailManager()
+websocketManager = WebsocketManager()
 
 origins = [ORIGIN]
 
@@ -108,5 +111,25 @@ async def login(req: LoginRequest):
     except:
         return fastapi.responses.JSONResponse(status_code=401, content={"message":"wrong credentials"})
 
+''' ------------------------------------------------------ WEBSOCKET ------------------------------------------------------ '''
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    try:
+        await websocket.accept()
+        print("accepted new websocket connection")
+        while True:
+            data = await websocket.receive_json()
+            if data["type"] == "sessionToken":
+                sessionToken = data["sessionToken"]
+                username = db.fetchUsername(sessionToken)
+                if username is None:
+                    await websocket.close()
+                    raise Exception("entered wrong session token")
+                await websocketManager.newConnection(username, websocket)
+    except Exception as e:
+        print("Closed websocket: ", e.__str__())
+
 if __name__ == "__main__":
     uvicorn.run("server:app", host=HOST, port=PORT, reload=True)
+

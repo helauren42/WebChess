@@ -38,11 +38,14 @@ export const LoginPage = () => {
         body: body
       }
     ).then((resp) => {
+      console.log('then')
       return resp
     }).catch((e) => {
-      setErrorMessage(e)
+      console.log('catch')
+      setErrorMessage("failed login", e)
       return null
     })
+    console.log("here!")
     if (resp == null)
       return
     const data = await resp.json()
