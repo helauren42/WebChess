@@ -4,6 +4,7 @@ import datetime
 class LoginRequest(BaseModel):
     username:str
     password:str
+    stayLoggedIn:bool
 
 class SignupRequest(BaseModel):
     username:str
@@ -17,3 +18,6 @@ class VerifyEmailRequest(BaseModel):
 class VerifyCodeRequest(BaseModel):
     code:int
     email:str
+
+class SessionToken(BaseModel):
+    sessionToken:str

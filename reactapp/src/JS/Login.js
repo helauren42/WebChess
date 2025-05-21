@@ -8,11 +8,13 @@ export const LoginPage = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [errorMessage, setErrorMessage] = useState("")
+  const [stayLoggedIn, setStayConnected] = useState(false)
   const [signedIn, setSignedIn] = useContext(AppContext)
   const navigate = useNavigate()
   const inputChange = (e) => {
     return e.target.value
   }
+
   const errorMessageDisplay = (() => {
     const elem = document.getElementById('signup-error-message')
     if (errorMessage == "")
@@ -26,7 +28,7 @@ export const LoginPage = () => {
     console.log(username)
     console.log(password)
     const endpoint = `${SOCKET_ADDRESS}/login`
-    const body = JSON.stringify({ 'username': username, 'password': password })
+    const body = JSON.stringify({ 'username': username, 'password': password, 'stayLoggedIn': stayLoggedIn })
     console.log(body)
     const resp = await fetch(endpoint,
       {
@@ -49,6 +51,10 @@ export const LoginPage = () => {
       return
     console.log("setting sessionToken cookie")
     document.cookie = `chessSessionToken=${data["sessionToken"]}; path=/; SameSite=None; Secure`;
+    if (data["stayLoggedIn"]) {
+      const persistentToken = data["persistentToken"]
+      document.cookie = `persistentToken=${data["persistentToken"]}; max-age=${3600 * 24 * 365}; path=/; SameSite=None; Secure`;
+    }
     navigate("/")
     setSignedIn(true)
     setUsername("")
@@ -67,6 +73,14 @@ export const LoginPage = () => {
           <div className='input-block'>
             <h2 className='input-header'>password</h2>
             <input className='input-input' required type="text" onChange={(e) => setPassword(inputChange(e))} />
+          </div>
+          <div className='input-block'>
+            <div className='account-same-line'>
+              <h3>Stay Connected</h3>
+              <input type="checkbox" id="stay-connected-checkbox" onClick={(e) => {
+                setStayConnected(!stayLoggedIn);
+              }} ></input>
+            </div>
           </div>
           <div className='centerx-container'>
             <button className='account-submit-btn'>submit</button>

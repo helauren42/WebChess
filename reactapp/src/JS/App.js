@@ -13,6 +13,9 @@ import { SOCKET_ADDRESS } from './Const';
 
 export const AppContext = createContext()
 
+const COOKIE_SESSION = "chessSessionToken"
+const COOKIE_PERSISTENT = "persistentToken"
+
 function getCookie(name) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
@@ -21,7 +24,7 @@ function getCookie(name) {
   return null
 }
 const App = () => {
-  const [signedIn, setSignedIn] = useState(getCookie("chessSessionToken") == null ? false : true)
+  const [signedIn, setSignedIn] = useState(getCookie("chessSessionToken") != null ? true : getCookie("persistentToken") != null ? true : false)
   const [accountUsername, setAccountUsername] = useState("")
   const sessionToken = getCookie("chessSessionToken")
   console.log("cookie: ", sessionToken)
@@ -29,9 +32,10 @@ const App = () => {
   const fetchUsername = async () => {
     console.log("fetching username")
     const body = JSON.stringify({ sessionToken })
+    console.log(body)
     const resp = await fetch(`${SOCKET_ADDRESS}/fetchUsername`, {
       method: "POST",
-      credentials: "include",
+      headers: { "Content-type": "application/json" },
       body: body
     }).then((resp) => {
       return resp
@@ -49,7 +53,8 @@ const App = () => {
   }
   useEffect(() => {
     if (signedIn == false) {
-      document.cookie = "chessSessionToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      document.cookie = `${COOKIE_SESSION}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      document.cookie = `chessSessionToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
     }
     else {
       fetchUsername()

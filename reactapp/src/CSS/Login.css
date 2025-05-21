@@ -7,7 +7,7 @@
 }
 
 .account-block {
-  margin-top: 10%;
+  margin-top: 5%;
   padding: 1rem 5rem;
   border-color: var(--border-color);
   border-style: solid;
@@ -50,5 +50,21 @@
 
 .account-signin-redirect {
   margin: 0 auto;
+  margin-top: 1rem;
   font-size: 0.6rem;
+}
+
+.account-same-line {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  gap: 1rem;
+  align-items: center;
+}
+
+#stay-connected-checkbox {
+  width: 2rem;
+  height: 2rem;
+  accent-color: var(--secondary-text-color);
+  background-color: white;
 }

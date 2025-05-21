@@ -26,6 +26,7 @@ class AbstractDb():
         self.table_users:str = ""
         self.table_email_verification:str = ""
         self.table_session_token:str = ""
+        self.table_persistent_token:str = ""
         self.fetchCredentials()
         self.createDb()
         self.setupCursor()
@@ -47,6 +48,7 @@ class AbstractDb():
                 lines[i] = lines[i].replace("DB_TABLE_USERS", self.table_users)
                 lines[i] = lines[i].replace("DB_TABLE_EMAIL_VERIFICATION", self.table_email_verification)
                 lines[i] = lines[i].replace("DB_TABLE_SESSION_TOKEN", self.table_session_token)
+                lines[i] = lines[i].replace("DB_TABLE_PERSISTENT_TOKEN ", self.table_persistent_token)
         with open(f"{DB_DIR}build.sql", "w") as writeFile:
             for line in lines:
                 writeFile.write(line)
@@ -79,6 +81,8 @@ class AbstractDb():
                         self.table_email_verification = value
                     elif key == "DB_TABLE_SESSION_TOKEN":
                         self.table_session_token = value
+                    elif key == "DB_TABLE_PERSISTENT_TOKEN":
+                        self.table_persistent_token = value
     def validLoginPassword(self, user, password):
         self.cursor.execute(f"SELECT password FROM {self.table_users} WHERE username=%s", (user,))
         fetched = self.cursor.fetchone()
@@ -127,13 +131,13 @@ class Database(AbstractDb):
         if found == None:
             return None
         return found[0]
-    def fetchSessionToken(self, username):
-        query = f"SELECT username FROM {self.table_session_token} where username=%s"
-        values = (username, )
-        self.cursor.execute(query, values)
     def addSessionToken(self, username, sessionToken):
         query = f'''INSERT INTO {self.table_session_token} (session_token, username) VALUES(%s, %s)'''
         values = (sessionToken, username)
+        self.cursor.execute(query, values)
+    def addPersistenceToken(self, username, persistentToken):
+        query = f'''INSERT INTO {self.table_persistent_token} (persistent_token, username) VALUES(%s, %s)'''
+        values = (persistentToken, username)
         self.cursor.execute(query, values)
     def insertValidationCode(self, email, code):
         self.cursor.execute(f"DELETE FROM {self.table_email_verification} WHERE email=%s", (email, ))

@@ -1,3 +1,5 @@
+import uuid
+from pydantic import BaseModel
 import uvicorn
 import fastapi
 import logging
@@ -6,7 +8,7 @@ from uuid import uuid4
 from utils import HOST, PORT, ORIGIN
 from fastapi.middleware.cors import CORSMiddleware
 from database import Database
-from schemas import LoginRequest, SignupRequest, VerifyCodeRequest, VerifyEmailRequest
+from schemas import LoginRequest, SignupRequest, VerifyCodeRequest, VerifyEmailRequest, SessionToken
 from emailManager import EmailManager
 
 logging.basicConfig(filename="logs.log", encoding='utf-8', level=logging.DEBUG)
@@ -27,12 +29,23 @@ app.add_middleware(
 
 ''' ------------------------------------------------------- ACCOUNT ------------------------------------------------------- '''
 
+@app.post("/getPersistentToken")
+async def getPersistentToken(req:SessionToken):
+  try:
+    username = db.fetchUsername(req.sessionToken)
+    db.addPersistenceToken()
+  except Exception as e:
+    return fastapi.responses.JSONResponse(status_code=500, content={"message": e.__str__()})
+  if username == None:
+      return fastapi.responses.JSONResponse(status_code=401, content={})
+  persistentToken = str(uuid4())
+  return fastapi.responses.JSONResponse(status_code=200, content={"persistentToken":persistentToken})
+
 @app.post("/fetchUsername")
-async def fetchUsername(req: fastapi.Request):
-    data = await req.json()
-    sessionToken = data["sessionToken"]
+async def fetchUsername(req:SessionToken):
+    print(req)
+    sessionToken = req.sessionToken
     print("fetchUsername request: ", sessionToken)
-    print(data)
     username = db.fetchUsername(sessionToken)
     print("found username: ", username)
     if username == None:
@@ -87,8 +100,12 @@ async def login(req: LoginRequest):
         db.loginUser(req)
         sessionToken = str(uuid4())
         db.addSessionToken(req.username, sessionToken)
-        return fastapi.responses.JSONResponse(status_code=200, content={"message":"login success", "sessionToken":sessionToken})
-    except Exception as e:
+        persistentToken = ""
+        if req.stayLoggedIn:
+          persistentToken = str(uuid4())
+          db.addPersistenceToken(req.username, persistentToken)
+        return fastapi.responses.JSONResponse(status_code=200, content={"message":"login success", "sessionToken":sessionToken, "stayLoggedIn":req.stayLoggedIn, "persistentToken": persistentToken})
+    except:
         return fastapi.responses.JSONResponse(status_code=401, content={"message":"wrong credentials"})
 
 if __name__ == "__main__":
