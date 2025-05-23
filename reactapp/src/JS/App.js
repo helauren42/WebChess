@@ -28,7 +28,6 @@ function getCookie(name) {
 
 const App = () => {
   const [signedIn, setSignedIn] = useState(getCookie("chessSessionToken") != null ? true : getCookie("persistentToken") != null ? true : false)
-  const [websocket, setWebsocket] = useState(null)
   const [accountUsername, setAccountUsername] = useState("")
   const sessionToken = getCookie("chessSessionToken")
   const persistentToken = getCookie("persistentToken")
@@ -71,11 +70,12 @@ const App = () => {
     }
     else {
       fetchUsername()
+      WS.init(sessionToken)
     }
   }, [signedIn])
 
   return (
-    <AppContext.Provider value={[signedIn, setSignedIn, websocket, setWebsocket]}>
+    <AppContext.Provider value={[signedIn, setSignedIn]}>
       <AccountContext.Provider value={[accountUsername, setAccountUsername]}>
         <NavBar />
         <Routes>
