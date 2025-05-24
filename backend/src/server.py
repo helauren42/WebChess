@@ -1,4 +1,3 @@
-import uuid
 from pydantic import BaseModel
 import uvicorn
 import fastapi
@@ -119,11 +118,14 @@ async def websocket_endpoint(websocket: WebSocket):
         await websocket.accept()
         print("accepted new websocket connection")
         while True:
+            # User logging in, new active connection
             data = await websocket.receive_json()
-            if data["type"] == "sessionToken":
+            if data["type"] == "newConnection":
+                print("making new active connection")
                 sessionToken = data["sessionToken"]
                 username = db.fetchUsername(sessionToken)
                 if username is None:
+                    print("invalid sessionToken")
                     await websocket.close()
                     raise Exception("entered wrong session token")
                 await websocketManager.newConnection(username, websocket)
