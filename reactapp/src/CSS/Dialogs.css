@@ -1,0 +1,55 @@
+dialog {
+  border: none !important;
+}
+
+.dialog {
+  top: 25%;
+  left: 25%;
+  height: 50%;
+  width: 50%;
+}
+
+.dialog-content {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  border-style: none;
+  padding: 10%;
+}
+
+.dialog-content h1 {
+  font-size: 3rem;
+}
+
+.dialog-content p {
+  font-size: 1.5rem;
+  margin: auto auto;
+}
+
+.ghost {
+  display: hidden;
+  height: 10%;
+}
+
+.invite-response {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.invite-button {
+  display: grid;
+  place-items: center;
+}
+
+.invite-accept {
+  background-color: var(--blue-color);
+}
+
+.invite-reject {
+  background-color: var(--red-color);
+}

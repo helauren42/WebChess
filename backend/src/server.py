@@ -130,6 +130,7 @@ async def websocket_endpoint(websocket: WebSocket):
                     raise Exception("entered wrong session token")
                 await websocketManager.newConnection(username, websocket)
     except Exception as e:
+        await websocketManager.removeCloseSockets()
         print("Closed websocket: ", e.__str__())
 
 if __name__ == "__main__":

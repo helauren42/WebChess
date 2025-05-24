@@ -11,6 +11,7 @@ import { SocialPage } from './Social.js'
 import { AccountPage } from './Account.js'
 import { SOCKET_ADDRESS } from './Const';
 import { WS } from './WebSocket.js'
+import { DialogServerConnectionError, DialogWebsocketDisconnectionError, DialogGameInvitation } from './Dialogs';
 
 export const AppContext = createContext()
 export const AccountContext = createContext()
@@ -86,6 +87,9 @@ const App = () => {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/account" element={<AccountPage />} />
         </Routes>
+        <DialogServerConnectionError />
+        <DialogWebsocketDisconnectionError />
+        <DialogGameInvitation />
       </AccountContext.Provider>
     </AppContext.Provider >
   )

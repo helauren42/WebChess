@@ -1,6 +1,8 @@
 import { useState, useEffect, useContext } from 'react';
-import { AppContext } from './App';
 import { WS } from './WebSocket.js'
+import { AppContext } from './App';
+import { SOCKET_ADDRESS } from './Const';
+import { displayDialogServerConnectionError } from './Dialogs'
 import '../CSS/Game.css'
 
 const changeSquareColor = (square) => {
@@ -28,10 +30,31 @@ const getPos = (square) => {
   return ret
 }
 
+const makeMove = async (from, to) => {
+  const failure = { "status": "failure" }
+  console.log("from: ", from)
+  console.log("to: ", to)
+  const body = JSON.stringify({ from, to })
+  const resp = await fetch(`${SOCKET_ADDRESS}/makeMove`, {
+    method: "POST",
+    headers: "Content-Type: application/json",
+    body: body
+  }).then((resp) => {
+    return resp
+  }).catch((e) => {
+    displayDialogServerConnectionError()
+    console.log("Could not connect to server: ", e)
+    return null
+  })
+  console.log(resp)
+  if (resp == null || resp.status != 200)
+    return failure
+}
+
 const Board = ({ playerColor, setPlayerColor, isOnline, setIsOnline }) => {
   console.log("playerColor: ", playerColor)
   const [playerTurn, setPlayerTurn] = useState("white")
-  const [selectedPiece, setSelectedPiece] = useState("")
+  const [selectedSquare, setSelectedSquare] = useState(null)
   const [countSelectedPieces, setCountSelectedPieces] = useState(0)
   const [boardLayout, setBoardLayout] = useState([
     ["rw", "nw", "bw", "qw", "kw", "bw", "nw", "rw"],
@@ -56,26 +79,31 @@ const Board = ({ playerColor, setPlayerColor, isOnline, setIsOnline }) => {
   }
 
   const onSelectedPieceChange = (() => {
-    console.log("selectedPiece: ", selectedPiece)
-  }, [selectedPiece])
+    console.log("selectedPiece: ", selectedSquare)
+  }, [selectedSquare])
 
   const resetSelection = (square) => {
-    setSelectedPiece("")
+    console.log("resetting selection")
+    setSelectedSquare(null)
     resetSquareColor(square)
   }
-  const onClickSquare = (event) => {
+  const updateBoard = (newBoard) => {
+    console.log("updating board")
+    setBoardLayout(newBoard)
+  }
+  const onClickSquare = async (event) => {
     const square = event.target
     const squarePos = getPos(square)
     console.log(squarePos)
-    const isSamePiece = selectedPiece == square.id
+    const isSamePiece = selectedSquare == square.id
     console.log("PRE resetting selection")
-    if (isSamePiece || (selectedPiece == "" && !isPlayerColor(squarePos))) {
-      console.log("resetting selection")
-      resetSelection(square)
-      return
-    }
-    changeSquareColor(square)
-    console.log("TYPE: ", square)
+    if (isSamePiece || (selectedSquare == "" && !isPlayerColor(squarePos)))
+      return resetSelection(square)
+    if (selectedSquare == null)
+      return setSelectedSquare(square), changeSquareColor(square)
+    const move = await makeMove(getPos(selectedSquare), squarePos)
+    if (move["status"] == "success")
+      updateBoard(move["newBoard"])
   }
   return (
     <div id="board-block">

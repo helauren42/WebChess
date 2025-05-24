@@ -14,3 +14,7 @@ class WebsocketManager:
     async def sendMessage(self, message: str, websocket: WebSocket):
         await websocket.send_json(data={"message": message})
 
+    async def removeCloseSockets(self):
+        for username, websocket in self.active_connections.items():
+            print("client: ", websocket.client)
+            print("client state: ", websocket.client_state)
