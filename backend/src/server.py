@@ -30,7 +30,14 @@ app.add_middleware(
 )
 
 ''' ------------------------------------------------------- ACCOUNT ------------------------------------------------------- '''
-
+@app.post("/addSessionToken")
+async def addSessionToken(req:SessionToken):
+    try:
+        username = db.fetchUsername(req.sessionToken)
+        db.addSessionToken(username, req.sessionToken)
+    except Exception as e:
+        return fastapi.responses.JSONResponse(status_code=500, content={"message": e.__str__()})
+    return fastapi.responses.JSONResponse(content={})
 @app.post("/getPersistentToken")
 async def getPersistentToken(req:SessionToken):
   try:

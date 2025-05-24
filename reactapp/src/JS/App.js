@@ -11,12 +11,12 @@ import { SocialPage } from './Social.js'
 import { AccountPage } from './Account.js'
 import { SOCKET_ADDRESS } from './Const';
 import { WS } from './WebSocket.js'
-import { DialogServerConnectionError, DialogWebsocketDisconnectionError, DialogGameInvitation } from './Dialogs';
+import { DialogServerConnectionError, DialogWebsocketDisconnectionError, DialogGameInvitation, displayDialogServerConnectionError } from './Dialogs';
 
 export const AppContext = createContext()
 export const AccountContext = createContext()
 
-const COOKIE_SESSION = "chessSessionToken"
+const COOKIE_SESSION = "sessionToken"
 const COOKIE_PERSISTENT = "persistentToken"
 
 function getCookie(name) {
@@ -28,19 +28,32 @@ function getCookie(name) {
 }
 
 const App = () => {
-  const [signedIn, setSignedIn] = useState(getCookie("chessSessionToken") != null ? true : getCookie("persistentToken") != null ? true : false)
+  const [signedIn, setSignedIn] = useState(getCookie("sessionToken") != null ? true : getCookie("persistentToken") != null ? true : false)
   const [accountUsername, setAccountUsername] = useState("")
-  const sessionToken = getCookie("chessSessionToken")
+  let sessionToken = getCookie("sessionToken")
   const persistentToken = getCookie("persistentToken")
-  console.log("session cookie: ", sessionToken)
-  console.log("persistent cookie: ", persistentToken)
-  console.log("signedin: ", signedIn)
-  useEffect(() => {
-    console.log('updated account username: ', accountUsername);
-  }, [accountUsername]); // Runs whenever accountUsername changes
+  const createSessionTokenFromPersistentToken = async () => {
+    sessionToken = crypto.randomUUID()
+    document.cookie = `sessionToken=${sessionToken}; path=/; SameSite=None; Secure`;
+    const resp = await fetch(`${SOCKET_ADDRESS}/addSessionToken`, {
+      method: "POST",
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify({ sessionToken })
+    }).then((resp) => {
+      return resp
+    }).catch((e) => {
+      displayDialogServerConnectionError()
+      return null
+    })
+    if (!resp || resp.status != 200) {
+      console.log("error adding session token: ", resp)
+      displayDialogServerConnectionError()
+    }
+    console.log("added session token from persistent token")
+  }
   const fetchUsername = async () => {
     console.log("fetching username")
-    const token = sessionToken ? sessionToken : persistentToken
+    const token = sessionToken
     console.log("token:", token)
     const body = JSON.stringify({ "token": token })
     console.log(body)
@@ -64,6 +77,9 @@ const App = () => {
     else
       setSignedIn(false)
   }
+  // create sessionToken if persistentToken is found
+  if (persistentToken && !sessionToken)
+    createSessionTokenFromPersistentToken()
   useEffect(() => {
     if (signedIn == false) {
       document.cookie = `${COOKIE_SESSION}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
@@ -75,6 +91,9 @@ const App = () => {
     }
   }, [signedIn])
 
+  console.log("session cookie: ", sessionToken)
+  console.log("persistent cookie: ", persistentToken)
+  console.log("signedin: ", signedIn)
   return (
     <AppContext.Provider value={[signedIn, setSignedIn]}>
       <AccountContext.Provider value={[accountUsername, setAccountUsername]}>

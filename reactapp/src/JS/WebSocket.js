@@ -1,4 +1,5 @@
 import { WEBSOCKET_URL } from "./Const"
+import { displayDialogWebsocketDisconnectionError } from "./Dialogs"
 
 class WebSocketManager {
   constructor() {
@@ -11,8 +12,11 @@ class WebSocketManager {
       this.websocketSendMessage(JSON.stringify({
         "type": "newConnection",
         "sessionToken": sessionToken
-      }));
-    });
+      }))
+    })
+    this.WS.addEventListener("close", () => {
+      displayDialogWebsocketDisconnectionError()
+    })
     this.WS.onmessage = function(event) {
       console.log("WS on message:")
       console.log(event.data)

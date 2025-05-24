@@ -126,7 +126,7 @@ const CodeValidationElement = ({ username, password, email, errorMessage, setErr
       return
     }
     console.log("setting sessionToken cookie")
-    document.cookie = `chessSessionToken=${data["sessionToken"]}; path=/; SameSite=None; Secure`;
+    document.cookie = `sessionToken=${data["sessionToken"]}; path=/; SameSite=None; Secure`;
     navigate("/")
     setSignedIn(true)
   }

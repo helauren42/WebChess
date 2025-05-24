@@ -53,7 +53,7 @@ export const LoginPage = () => {
     if (resp.status != 200)
       return
     console.log("setting sessionToken cookie")
-    document.cookie = `chessSessionToken=${data["sessionToken"]}; path=/; SameSite=None; Secure`;
+    document.cookie = `sessionToken=${data["sessionToken"]}; path=/; SameSite=None; Secure`;
     if (data["stayLoggedIn"]) {
       const persistentToken = data["persistentToken"]
       document.cookie = `persistentToken=${data["persistentToken"]}; max-age=${3600 * 24 * 365}; path=/; SameSite=None; Secure`;
