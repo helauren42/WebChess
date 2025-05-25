@@ -128,21 +128,17 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             # User logging in, new active connection
             data = await websocket.receive_json()
-            print('1: ', data)
+            print('websocket recv: ', data)
             if data == "":
                 continue
             # make sure session token is valid
-            print(2)
             sessionToken = data["sessionToken"]
-            print(3)
             username = db.fetchUsername(sessionToken)
-            print(4)
             if username is None:
                 print("invalid sessionToken")
                 await websocket.close()
                 raise Exception("entered wrong session token")
             # handling different websocket requests
-            print(5)
             if data["type"] == "newConnection":
                 print("making new active connection")
                 await websocketManager.newConnection(username, websocket, sessionToken)
