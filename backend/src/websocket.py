@@ -11,13 +11,17 @@ class AbstractWebsocketManager(ABC):
     def __init__(self):
         self.active_connections: dict[str,WebSocket] = {}
         self.active_connections_usernames: list[str] = []
+        self.session_tokens: dict[str,str] = {}
 
-    async def newConnection(self, username: str, websocket: WebSocket):
+    async def newConnection(self, username: str, websocket: WebSocket, sessionToken:str):
         print("accepted new connection: ", username)
-        if self.active_connections_usernames.count(username) > 0:
+        if self.active_connections_usernames.count(username) > 0 and self.session_tokens[username] != sessionToken:
+            print(f"{username} is already connected disconnecting previous session")
             await self.disconnect(username)
+        print("here")
         self.active_connections[username] = websocket
         self.active_connections_usernames.append(username)
+        self.session_tokens[username] = sessionToken
         print("currently online: ", self.active_connections_usernames)
 
     async def disconnect(self, username: str):
@@ -26,6 +30,7 @@ class AbstractWebsocketManager(ABC):
             await self.active_connections[username].close()
         self.active_connections.pop(username)
         self.active_connections_usernames.remove(username)
+        self.session_tokens.pop(username)
         print("currently online: ", self.active_connections_usernames)
 
     async def sendMessage(self, type: str, data:str, websocket: WebSocket):

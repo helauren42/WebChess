@@ -145,7 +145,7 @@ async def websocket_endpoint(websocket: WebSocket):
             print(5)
             if data["type"] == "newConnection":
                 print("making new active connection")
-                await websocketManager.newConnection(username, websocket)
+                await websocketManager.newConnection(username, websocket, sessionToken)
                 await websocketManager.msgUpdateActiveUsers()
             if data["type"] == "globalChat":
                 print("received global chat message")
