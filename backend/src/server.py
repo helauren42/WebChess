@@ -104,15 +104,16 @@ async def createAccount(req: SignupRequest):
 
 @app.post("/login")
 async def login(req: LoginRequest):
-    print("login request received: ")
+    print(f"login request received username: {req.username}")
     try:
         db.loginUser(req)
         sessionToken = str(uuid4())
+        print("sessionToken: ", sessionToken)
         db.addSessionToken(req.username, sessionToken)
         persistentToken = ""
         if req.stayLoggedIn:
-          persistentToken = str(uuid4())
-          db.addPersistenceToken(req.username, persistentToken)
+            persistentToken = str(uuid4())
+            db.addPersistenceToken(req.username, persistentToken)
         return fastapi.responses.JSONResponse(status_code=200, content={"message":"login success", "sessionToken":sessionToken, "stayLoggedIn":req.stayLoggedIn, "persistentToken": persistentToken})
     except:
         return fastapi.responses.JSONResponse(status_code=401, content={"message":"wrong credentials"})
@@ -136,8 +137,9 @@ async def websocket_endpoint(websocket: WebSocket):
                     await websocket.close()
                     raise Exception("entered wrong session token")
                 await websocketManager.newConnection(username, websocket)
+                await websocketManager.updateActiveUsersMsg()
     except Exception as e:
-        await websocketManager.removeCloseSockets()
+        await websocketManager.removeClosedSockets()
         print("Closed websocket: ", e.__str__())
 
 if __name__ == "__main__":
