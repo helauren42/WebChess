@@ -14,9 +14,6 @@ CWD = os.getcwd()
 ENV_PATH = os.path.join(CWD, ".env")
 DB_DIR =  os.path.join(os.path.dirname(CWD), "database/")
 
-print(ENV_PATH)
-print(DB_DIR)
-
 class AbstractDb():
     def __init__(self):
         self.host:str = ""
@@ -27,6 +24,7 @@ class AbstractDb():
         self.table_email_verification:str = ""
         self.table_session_token:str = ""
         self.table_persistent_token:str = ""
+        self.table_global_chat:str = ""
         self.fetchCredentials()
         self.createDb()
         self.setupCursor()
@@ -35,7 +33,6 @@ class AbstractDb():
         self.cursor = self.cnx.cursor()
         self.cursor.execute(f"USE {self.name}")
     def createBuildFile(self):
-        print(DB_DIR)
         subprocess.run(["touch build.sql"], shell=True, cwd=DB_DIR)
         lines = []
         with open(f"{DB_DIR}create.sql", "r") as readfile:
@@ -48,17 +45,17 @@ class AbstractDb():
                 lines[i] = lines[i].replace("DB_TABLE_USERS", self.table_users)
                 lines[i] = lines[i].replace("DB_TABLE_EMAIL_VERIFICATION", self.table_email_verification)
                 lines[i] = lines[i].replace("DB_TABLE_SESSION_TOKEN", self.table_session_token)
-                lines[i] = lines[i].replace("DB_TABLE_PERSISTENT_TOKEN ", self.table_persistent_token)
+                lines[i] = lines[i].replace("DB_TABLE_PERSISTENT_TOKEN", self.table_persistent_token)
+                lines[i] = lines[i].replace("DB_TABLE_GLOBAL_CHAT ", self.table_global_chat)
         with open(f"{DB_DIR}build.sql", "w") as writeFile:
             for line in lines:
                 writeFile.write(line)
-        print(lines)
     def createDb(self):
         print("creating database")
         self.createBuildFile()
         print("running subprocess excecuting mysql build")
         subprocess.run(f"sudo mysql < {DB_DIR}build.sql", shell=True)
-        subprocess.run(["rm build.sql"], shell=True, cwd=DB_DIR)
+        # subprocess.run(["rm build.sql"], shell=True, cwd=DB_DIR)
     def fetchCredentials(self):
         with open(ENV_PATH, "r") as file:
             lines = file.readlines()
@@ -83,6 +80,8 @@ class AbstractDb():
                         self.table_session_token = value
                     elif key == "DB_TABLE_PERSISTENT_TOKEN":
                         self.table_persistent_token = value
+                    elif key == "DB_TABLE_GLOBAL_CHAT":
+                        self.table_global_chat = value
     def validLoginPassword(self, user, password):
         self.cursor.execute(f"SELECT password FROM {self.table_users} WHERE username=%s", (user,))
         fetched = self.cursor.fetchone()
@@ -101,7 +100,7 @@ class AbstractDb():
     def fetchUserData(self, username):
         self.cursor.execute(f"SELECT * FROM {self.table_users} WHERE username=%s", (username,))
         columns = self.cursor.fetchone()
-        # userData = UserData(username, columns[4], columns[5], columns[6], columns[1])
+        # todo
         # return userData
     def fetchUserFromToken(self, token:str):
         print("searching for token: ", token)
@@ -186,3 +185,13 @@ class Database(AbstractDb):
         print("entered password is wrong")
         raise Exception("wrong credentials")
 
+    def trimGlobalChatTable(self):
+        self.cursor.execute(f"SELECT * FROM {self.table_global_chat}")
+        found = self.cursor.fetchall()
+        print(found)
+        # todo 
+
+db = Database()
+
+if __name__ == "__main__":
+    db.trimGlobalChatTable()

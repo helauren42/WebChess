@@ -13,11 +13,11 @@
   align-items: center;
 }
 
-#direct-message-container {
+#global-message-container {
   justify-content: space-between;
 }
 
-#direct-message-section {
+#global-message-section {
   height: 80vh;
   width: 50vh;
   color: black;
@@ -31,15 +31,16 @@
   height: calc(90%);
   width: 100%;
   background-color: white;
+  border: 0.01rem solid var(--light-border-color);
 }
 
 #input-message {
   width: 100%;
   height: 2rem;
-  font-size: 1.5rem;
+  font-size: 1rem;
   background-color: aliceblue;
   border: 0.01rem solid var(--light-border-color);
-  border-radius: 1rem;
+  overflow: auto;
 }
 
 #active-users-container {
@@ -52,11 +53,12 @@
   flex-direction: column;
   align-items: center;
   gap: 1rem;
+  overflow: auto;
 }
 
 #active-users-title-container {
   width: 100%;
-  border: 0.01rem solid var(--light-border-color);
+  border: 0.09rem solid var(--light-border-color);
   display: grid;
   place-items: center;
 }
@@ -65,4 +67,29 @@
   width: 100%;
   height: 100%;
   list-style: none;
+}
+
+.active-users-list-element {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  cursor: pointer;
+  border: 0.01rem solid var(--light-border-color);
+}
+
+.active-users-left {
+  width: 20%;
+}
+
+.active-users-middle {
+  width: 60%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.active-users-right {
+  width: 20%;
 }

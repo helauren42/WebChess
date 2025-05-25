@@ -3,6 +3,9 @@ from abc import ABC
 import json
 
 from fastapi.websockets import WebSocketState
+from database import db
+
+GLOBAL_CHAT_HISTORY_SIZE = 50
 
 class AbstractWebsocketManager(ABC):
     def __init__(self):
@@ -15,6 +18,7 @@ class AbstractWebsocketManager(ABC):
             await self.disconnect(username)
         self.active_connections[username] = websocket
         self.active_connections_usernames.append(username)
+        print("currently online: ", self.active_connections_usernames)
 
     async def disconnect(self, username: str):
         print("websocket disconnecting: ", username)
@@ -22,9 +26,10 @@ class AbstractWebsocketManager(ABC):
             await self.active_connections[username].close()
         self.active_connections.pop(username)
         self.active_connections_usernames.remove(username)
+        print("currently online: ", self.active_connections_usernames)
 
-    async def sendMessage(self, message: str, data:str, websocket: WebSocket):
-        await websocket.send_json(data={"message": message, "data": data})
+    async def sendMessage(self, type: str, data:str, websocket: WebSocket):
+        await websocket.send_json(data={"type": type, "data": data})
 
     async def removeClosedSockets(self):
         toRemove = []
@@ -40,8 +45,14 @@ class WebsocketManager(AbstractWebsocketManager):
     def __init__(self):
         super().__init__()
     async def msgUpdateActiveUsers(self):
-        print("!!!: ", self.active_connections_usernames)
-        data = json.dumps(self.active_connections_usernames)
         for username in self.active_connections:
+            usernames = self.active_connections_usernames.copy()
+            usernames.remove(username)
+            data = json.dumps(usernames)
             await self.sendMessage("activeUsers", data, self.active_connections[username])
+
+    async def msgGlobalChat(self, message, sender):
+        for username in self.active_connections:
+            data = json.dumps({"message":message, "sender": sender})
+            await self.sendMessage("globalChat", data, self.active_connections[username])
 

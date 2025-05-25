@@ -8,14 +8,13 @@ from websocket import WebsocketManager
 
 from utils import HOST, PORT, ORIGIN
 from fastapi.middleware.cors import CORSMiddleware
-from database import Database
+from database import db
 from schemas import LoginRequest, SignupRequest, VerifyCodeRequest, VerifyEmailRequest, SessionToken, Token
 from emailManager import EmailManager
 
 logging.basicConfig(filename="logs.log", encoding='utf-8', level=logging.DEBUG)
 
 app = fastapi.FastAPI()
-db = Database()
 emailManager = EmailManager()
 websocketManager = WebsocketManager()
 
@@ -30,6 +29,7 @@ app.add_middleware(
 )
 
 ''' ------------------------------------------------------- ACCOUNT ------------------------------------------------------- '''
+
 @app.post("/addSessionToken")
 async def addSessionToken(req:SessionToken):
     try:
@@ -128,16 +128,27 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             # User logging in, new active connection
             data = await websocket.receive_json()
+            print('1: ', data)
+            if data == "":
+                continue
+            # make sure session token is valid
+            print(2)
+            sessionToken = data["sessionToken"]
+            print(3)
+            username = db.fetchUsername(sessionToken)
+            print(4)
+            if username is None:
+                print("invalid sessionToken")
+                await websocket.close()
+                raise Exception("entered wrong session token")
+            # handling different websocket requests
+            print(5)
             if data["type"] == "newConnection":
                 print("making new active connection")
-                sessionToken = data["sessionToken"]
-                username = db.fetchUsername(sessionToken)
-                if username is None:
-                    print("invalid sessionToken")
-                    await websocket.close()
-                    raise Exception("entered wrong session token")
                 await websocketManager.newConnection(username, websocket)
                 await websocketManager.msgUpdateActiveUsers()
+            if data["type"] == "globalChat":
+                print("received global chat message")
     except Exception as e:
         await websocketManager.removeClosedSockets()
         print("Closed websocket: ", e.__str__())
