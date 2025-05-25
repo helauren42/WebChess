@@ -213,6 +213,10 @@ export const SignupPage = () => {
     if (resp.status != 200) {
       const data = await resp.json()
       console.log(data)
+      if (data["message"] != undefined && data["message"])
+        setErrorMessage(data["message"])
+      else
+        setErrorMessage("error validating form")
       return false
     }
     console.log("input validated")

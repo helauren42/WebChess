@@ -23,8 +23,8 @@ class AbstractWebsocketManager(ABC):
         self.active_connections.pop(username)
         self.active_connections_usernames.remove(username)
 
-    async def sendMessage(self, message: str, websocket: WebSocket):
-        await websocket.send_json(data={"message": message})
+    async def sendMessage(self, message: str, data:str, websocket: WebSocket):
+        await websocket.send_json(data={"message": message, "data": data})
 
     async def removeClosedSockets(self):
         toRemove = []
@@ -39,9 +39,9 @@ class AbstractWebsocketManager(ABC):
 class WebsocketManager(AbstractWebsocketManager):
     def __init__(self):
         super().__init__()
-    async def updateActiveUsersMsg(self):
+    async def msgUpdateActiveUsers(self):
         print("!!!: ", self.active_connections_usernames)
-        msg = json.dumps(self.active_connections_usernames)
+        data = json.dumps(self.active_connections_usernames)
         for username in self.active_connections:
-            await self.sendMessage(msg, self.active_connections[username])
+            await self.sendMessage("activeUsers", data, self.active_connections[username])
 

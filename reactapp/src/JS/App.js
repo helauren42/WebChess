@@ -10,14 +10,12 @@ import { SignupPage } from './Signup.js'
 import { SocialPage } from './Social.js'
 import { AccountPage } from './Account.js'
 import { SOCKET_ADDRESS } from './Const';
-import { WS } from './WebSocket.js'
+import { WebSocketManager } from './WebSocket.js'
 import { DialogServerConnectionError, DialogWebsocketDisconnectionError, DialogGameInvitation, displayDialogServerConnectionError } from './Dialogs';
 
 export const AppContext = createContext()
 export const AccountContext = createContext()
-
-const COOKIE_SESSION = "sessionToken"
-const COOKIE_PERSISTENT = "persistentToken"
+export const WS = new WebSocketManager()
 
 function getCookie(name) {
   const value = `; ${document.cookie}`;
@@ -30,6 +28,7 @@ function getCookie(name) {
 const App = () => {
   const [signedIn, setSignedIn] = useState(getCookie("sessionToken") != null ? true : getCookie("persistentToken") != null ? true : false)
   const [accountUsername, setAccountUsername] = useState("")
+  const [activeUsers, setActiveUsers] = useState([])
   let sessionToken = getCookie("sessionToken")
   const persistentToken = getCookie("persistentToken")
   const createSessionTokenFromPersistentToken = async () => {
@@ -82,12 +81,12 @@ const App = () => {
     createSessionTokenFromPersistentToken()
   useEffect(() => {
     if (signedIn == false) {
-      document.cookie = `${COOKIE_SESSION}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-      document.cookie = `${COOKIE_PERSISTENT}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      document.cookie = `sessionToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      document.cookie = `persistentToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
     }
     else {
       fetchUsername()
-      WS.init(sessionToken)
+      WS.init(sessionToken, activeUsers, setActiveUsers)
     }
   }, [signedIn])
 
@@ -95,7 +94,7 @@ const App = () => {
   console.log("persistent cookie: ", persistentToken)
   console.log("signedin: ", signedIn)
   return (
-    <AppContext.Provider value={[signedIn, setSignedIn]}>
+    <AppContext.Provider value={[signedIn, setSignedIn, activeUsers, setActiveUsers]}>
       <AccountContext.Provider value={[accountUsername, setAccountUsername]}>
         <NavBar />
         <Routes>

@@ -6,7 +6,9 @@
 :root {
   --primary-color: #797D87;
   --secondary-color: #c9cbcf;
+  --thirdary-color: #95979c;
   --border-color: #3d3f44;
+  --light-border-color: #5a5a5a;
   --navbar-text-color: #18191b;
   --primary-text-color: #0a0a0b;
   --secondary-text-color: #212225;

@@ -1,11 +1,14 @@
 import { WEBSOCKET_URL } from "./Const"
 import { displayDialogWebsocketDisconnectionError } from "./Dialogs"
 
-class WebSocketManager {
+export class WebSocketManager {
   constructor() {
     this.WS = null
+    this.activeUsers = []
   }
-  init(sessionToken) {
+  init(sessionToken, _activeUsers, _setActiveUsers) {
+    this.activeUsers = _activeUsers
+    this.setActiveUsers = _setActiveUsers
     console.log("WS init")
     this.WS = new WebSocket(`${WEBSOCKET_URL}`)
     this.WS.addEventListener('open', () => {
@@ -17,9 +20,18 @@ class WebSocketManager {
     this.WS.addEventListener("close", () => {
       displayDialogWebsocketDisconnectionError()
     })
-    this.WS.onmessage = function(event) {
-      console.log("WS on message:")
-      console.log(event.data)
+    this.WS.onmessage = (event) => {
+      console.log("WS on message:", event.data)
+      const recv = JSON.parse(event.data)
+      console.log("Websocket Recv: ", recv)
+      const msg = recv["message"]
+      const data = JSON.parse(recv["data"])
+      switch (msg) {
+        case "activeUsers":
+          console.log("received active users: ", data)
+          this.setActiveUsers(data)
+          break
+      }
     }
   }
   websocketSendMessage(msg) {
@@ -34,5 +46,4 @@ class WebSocketManager {
   }
 }
 
-export const WS = new WebSocketManager()
 
