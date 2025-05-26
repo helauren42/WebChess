@@ -55,7 +55,7 @@ class AbstractDb():
         self.createBuildFile()
         print("running subprocess excecuting mysql build")
         subprocess.run(f"sudo mysql < {DB_DIR}build.sql", shell=True)
-        # subprocess.run(["rm build.sql"], shell=True, cwd=DB_DIR)
+        subprocess.run(["rm build.sql"], shell=True, cwd=DB_DIR)
     def fetchCredentials(self):
         with open(ENV_PATH, "r") as file:
             lines = file.readlines()
@@ -185,6 +185,12 @@ class Database(AbstractDb):
         print("entered password is wrong")
         raise Exception("wrong credentials")
 
+    def addGlobalChatMessage(self, time:int, sender:str, message:str):
+        print("adding global chat message!!!!!!!!!!!")
+        query = f"INSERT INTO {self.table_global_chat} (time, sender, message) values(%s,%s,%s)"
+        values = (time, sender, message)
+        self.cursor.execute(query, values)
+        print("done!!!!!!!!")
     def trimGlobalChatTable(self):
         self.cursor.execute(f"SELECT * FROM {self.table_global_chat}")
         found = self.cursor.fetchall()

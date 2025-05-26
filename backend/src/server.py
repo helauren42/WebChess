@@ -122,6 +122,8 @@ async def login(req: LoginRequest):
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
+    username = ""
+    sessionToken = ""
     try:
         await websocket.accept()
         print("accepted new websocket connection")
@@ -134,20 +136,27 @@ async def websocket_endpoint(websocket: WebSocket):
             # make sure session token is valid
             sessionToken = data["sessionToken"]
             username = db.fetchUsername(sessionToken)
+            print("1")
             if username is None:
                 print("invalid sessionToken")
                 await websocket.close()
                 raise Exception("entered wrong session token")
             # handling different websocket requests
-            if data["type"] == "newConnection":
-                print("making new active connection")
-                await websocketManager.newConnection(username, websocket, sessionToken)
-                await websocketManager.msgUpdateActiveUsers()
-            if data["type"] == "globalChat":
-                print("received global chat message")
+            print("2")
+            dataType = data["type"]
+            print("3: ", dataType)
+            match dataType:
+                case "newConnection":
+                    print("making new active connection")
+                    await websocketManager.newConnection(username, websocket, sessionToken)
+                    await websocketManager.msgUpdateActiveUsers()
+                case "globalChat":
+                    print(f"received global chat message: {data}")
+                    message = data["data"]["message"]
+                    await websocketManager.msgGlobalChat(message, username)
     except Exception as e:
         await websocketManager.removeClosedSockets()
-        print("Closed websocket: ", e.__str__())
+        print(f"Closed websocket {username} {sessionToken}: ", e.__str__())
 
 if __name__ == "__main__":
     uvicorn.run("server:app", host=HOST, port=PORT, reload=True)
