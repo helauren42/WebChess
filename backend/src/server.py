@@ -154,6 +154,7 @@ async def websocket_endpoint(websocket: WebSocket):
                     print(f"received global chat message: {data}")
                     message = data["data"]["message"]
                     await websocketManager.msgGlobalChat(message, username)
+                # todo case "disconnect"
     except Exception as e:
         await websocketManager.removeClosedSockets()
         print(f"Closed websocket {username} {sessionToken}: ", e.__str__())

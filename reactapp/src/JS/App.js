@@ -15,6 +15,7 @@ import { DialogServerConnectionError, DialogWebsocketDisconnectionError, DialogG
 
 export const AppContext = createContext()
 export const AccountContext = createContext()
+export const SocialContext = createContext()
 export const WS = new WebSocketManager()
 
 function getCookie(name) {
@@ -28,6 +29,7 @@ function getCookie(name) {
 const App = () => {
   const [signedIn, setSignedIn] = useState(getCookie("sessionToken") != null ? true : getCookie("persistentToken") != null ? true : false)
   const [accountUsername, setAccountUsername] = useState("")
+  const [recvGlobalChatMsg, setRecvGlobalChatMessage] = useState(null)
   const [activeUsers, setActiveUsers] = useState([])
   let sessionToken = getCookie("sessionToken")
   const persistentToken = getCookie("persistentToken")
@@ -86,7 +88,7 @@ const App = () => {
     }
     else {
       fetchUsername()
-      WS.init(sessionToken, activeUsers, setActiveUsers)
+      WS.init(sessionToken, activeUsers, setActiveUsers, recvGlobalChatMsg, setRecvGlobalChatMessage, accountUsername)
     }
   }, [signedIn])
 
@@ -94,21 +96,23 @@ const App = () => {
   console.log("persistent cookie: ", persistentToken)
   console.log("signedin: ", signedIn)
   return (
-    <AppContext.Provider value={[signedIn, setSignedIn, activeUsers, setActiveUsers]}>
-      <AccountContext.Provider value={[accountUsername, setAccountUsername]}>
-        <NavBar />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/game" element={<GamePage />} />
-          <Route path="/social" element={<SocialPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/account" element={<AccountPage />} />
-        </Routes>
-        <DialogServerConnectionError />
-        <DialogWebsocketDisconnectionError />
-        <DialogGameInvitation />
-      </AccountContext.Provider>
+    <AppContext.Provider value={[signedIn, setSignedIn]}>
+      <SocialContext.Provider value={[activeUsers, setActiveUsers, recvGlobalChatMsg, setRecvGlobalChatMessage]}>
+        <AccountContext.Provider value={[accountUsername, setAccountUsername]}>
+          <NavBar />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/game" element={<GamePage />} />
+            <Route path="/social" element={<SocialPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/account" element={<AccountPage />} />
+          </Routes>
+          <DialogServerConnectionError />
+          <DialogWebsocketDisconnectionError />
+          <DialogGameInvitation />
+        </AccountContext.Provider>
+      </SocialContext.Provider>
     </AppContext.Provider >
   )
 }
