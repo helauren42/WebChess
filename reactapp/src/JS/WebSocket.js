@@ -9,13 +9,15 @@ export class MainWebSocketManager {
     this.activeUsers = []
     this.setActiveUsers = null
   }
-  baseInit(_sessionToken, _activeUsers, _setActiveUsers, _recvGlobalChatMsg, _setRecvGlobalChatMessage, _username) {
+  baseInit(_sessionToken, _activeUsers, _setActiveUsers, _recvGlobalChatMsg, _setRecvGlobalChatMessage, _username, _globalChatHistory, _setGlobalChatHistory) {
     this.sessionToken = _sessionToken
     this.activeUsers = _activeUsers
     this.setActiveUsers = _setActiveUsers
     this.recvGlobalChatMsg = _recvGlobalChatMsg
     this.username = _username
     this.setRecvGlobalChatMessage = _setRecvGlobalChatMessage
+    this.globalChatHistory = _globalChatHistory
+    this.setGlobalChatHistory = _setGlobalChatHistory
     this.WS = new WebSocket(`${WEBSOCKET_URL}`)
     this.WS.addEventListener('open', () => {
       console.log("on open websocket")
@@ -39,15 +41,14 @@ export class WebSocketManager extends MainWebSocketManager {
   constructor() {
     super()
   }
-  init(_sessionToken, _activeUsers, _setActiveUsers, _recvGlobalChatMsg, _setRecvGlobalChatMessage, _username) {
-    this.baseInit(_sessionToken, _activeUsers, _setActiveUsers, _recvGlobalChatMsg, _setRecvGlobalChatMessage, _username)
+  init(_sessionToken, _activeUsers, _setActiveUsers, _recvGlobalChatMsg, _setRecvGlobalChatMessage, _username, _globalChatHistory, _setGlobalChatHistory) {
+    this.baseInit(_sessionToken, _activeUsers, _setActiveUsers, _recvGlobalChatMsg, _setRecvGlobalChatMessage, _username, _globalChatHistory, _setGlobalChatHistory)
     this.WS.addEventListener("close", () => {
       displayDialogWebsocketDisconnectionError()
     })
     this.WS.onmessage = (event) => {
       console.log("WS on message:", event.data)
       const recv = JSON.parse(event.data)
-      console.log("Websocket Recv: ", recv)
       const type = recv["type"]
       console.log("received type: ", type)
       const data = JSON.parse(recv["data"])
@@ -59,8 +60,14 @@ export class WebSocketManager extends MainWebSocketManager {
         case "globalChat":
           console.log("received global chat message: ", data)
           this.setRecvGlobalChatMessage(data)
+          this.appendToChatHistory(data)
       }
     }
+  }
+  appendToChatHistory(data) {
+    let array = this.globalChatHistory
+    array.push(data);
+    this.setGlobalChatHistory(array)
   }
   sendGlobalChat(message) {
     const data = { "message": message }

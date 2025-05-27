@@ -26,10 +26,20 @@ function getCookie(name) {
   return null
 }
 
+const getGlobalChatHistory = async () => {
+  const resp = fetch(`${SOCKET_ADDRESS}/getGlobalChatHistory`).then((resp) => {
+    return resp.json()
+  }).catch((e) => {
+    console.log("failed to fetch global chat history: ", e)
+    displayDialogServerConnectionError()
+  })
+}
+
 const App = () => {
   const [signedIn, setSignedIn] = useState(getCookie("sessionToken") != null ? true : getCookie("persistentToken") != null ? true : false)
   const [accountUsername, setAccountUsername] = useState("")
   const [recvGlobalChatMsg, setRecvGlobalChatMessage] = useState(null)
+  const [globalChatHistory, setGlobalChatHistory] = useState([])
   const [activeUsers, setActiveUsers] = useState([])
   let sessionToken = getCookie("sessionToken")
   const persistentToken = getCookie("persistentToken")
@@ -88,7 +98,7 @@ const App = () => {
     }
     else {
       fetchUsername()
-      WS.init(sessionToken, activeUsers, setActiveUsers, recvGlobalChatMsg, setRecvGlobalChatMessage, accountUsername)
+      WS.init(sessionToken, activeUsers, setActiveUsers, recvGlobalChatMsg, setRecvGlobalChatMessage, accountUsername, globalChatHistory, setGlobalChatHistory)
     }
   }, [signedIn])
 
@@ -97,7 +107,7 @@ const App = () => {
   console.log("signedin: ", signedIn)
   return (
     <AppContext.Provider value={[signedIn, setSignedIn]}>
-      <SocialContext.Provider value={[activeUsers, setActiveUsers, recvGlobalChatMsg, setRecvGlobalChatMessage]}>
+      <SocialContext.Provider value={[activeUsers, setActiveUsers, recvGlobalChatMsg, setRecvGlobalChatMessage, globalChatHistory, setGlobalChatHistory]}>
         <AccountContext.Provider value={[accountUsername, setAccountUsername]}>
           <NavBar />
           <Routes>

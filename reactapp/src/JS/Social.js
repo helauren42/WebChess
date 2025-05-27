@@ -28,10 +28,9 @@ const createOtherMessage = (message, sender, date) => {
 }
 
 export const SocialPage = () => {
-  const [activeUsers, setActiveUsers, recvGlobalChatMsg, setRecvGlobalChatMsg] = useContext(SocialContext)
+  const [activeUsers, setActiveUsers, recvGlobalChatMsg, setRecvGlobalChatMessage, globalChatHistory, setGlobalChatHistory] = useContext(SocialContext)
   const [globalInput, setGlobalInput] = useState("")
   const [accountUsername] = useContext(AccountContext)
-  console.log("Social page active users: ", activeUsers)
   useEffect(() => {
     console.log("effect recv global message: ", recvGlobalChatMsg)
     if (recvGlobalChatMsg == null)
@@ -88,7 +87,6 @@ export const SocialPage = () => {
   }, [activeUsers])
   const updateInput = (event) => {
     const input = event.target.value
-    console.log("global chat input: ", input)
     setGlobalInput(input)
   }
   const onSubmit = (event) => {
