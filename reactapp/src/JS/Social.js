@@ -66,6 +66,7 @@ export const SocialPage = () => {
   const [activeUsers, setActiveUsers, globalChatHistory, setGlobalChatHistory] = useContext(SocialContext)
   const [globalInput, setGlobalInput] = useState("")
   const [accountUsername] = useContext(AccountContext)
+  const [firstRender, setFirstRender] = useState(true)
 
   const createChatHistory = async (setGlobalChatHistory) => {
     console.log("createChatHistory")
@@ -76,6 +77,9 @@ export const SocialPage = () => {
     if (!globalChatHistory || !accountUsername)
       return
     const parent = document.getElementById("message-history")
+    const scrollToBottom = firstRender == true ? true : parent.clientHeight + parent.scrollTop + 5 >= parent.scrollHeight
+    console.log("scrollToBottom: ", scrollToBottom)
+    setFirstRender(false)
     while (parent.lastChild) {
       parent.removeChild(parent.lastChild)
     }
@@ -84,7 +88,8 @@ export const SocialPage = () => {
       const messageObject = { "message": block[3], "sender": block[2], "time": block[1] }
       createMessageBlock(messageObject, accountUsername)
     }
-    parent.scrollTop = parent.scrollHeight
+    if (scrollToBottom)
+      parent.scrollTop = parent.scrollHeight
   }, [globalChatHistory, accountUsername])
   useEffect(() => {
     createChatHistory(setGlobalChatHistory)
@@ -137,6 +142,8 @@ export const SocialPage = () => {
   const onSubmit = (event) => {
     if (globalInput == "")
       return
+    const parent = document.getElementById("message-history")
+    parent.scrollTop = parent.scrollHeight
     WS.sendGlobalChat(globalInput)
     setGlobalInput("")
     event.target.value = ""
