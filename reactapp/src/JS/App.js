@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, createContext } from 'react';
+import { useState, useEffect, useContext, createContext, useRef } from 'react';
 import { Routes, Route } from 'react-router-dom'
 
 import '../CSS/App.css'
@@ -26,23 +26,18 @@ function getCookie(name) {
   return null
 }
 
-const getGlobalChatHistory = async () => {
-  const resp = fetch(`${SOCKET_ADDRESS}/getGlobalChatHistory`).then((resp) => {
-    return resp.json()
-  }).catch((e) => {
-    console.log("failed to fetch global chat history: ", e)
-    displayDialogServerConnectionError()
-  })
-}
-
 const App = () => {
   const [signedIn, setSignedIn] = useState(getCookie("sessionToken") != null ? true : getCookie("persistentToken") != null ? true : false)
   const [accountUsername, setAccountUsername] = useState("")
-  const [recvGlobalChatMsg, setRecvGlobalChatMessage] = useState(null)
   const [globalChatHistory, setGlobalChatHistory] = useState([])
   const [activeUsers, setActiveUsers] = useState([])
+  const globalChatHistoryRef = useRef();
+  globalChatHistoryRef.current = globalChatHistory;
   let sessionToken = getCookie("sessionToken")
   const persistentToken = getCookie("persistentToken")
+  useEffect(() => {
+    console.log("!!!!!!!!!! updated history for global chat: ", globalChatHistory)
+  }, [globalChatHistory])
   const createSessionTokenFromPersistentToken = async () => {
     sessionToken = crypto.randomUUID()
     document.cookie = `sessionToken=${sessionToken}; path=/; SameSite=None; Secure`;
@@ -65,9 +60,7 @@ const App = () => {
   const fetchUsername = async () => {
     console.log("fetching username")
     const token = sessionToken
-    console.log("token:", token)
     const body = JSON.stringify({ "token": token })
-    console.log(body)
     const resp = await fetch(`${SOCKET_ADDRESS}/fetchUsername`, {
       method: "POST",
       headers: { "Content-type": "application/json" },
@@ -80,7 +73,6 @@ const App = () => {
     })
     if (resp != null && resp.status == 200) {
       const data = await resp.json()
-      console.log(data)
       const username = data["username"]
       console.log("found username: ", username)
       setAccountUsername(username)
@@ -98,16 +90,13 @@ const App = () => {
     }
     else {
       fetchUsername()
-      WS.init(sessionToken, activeUsers, setActiveUsers, recvGlobalChatMsg, setRecvGlobalChatMessage, accountUsername, globalChatHistory, setGlobalChatHistory)
+      WS.init(sessionToken, activeUsers, setActiveUsers, accountUsername, globalChatHistoryRef, setGlobalChatHistory)
     }
   }, [signedIn])
 
-  console.log("session cookie: ", sessionToken)
-  console.log("persistent cookie: ", persistentToken)
-  console.log("signedin: ", signedIn)
   return (
     <AppContext.Provider value={[signedIn, setSignedIn]}>
-      <SocialContext.Provider value={[activeUsers, setActiveUsers, recvGlobalChatMsg, setRecvGlobalChatMessage, globalChatHistory, setGlobalChatHistory]}>
+      <SocialContext.Provider value={[activeUsers, setActiveUsers, globalChatHistory, setGlobalChatHistory]}>
         <AccountContext.Provider value={[accountUsername, setAccountUsername]}>
           <NavBar />
           <Routes>

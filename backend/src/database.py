@@ -196,8 +196,15 @@ class Database(AbstractDb):
         found = self.cursor.fetchall()
         print(found)
         # todo 
-
+    def getGlobalChatHistory(self):
+        self.cursor.execute('''SELECT * FROM global_chat ORDER BY id DESC LIMIT
+20''')
+        found = self.cursor.fetchall()
+        if found == None:
+            raise Exception("Error fetching global chat history from database")
+        return found
+        
 db = Database()
 
 if __name__ == "__main__":
-    db.trimGlobalChatTable()
+    db.getGlobalChatHistory()

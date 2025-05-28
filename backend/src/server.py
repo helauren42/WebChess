@@ -118,6 +118,16 @@ async def login(req: LoginRequest):
     except:
         return fastapi.responses.JSONResponse(status_code=401, content={"message":"wrong credentials"})
 
+''' ------------------------------------------------------ CHAT ------------------------------------------------------ '''
+
+@app.get("/getGlobalChatHistory")
+async def getGlobalChatHistory(req: fastapi.Request):
+    try:
+        print("request to getGlobalChatHistory")
+        return fastapi.responses.JSONResponse(content={"history":db.getGlobalChatHistory()})
+    except Exception as e:
+        return fastapi.responses.JSONResponse(status_code=500, content={"message":e.__str__()})
+
 ''' ------------------------------------------------------ WEBSOCKET ------------------------------------------------------ '''
 
 @app.websocket("/ws")
@@ -136,25 +146,23 @@ async def websocket_endpoint(websocket: WebSocket):
             # make sure session token is valid
             sessionToken = data["sessionToken"]
             username = db.fetchUsername(sessionToken)
-            print("1")
             if username is None:
                 print("invalid sessionToken")
                 await websocket.close()
                 raise Exception("entered wrong session token")
             # handling different websocket requests
-            print("2")
             dataType = data["type"]
-            print("3: ", dataType)
+            print("websocket message type: ", dataType)
             match dataType:
                 case "newConnection":
-                    print("making new active connection")
                     await websocketManager.newConnection(username, websocket, sessionToken)
                     await websocketManager.msgUpdateActiveUsers()
                 case "globalChat":
-                    print(f"received global chat message: {data}")
                     message = data["data"]["message"]
                     await websocketManager.msgGlobalChat(message, username)
                 # todo case "disconnect"
+                case "disconnect":
+                      await websocketManager.disconnect(username)
     except Exception as e:
         await websocketManager.removeClosedSockets()
         print(f"Closed websocket {username} {sessionToken}: ", e.__str__())

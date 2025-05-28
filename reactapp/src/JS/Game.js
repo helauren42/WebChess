@@ -177,12 +177,34 @@ const Board = ({ playerColor, setPlayerColor, isOnline, setIsOnline }) => {
   );
 };
 
+const startGame = () => {
+  // change colors
+}
+
+const SelectMode = () => {
+  return (
+    <div id="select-mode">
+      <div id="select-mode-title-background">
+        <h1 id="select-mode-title">Select Mode</h1>
+      </div>
+      <div className="select-mode-mode-background">
+        <h1 className="select-mode-mode">HotSeat</h1>
+      </div>
+      <div className="select-mode-mode-background">
+        <h1 className="select-mode-mode">Online</h1>
+      </div>
+      <div className='ghost'></div>
+    </div>
+  )
+}
+
 export const GamePage = () => {
   const [playerColor, setPlayerColor] = useState("white")
   const [isOnline, setIsOnline] = useState(false)
   return (
     <div id="game-page-container">
       <Board playerColor={playerColor} setPlayerColor={setPlayerColor} isOnline={isOnline} setIsOnline={setIsOnline} />
+      <SelectMode />
     </div>
   )
 }

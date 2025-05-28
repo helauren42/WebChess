@@ -1,6 +1,8 @@
 import { useEffect, useContext, useState } from 'react'
 import '../CSS/Social.css'
 import { SocialContext, WS, AccountContext } from './App'
+import { SOCKET_ADDRESS } from './Const'
+import { displayDialogServerConnectionError } from './Dialogs'
 
 const chatMessageContainer = (message, pos) => {
   const elem = document.createElement('div')
@@ -27,32 +29,80 @@ const createOtherMessage = (message, sender, date) => {
   elem.id = "chat-message-other"
 }
 
+const createMessageBlock = (messageObject, accountUsername) => {
+  console.log("createMessageBlock: ", messageObject)
+  const message = messageObject["message"]
+  const sender = messageObject["sender"]
+  const time = parseInt(messageObject["time"])
+  const date = new Date(time)
+  if (sender == accountUsername)
+    createUserMessage(message, sender, date)
+  else
+    createOtherMessage(message, sender, date)
+}
+
+const getGlobalChatHistory = async () => {
+  console.log("getGlobalChatHistory")
+  const resp = await fetch(`${SOCKET_ADDRESS}/getGlobalChatHistory`, {
+    headers: { "Content-type": "application/json" },
+  }).then((resp) => {
+    return resp
+  }).catch((e) => {
+    console.log("failed to fetch global chat history: ", e)
+    return null
+  })
+  if (!resp || resp.status != 200) {
+    displayDialogServerConnectionError()
+    return null
+  }
+  if (resp == null)
+    return []
+  const data = await resp.json()
+  const history = data["history"]
+  console.log("history: ", history)
+  return data["history"]
+}
+
 export const SocialPage = () => {
-  const [activeUsers, setActiveUsers, recvGlobalChatMsg, setRecvGlobalChatMessage, globalChatHistory, setGlobalChatHistory] = useContext(SocialContext)
+  const [activeUsers, setActiveUsers, globalChatHistory, setGlobalChatHistory] = useContext(SocialContext)
   const [globalInput, setGlobalInput] = useState("")
   const [accountUsername] = useContext(AccountContext)
+
+  const createChatHistory = async (setGlobalChatHistory) => {
+    console.log("createChatHistory")
+    const history = await getGlobalChatHistory()
+    setGlobalChatHistory(history)
+  }
   useEffect(() => {
-    console.log("effect recv global message: ", recvGlobalChatMsg)
-    if (recvGlobalChatMsg == null)
+    if (!globalChatHistory || !accountUsername)
       return
-    const message = recvGlobalChatMsg["message"]
-    const sender = recvGlobalChatMsg["sender"]
-    const time = parseInt(recvGlobalChatMsg["time"])
-    const date = new Date(time)
-    if (sender == accountUsername)
-      createUserMessage(message, sender, date)
-    else
-      createOtherMessage(message, sender, date)
-  }, [recvGlobalChatMsg])
+    const parent = document.getElementById("message-history")
+    while (parent.lastChild) {
+      parent.removeChild(parent.lastChild)
+    }
+    console.log("!!!!!: ", globalChatHistory)
+    console.log("!!!!!: ", globalChatHistory.length)
+    for (let i = globalChatHistory.length - 1; i >= 0; i--) {
+      const block = globalChatHistory[i]
+      const messageObject = { "message": block[3], "sender": block[2], "time": block[1] }
+      createMessageBlock(messageObject, accountUsername)
+    }
+  }, [globalChatHistory, accountUsername])
+  useEffect(() => {
+    createChatHistory(setGlobalChatHistory)
+  }, [])
   useEffect(() => {
     const parent = document.getElementById("active-users-list")
+    console.log("activeUsers.length: ", activeUsers.length)
     for (let i = 0; i < activeUsers.length; i++) {
       const username = activeUsers[i]
       const arrayUsersList = Array.from(document.getElementsByClassName("active-users-list-element"))
+      console.log("activeUsers.length: ", activeUsers.length)
       for (let i = 0; i < arrayUsersList.length; i++) {
         const element = arrayUsersList[i]
         parent.removeChild(element)
       }
+      console.log("activeUsers.length: ", activeUsers.length)
       for (let i = 0; i < activeUsers.length; i++) {
         const username = activeUsers[i]
         const container = document.createElement('div')
@@ -66,6 +116,7 @@ export const SocialPage = () => {
         // add username middle element
         const usernameElement = document.createElement('h3')
         usernameElement.title = username
+        console.log("username.length: ", username.length)
         const textUsername = username.length < 15 ? username : username.substring(0, 14) + '.';
         // todo add profile picture to left element
 

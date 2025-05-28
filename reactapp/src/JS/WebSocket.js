@@ -1,5 +1,6 @@
 import { WEBSOCKET_URL } from "./Const"
 import { displayDialogWebsocketDisconnectionError } from "./Dialogs"
+import { useEffect } from "react"
 
 export class MainWebSocketManager {
   constructor() {
@@ -9,18 +10,15 @@ export class MainWebSocketManager {
     this.activeUsers = []
     this.setActiveUsers = null
   }
-  baseInit(_sessionToken, _activeUsers, _setActiveUsers, _recvGlobalChatMsg, _setRecvGlobalChatMessage, _username, _globalChatHistory, _setGlobalChatHistory) {
+  baseInit(_sessionToken, _activeUsers, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory) {
     this.sessionToken = _sessionToken
     this.activeUsers = _activeUsers
     this.setActiveUsers = _setActiveUsers
-    this.recvGlobalChatMsg = _recvGlobalChatMsg
     this.username = _username
-    this.setRecvGlobalChatMessage = _setRecvGlobalChatMessage
     this.globalChatHistory = _globalChatHistory
     this.setGlobalChatHistory = _setGlobalChatHistory
     this.WS = new WebSocket(`${WEBSOCKET_URL}`)
     this.WS.addEventListener('open', () => {
-      console.log("on open websocket")
       this.websocketSendMessage("newConnection", {})
     })
   }
@@ -41,8 +39,8 @@ export class WebSocketManager extends MainWebSocketManager {
   constructor() {
     super()
   }
-  init(_sessionToken, _activeUsers, _setActiveUsers, _recvGlobalChatMsg, _setRecvGlobalChatMessage, _username, _globalChatHistory, _setGlobalChatHistory) {
-    this.baseInit(_sessionToken, _activeUsers, _setActiveUsers, _recvGlobalChatMsg, _setRecvGlobalChatMessage, _username, _globalChatHistory, _setGlobalChatHistory)
+  init(_sessionToken, _activeUsers, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory) {
+    this.baseInit(_sessionToken, _activeUsers, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory)
     this.WS.addEventListener("close", () => {
       displayDialogWebsocketDisconnectionError()
     })
@@ -54,20 +52,23 @@ export class WebSocketManager extends MainWebSocketManager {
       const data = JSON.parse(recv["data"])
       switch (type) {
         case "activeUsers":
-          console.log("received active users: ", data)
           this.setActiveUsers(data)
           break
         case "globalChat":
-          console.log("received global chat message: ", data)
-          this.setRecvGlobalChatMessage(data)
           this.appendToChatHistory(data)
       }
     }
   }
   appendToChatHistory(data) {
-    let array = this.globalChatHistory
-    array.push(data);
+    let array = [...this.globalChatHistory.current]
+    console.log("globalChatHistory: ", array)
+    let id = 1;
+    if (array.length > 0) {
+      id = array[array.length - 1][0] + 1
+    }
+    array.unshift([id, data["time"], data["sender"], data["message"]]);
     this.setGlobalChatHistory(array)
+    console.log("globalChatHistory2: ", this.globalChatHistory.current)
   }
   sendGlobalChat(message) {
     const data = { "message": message }
