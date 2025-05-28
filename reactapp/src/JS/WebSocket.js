@@ -61,14 +61,14 @@ export class WebSocketManager extends MainWebSocketManager {
   }
   appendToChatHistory(data) {
     let array = [...this.globalChatHistory.current]
-    console.log("globalChatHistory: ", array)
     let id = 1;
     if (array.length > 0) {
       id = array[array.length - 1][0] + 1
     }
     array.unshift([id, data["time"], data["sender"], data["message"]]);
+    if (array.length > 50)
+      array.pop()
     this.setGlobalChatHistory(array)
-    console.log("globalChatHistory2: ", this.globalChatHistory.current)
   }
   sendGlobalChat(message) {
     const data = { "message": message }

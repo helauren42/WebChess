@@ -30,7 +30,6 @@ const createOtherMessage = (message, sender, date) => {
 }
 
 const createMessageBlock = (messageObject, accountUsername) => {
-  console.log("createMessageBlock: ", messageObject)
   const message = messageObject["message"]
   const sender = messageObject["sender"]
   const time = parseInt(messageObject["time"])
@@ -80,29 +79,25 @@ export const SocialPage = () => {
     while (parent.lastChild) {
       parent.removeChild(parent.lastChild)
     }
-    console.log("!!!!!: ", globalChatHistory)
-    console.log("!!!!!: ", globalChatHistory.length)
     for (let i = globalChatHistory.length - 1; i >= 0; i--) {
       const block = globalChatHistory[i]
       const messageObject = { "message": block[3], "sender": block[2], "time": block[1] }
       createMessageBlock(messageObject, accountUsername)
     }
+    parent.scrollTop = parent.scrollHeight
   }, [globalChatHistory, accountUsername])
   useEffect(() => {
     createChatHistory(setGlobalChatHistory)
   }, [])
   useEffect(() => {
     const parent = document.getElementById("active-users-list")
-    console.log("activeUsers.length: ", activeUsers.length)
     for (let i = 0; i < activeUsers.length; i++) {
       const username = activeUsers[i]
       const arrayUsersList = Array.from(document.getElementsByClassName("active-users-list-element"))
-      console.log("activeUsers.length: ", activeUsers.length)
       for (let i = 0; i < arrayUsersList.length; i++) {
         const element = arrayUsersList[i]
         parent.removeChild(element)
       }
-      console.log("activeUsers.length: ", activeUsers.length)
       for (let i = 0; i < activeUsers.length; i++) {
         const username = activeUsers[i]
         const container = document.createElement('div')
@@ -116,7 +111,6 @@ export const SocialPage = () => {
         // add username middle element
         const usernameElement = document.createElement('h3')
         usernameElement.title = username
-        console.log("username.length: ", username.length)
         const textUsername = username.length < 15 ? username : username.substring(0, 14) + '.';
         // todo add profile picture to left element
 
