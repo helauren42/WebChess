@@ -74,6 +74,14 @@ export class WebSocketManager extends MainWebSocketManager {
     const data = { "message": message }
     this.websocketSendMessage("globalChat", data)
   }
+  sendChallenge(challenger, challenged) {
+    const data = { challenger, challenged }
+    this.websocketSendMessage("challengeUser", data)
+  }
+  acceptChallenger(challenger, challenged) {
+    const data = { challenger, challenged }
+    this.websocketSendMessage("accpetChallenge", data)
+  }
 }
 
 

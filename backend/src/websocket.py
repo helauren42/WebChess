@@ -70,3 +70,5 @@ class WebsocketManager(AbstractWebsocketManager):
         self.session_tokens[username] = sessionToken
         print("currently online: ", self.active_connections_usernames)
 
+    async def challengeUser(self, challenger: str, challenged: str):
+        print(f"received challenge challenger: {challenger}, challenged{challenged} ")

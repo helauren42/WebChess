@@ -62,6 +62,10 @@ const getGlobalChatHistory = async () => {
   return data["history"]
 }
 
+const sendChallenge = (challenger, challenged) => {
+  console.log("sending challenge challenger: ", challenger, ", challenged: ", challenged)
+  WS.sendChallenge(challenger, challenged)
+}
 export const SocialPage = () => {
   const [activeUsers, setActiveUsers, globalChatHistory, setGlobalChatHistory] = useContext(SocialContext)
   const [globalInput, setGlobalInput] = useState("")
@@ -122,9 +126,17 @@ export const SocialPage = () => {
         // right element icon
         usernameElement.textContent = username
         middleElem.append(usernameElement)
-        // const messageIcon = document.createElement("span")
-        // messageIcon.textContent = '✉️';
-        // rightElem.append(messageIcon)
+        const challengeIcon = document.createElement("span")
+        challengeIcon.textContent = '♟️';
+        challengeIcon.id = "challenge-icon"
+        challengeIcon.title = "challenge user"
+        const messageIcon = document.createElement("span")
+        messageIcon.textContent = '✉️';
+        messageIcon.id = "message-icon"
+        messageIcon.title = "message user"
+        rightElem.append(challengeIcon)
+        rightElem.append(messageIcon)
+        challengeIcon.onclick = (ev) => sendChallenge(accountUsername, username)
 
         // append elements to parent
         container.append(leftElem)
@@ -153,6 +165,7 @@ export const SocialPage = () => {
       <div className="whole-width" id="global-message-container">
         <div id="ghost"></div>
         <section id="global-message-section">
+          <h3 id="global-message-title">Global Chat</h3>
           <section id="message-history"></section>
           <input id="input-message" type="text" onInput={(e) => updateInput(e)} onKeyDown={(e) => {
             if (e.key == 'Enter') onSubmit(e)

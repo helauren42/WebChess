@@ -139,30 +139,36 @@ async def websocket_endpoint(websocket: WebSocket):
         print("accepted new websocket connection")
         while True:
             # User logging in, new active connection
-            data = await websocket.receive_json()
-            print('websocket recv: ', data)
-            if data == "":
+            recv = await websocket.receive_json()
+            print('websocket recv: ', recv)
+            if recv == "":
                 continue
             # make sure session token is valid
-            sessionToken = data["sessionToken"]
+            sessionToken = recv["sessionToken"]
             username = db.fetchUsername(sessionToken)
             if username is None:
                 print("invalid sessionToken")
                 await websocket.close()
                 raise Exception("entered wrong session token")
             # handling different websocket requests
-            dataType = data["type"]
-            print("websocket message type: ", dataType)
-            match dataType:
+            recvType = recv["type"]
+            print("websocket message type: ", recvType)
+            data = recv["data"]
+            print("data: ", data)
+            match recvType:
                 case "newConnection":
                     await websocketManager.newConnection(username, websocket, sessionToken)
                     await websocketManager.msgUpdateActiveUsers()
                 case "globalChat":
-                    message = data["data"]["message"]
+                    message = data["message"]
                     await websocketManager.msgGlobalChat(message, username)
                 # todo case "disconnect"
                 case "disconnect":
-                      await websocketManager.disconnect(username)
+                    await websocketManager.disconnect(username)
+                case "challengeUser":
+                    challenger = data["challenger"]
+                    challenged = data["challenged"]
+                    await websocketManager.challengeUser(challenger, challenged)
     except Exception as e:
         await websocketManager.removeClosedSockets()
         print(f"Closed websocket {username} {sessionToken}: ", e.__str__())
