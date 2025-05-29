@@ -106,7 +106,7 @@ const Board = ({ playerColor, setPlayerColor, isOnline, setIsOnline }) => {
       updateBoard(move["newBoard"])
   }
   return (
-    <div id="board-block">
+    <div id="board-container">
       <div id="board">
         <button className="square white-square" id="row-7-col-0" onClick={(event) => onClickSquare(event)}></button>
         <button className="square black-square" id="row-7-col-1" onClick={(event) => onClickSquare(event)}></button>
@@ -178,24 +178,6 @@ const Board = ({ playerColor, setPlayerColor, isOnline, setIsOnline }) => {
 };
 
 const startGame = () => {
-  // change colors
-}
-
-const SelectMode = () => {
-  return (
-    <div id="select-mode">
-      <div id="select-mode-title-background">
-        <h1 id="select-mode-title">Select Mode</h1>
-      </div>
-      <div className="select-mode-mode-background">
-        <h1 className="select-mode-mode">HotSeat</h1>
-      </div>
-      <div className="select-mode-mode-background">
-        <h1 className="select-mode-mode">Online</h1>
-      </div>
-      <div className='ghost'></div>
-    </div>
-  )
 }
 
 export const GamePage = () => {
@@ -204,7 +186,18 @@ export const GamePage = () => {
   return (
     <div id="game-page-container">
       <Board playerColor={playerColor} setPlayerColor={setPlayerColor} isOnline={isOnline} setIsOnline={setIsOnline} />
-      <SelectMode />
+      <div id="select-mode">
+        <div id="select-mode-title-container">
+          <p className="select-mode-title">Play chess online on</p>
+          <p className="select-mode-title">the best website ever!</p>
+        </div>
+        <div className="ghost"><p></p></div>
+        <div id="play-buttons-container">
+          <button className="play-buttons" id="button-play-hotseat">Play Hotseat</button>
+          <button className="play-buttons" id="button-play-online" onSubmit={(e) => { }}>Play Online</button>
+        </div>
+        <div className="ghost"><p></p></div>
+      </div>
     </div>
   )
 }
