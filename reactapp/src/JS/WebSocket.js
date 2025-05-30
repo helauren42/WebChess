@@ -1,5 +1,5 @@
 import { WEBSOCKET_URL } from "./Const"
-import { displayDialogWebsocketDisconnectionError } from "./Dialogs"
+import { displayDialogGameInvitation, displayDialogWebsocketDisconnectionError } from "./Dialogs"
 import { useEffect } from "react"
 
 export class MainWebSocketManager {
@@ -56,6 +56,10 @@ export class WebSocketManager extends MainWebSocketManager {
           break
         case "globalChat":
           this.appendToChatHistory(data)
+          break
+        case "challengeUser":
+          displayDialogGameInvitation(data["challenger"])
+          break
       }
     }
   }
@@ -83,5 +87,4 @@ export class WebSocketManager extends MainWebSocketManager {
     this.websocketSendMessage("accpetChallenge", data)
   }
 }
-
 

@@ -17,7 +17,6 @@ class AbstractWebsocketManager(ABC):
     async def sendMessage(self, type: str, data:str, websocket: WebSocket):
         await websocket.send_json(data={"type": type, "data": data})
 
-
 class WebsocketManager(AbstractWebsocketManager):
     def __init__(self):
         super().__init__()
@@ -71,4 +70,17 @@ class WebsocketManager(AbstractWebsocketManager):
         print("currently online: ", self.active_connections_usernames)
 
     async def challengeUser(self, challenger: str, challenged: str):
-        print(f"received challenge challenger: {challenger}, challenged{challenged} ")
+        print(f"received challenge challenger: {challenger}, challenged: {challenged} ")
+        data = json.dumps({"challenger":challenger})
+        websocket = self.active_connections[challenged]
+        await self.sendMessage("challengeUser", data, websocket)
+
+    async def startOnlineGame(self, challenger:str, challenged:str):
+        print(f"Starting online game {challenger} vs {challenged}")
+        data = json.dumps({"challenger":challenger, "challenged":challenged})
+        await self.sendMessage("startOnlineGame", data, self.active_connections[challenger])
+        await self.sendMessage("startOnlineGame", data, self.active_connections[challenged])
+
+    async def acceptChallenge(self, challenger:str, challenged:str):
+        print(f"{challenged} accepted challenge from {challenger}")
+        await self.startOnlineGame(challenger, challenged)

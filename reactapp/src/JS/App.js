@@ -4,7 +4,7 @@ import { Routes, Route } from 'react-router-dom'
 import '../CSS/App.css'
 import { HomePage } from "./Home.js"
 import { NavBar } from './NavBar';
-import { GamePage } from './Game.js'
+import { GamePage } from './Game/Game.js'
 import { LoginPage } from './Login.js'
 import { SignupPage } from './Signup.js'
 import { SocialPage } from './Social.js'
@@ -109,7 +109,7 @@ const App = () => {
           </Routes>
           <DialogServerConnectionError />
           <DialogWebsocketDisconnectionError />
-          <DialogGameInvitation />
+          <DialogGameInvitation accountUsername={accountUsername} />
         </AccountContext.Provider>
       </SocialContext.Provider>
     </AppContext.Provider >

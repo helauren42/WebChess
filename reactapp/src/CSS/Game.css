@@ -19,7 +19,7 @@
   flex: 0 0 40%;
 }
 
-#board {
+.board {
   height: 70vmin;
   width: 70vmin;
   aspect-ratio: 1/1;

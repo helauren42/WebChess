@@ -53,3 +53,8 @@ dialog {
 .invite-reject {
   background-color: var(--red-color);
 }
+
+.challenger-text {
+  display: inline;
+  margin: 0;
+}

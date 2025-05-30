@@ -1,4 +1,6 @@
+import { SOCKET_ADDRESS } from './Const';
 import "../CSS/Dialogs.css"
+import { WS } from './App.js'
 
 export const displayDialogServerConnectionError = () => {
   const elem = document.getElementById("dialog-server-connection-error")
@@ -34,20 +36,30 @@ export const DialogWebsocketDisconnectionError = () => {
   )
 }
 
-export const displayDialogGameInvitation = () => {
-  const elem = document.getElementById("dialog-websocket-disconnection-error")
+export const displayDialogGameInvitation = (challenger) => {
+  const elem = document.getElementById("dialog-websocket-game-invitation")
   elem.showModal()
+  const challenger_element = document.getElementById("challenger-text-name")
+  challenger_element.innerText = `${challenger}`
 }
 
-export const DialogGameInvitation = ({ inviter }) => {
+export const DialogGameInvitation = ({ accountUsername }) => {
+  const acceptInvitation = () => {
+    const challenger = document.getElementById("challenger-text-name")
+    WS.acceptChallenger(challenger.innerText, accountUsername)
+  }
   return (
-    <dialog className="dialog" id="dialog-websocket-disconnection-error">
+    <dialog className="dialog" id="dialog-websocket-game-invitation">
       <div className="dialog-content">
-        <h1>Connection Error</h1>
-        <p>{inviter} has sent challenged you to a game</p>
+        <div>
+          <h1 className="challenger-text">You have been challenged to a game by </h1>
+          <h1 className="challenger-text" id="challenger-text-name"></h1>
+          <h1 className="challenger-text">!</h1>
+        </div>
+        <p className="ghost"></p>
         <div className="invite-response">
           <button className="invite-button invite-reject">reject</button>
-          <button className="invite-button invite-accept">accept</button>
+          <button className="invite-button invite-accept" onClick={(e) => acceptInvitation()}>accept</button>
         </div>
       </div>
     </dialog >
