@@ -9,7 +9,7 @@ import { BoardBlack } from './BoardBlack.js'
 import { resetSquareColor, getPos, changeSquareColor, makeMove } from './BoardActions.js';
 
 
-const Board = ({ playerColor, setPlayerColor, isOnline, setIsOnline }) => {
+const Board = ({ playerColor, setPlayerColor }) => {
   console.log("playerColor: ", playerColor)
   const [playerTurn, setPlayerTurn] = useState("white")
   const [selectedSquare, setSelectedSquare] = useState(null)
@@ -73,23 +73,36 @@ const Board = ({ playerColor, setPlayerColor, isOnline, setIsOnline }) => {
 const startGame = () => {
 }
 
-export const GamePage = () => {
+export const OnlineGame = () => {
   const [playerColor, setPlayerColor] = useState("white")
   const [isOnline, setIsOnline] = useState(false)
   return (
     <div id="game-page-container">
       <Board playerColor={playerColor} setPlayerColor={setPlayerColor} isOnline={isOnline} setIsOnline={setIsOnline} />
-      <div id="select-mode">
-        <div id="select-mode-title-container">
-          <p className="select-mode-title">Play chess online on</p>
-          <p className="select-mode-title">the best website ever!</p>
+      <div id="right-side">
+      </div >
+    </div >
+  )
+}
+
+export const PlayPage = () => {
+  const [playerColor, setPlayerColor] = useState("white")
+  return (
+    <div id="game-page-container">
+      <Board playerColor={playerColor} setPlayerColor={setPlayerColor} />
+      <div id="right-side">
+        <div id="select-mode">
+          <div id="select-mode-title-container">
+            <p className="select-mode-title">Play chess online on</p>
+            <p className="select-mode-title">the best website ever!</p>
+          </div>
+          <div className="ghost"><p></p></div>
+          <div id="play-buttons-container">
+            <button className="play-buttons" id="button-play-hotseat">Play Hotseat</button>
+            <button className="play-buttons" id="button-play-online" onSubmit={(e) => { }}>Play Online</button>
+          </div>
+          <div className="ghost"><p></p></div>
         </div>
-        <div className="ghost"><p></p></div>
-        <div id="play-buttons-container">
-          <button className="play-buttons" id="button-play-hotseat">Play Hotseat</button>
-          <button className="play-buttons" id="button-play-online" onSubmit={(e) => { }}>Play Online</button>
-        </div>
-        <div className="ghost"><p></p></div>
       </div>
     </div>
   )

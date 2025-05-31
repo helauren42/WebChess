@@ -127,7 +127,7 @@ export const SocialPage = () => {
         usernameElement.textContent = username
         middleElem.append(usernameElement)
         const challengeIcon = document.createElement("span")
-        challengeIcon.textContent = '♟️';
+        challengeIcon.textContent = '🆚';
         challengeIcon.id = "challenge-icon"
         challengeIcon.title = "challenge user"
         const messageIcon = document.createElement("span")

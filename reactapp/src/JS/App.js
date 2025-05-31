@@ -1,10 +1,11 @@
-import { useState, useEffect, useContext, createContext, useRef } from 'react';
+import { useState, useEffect, createContext, useRef } from 'react';
 import { Routes, Route } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import '../CSS/App.css'
 import { HomePage } from "./Home.js"
 import { NavBar } from './NavBar';
-import { GamePage } from './Game/Game.js'
+import { PlayPage, OnlineGame } from './Game/Play.js'
 import { LoginPage } from './Login.js'
 import { SignupPage } from './Signup.js'
 import { SocialPage } from './Social.js'
@@ -31,6 +32,7 @@ const App = () => {
   const [accountUsername, setAccountUsername] = useState("")
   const [globalChatHistory, setGlobalChatHistory] = useState([])
   const [activeUsers, setActiveUsers] = useState([])
+  const navigate = useNavigate()
   const globalChatHistoryRef = useRef();
   globalChatHistoryRef.current = globalChatHistory;
   let sessionToken = getCookie("sessionToken")
@@ -44,7 +46,7 @@ const App = () => {
     const resp = await fetch(`${SOCKET_ADDRESS}/addSessionToken`, {
       method: "POST",
       headers: { "Content-type": "application/json" },
-      body: JSON.stringify({ sessionToken })
+      body: JSON.stringify({ sessionToken, persistentToken })
     }).then((resp) => {
       return resp
     }).catch((e) => {
@@ -85,12 +87,11 @@ const App = () => {
     createSessionTokenFromPersistentToken()
   useEffect(() => {
     if (signedIn == false) {
-      document.cookie = `sessionToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-      document.cookie = `persistentToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      document.cookie = `sessionToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
     }
     else {
       fetchUsername()
-      WS.init(sessionToken, activeUsers, setActiveUsers, accountUsername, globalChatHistoryRef, setGlobalChatHistory)
+      WS.init(sessionToken, activeUsers, setActiveUsers, accountUsername, globalChatHistoryRef, setGlobalChatHistory, navigate)
     }
   }, [signedIn])
 
@@ -101,7 +102,9 @@ const App = () => {
           <NavBar />
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/game" element={<GamePage />} />
+            <Route path="/play" element={<PlayPage />}>
+              <Route path="play/online" element={<OnlineGame />} />
+            </Route>
             <Route path="/social" element={<SocialPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />

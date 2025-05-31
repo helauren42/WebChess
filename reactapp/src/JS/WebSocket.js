@@ -1,6 +1,5 @@
 import { WEBSOCKET_URL } from "./Const"
 import { displayDialogGameInvitation, displayDialogWebsocketDisconnectionError } from "./Dialogs"
-import { useEffect } from "react"
 
 export class MainWebSocketManager {
   constructor() {
@@ -10,13 +9,14 @@ export class MainWebSocketManager {
     this.activeUsers = []
     this.setActiveUsers = null
   }
-  baseInit(_sessionToken, _activeUsers, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory) {
+  baseInit(_sessionToken, _activeUsers, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory, _navigate) {
     this.sessionToken = _sessionToken
     this.activeUsers = _activeUsers
     this.setActiveUsers = _setActiveUsers
     this.username = _username
     this.globalChatHistory = _globalChatHistory
     this.setGlobalChatHistory = _setGlobalChatHistory
+    this.navigate = _navigate
     this.WS = new WebSocket(`${WEBSOCKET_URL}`)
     this.WS.addEventListener('open', () => {
       this.websocketSendMessage("newConnection", {})
@@ -39,8 +39,8 @@ export class WebSocketManager extends MainWebSocketManager {
   constructor() {
     super()
   }
-  init(_sessionToken, _activeUsers, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory) {
-    this.baseInit(_sessionToken, _activeUsers, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory)
+  init(_sessionToken, _activeUsers, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory, _navigate) {
+    this.baseInit(_sessionToken, _activeUsers, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory, _navigate)
     this.WS.addEventListener("close", () => {
       displayDialogWebsocketDisconnectionError()
     })
@@ -60,8 +60,15 @@ export class WebSocketManager extends MainWebSocketManager {
         case "challengeUser":
           displayDialogGameInvitation(data["challenger"])
           break
+        case "startOnlineGame":
+          this.startOnlineGame()
+          break
       }
     }
+  }
+  // ----------------------------------------------------- RECEIVE -----------------------------------------------------
+  startOnlineGame() {
+    this.navigate("/play/online")
   }
   appendToChatHistory(data) {
     let array = [...this.globalChatHistory.current]
@@ -74,6 +81,7 @@ export class WebSocketManager extends MainWebSocketManager {
       array.pop()
     this.setGlobalChatHistory(array)
   }
+  // ----------------------------------------------------- SEND-MESSAGE -----------------------------------------------------
   sendGlobalChat(message) {
     const data = { "message": message }
     this.websocketSendMessage("globalChat", data)
@@ -84,7 +92,7 @@ export class WebSocketManager extends MainWebSocketManager {
   }
   acceptChallenger(challenger, challenged) {
     const data = { challenger, challenged }
-    this.websocketSendMessage("accpetChallenge", data)
+    this.websocketSendMessage("acceptChallenge", data)
   }
 }
 

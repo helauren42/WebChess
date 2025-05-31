@@ -42,6 +42,10 @@ export const displayDialogGameInvitation = (challenger) => {
   const challenger_element = document.getElementById("challenger-text-name")
   challenger_element.innerText = `${challenger}`
 }
+export const hideDialogGameInvitation = (challenger) => {
+  const elem = document.getElementById("dialog-websocket-game-invitation")
+  elem.style.display = "none"
+}
 
 export const DialogGameInvitation = ({ accountUsername }) => {
   const acceptInvitation = () => {
@@ -58,8 +62,13 @@ export const DialogGameInvitation = ({ accountUsername }) => {
         </div>
         <p className="ghost"></p>
         <div className="invite-response">
-          <button className="invite-button invite-reject">reject</button>
-          <button className="invite-button invite-accept" onClick={(e) => acceptInvitation()}>accept</button>
+          <button className="invite-button invite-reject" onClick={(e) => {
+            hideDialogGameInvitation()
+          }}>reject</button>
+          <button className="invite-button invite-accept" onClick={(e) => {
+            hideDialogGameInvitation()
+            acceptInvitation()
+          }}>accept</button>
         </div>
       </div>
     </dialog >

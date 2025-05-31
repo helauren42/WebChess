@@ -9,7 +9,7 @@ from websocket import WebsocketManager
 from utils import HOST, PORT, ORIGIN
 from fastapi.middleware.cors import CORSMiddleware
 from database import db
-from schemas import LoginRequest, SignupRequest, VerifyCodeRequest, VerifyEmailRequest, SessionToken, Token
+from schemas import BothTokens, LoginRequest, SignupRequest, VerifyCodeRequest, VerifyEmailRequest, SessionToken, Token
 from emailManager import EmailManager
 
 logging.basicConfig(filename="logs.log", encoding='utf-8', level=logging.DEBUG)
@@ -31,13 +31,16 @@ app.add_middleware(
 ''' ------------------------------------------------------- ACCOUNT ------------------------------------------------------- '''
 
 @app.post("/addSessionToken")
-async def addSessionToken(req:SessionToken):
+async def addSessionToken(req:BothTokens):
     try:
-        username = db.fetchUsername(req.sessionToken)
+        print("req sessionToken: ", req.sessionToken)
+        username = db.fetchUsername(req.persistentToken)
         db.addSessionToken(username, req.sessionToken)
     except Exception as e:
+        print("add session token error: ", e.__str__())
         return fastapi.responses.JSONResponse(status_code=500, content={"message": e.__str__()})
     return fastapi.responses.JSONResponse(content={})
+
 @app.post("/getPersistentToken")
 async def getPersistentToken(req:SessionToken):
   try:
