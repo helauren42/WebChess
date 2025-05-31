@@ -169,6 +169,10 @@ async def websocket_endpoint(websocket: WebSocket):
                     challenger = data["challenger"]
                     challenged = data["challenged"]
                     await websocketManager.challengeUser(challenger, challenged)
+                case "acceptChallenge":
+                    challenger = data["challenger"]
+                    challenged = data["challenged"]
+                    await websocketManager.acceptChallenge(challenger, challenged)
     except Exception as e:
         await websocketManager.removeClosedSockets()
         print(f"Closed websocket {username} {sessionToken}: ", e.__str__())
