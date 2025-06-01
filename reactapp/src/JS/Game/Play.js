@@ -3,11 +3,10 @@ import { WS } from '../WebSocket.js'
 import { AppContext } from '../App';
 import { SOCKET_ADDRESS } from '../Const';
 import { displayDialogServerConnectionError } from '../Dialogs'
-import '../../CSS/Game.css'
+import '../../CSS/Play.css'
 import { BoardWhite } from './BoardWhite.js'
 import { BoardBlack } from './BoardBlack.js'
 import { resetSquareColor, getPos, changeSquareColor, makeMove } from './BoardActions.js';
-
 
 const Board = ({ playerColor, setPlayerColor }) => {
   console.log("playerColor: ", playerColor)
@@ -69,21 +68,6 @@ const Board = ({ playerColor, setPlayerColor }) => {
     </div>
   );
 };
-
-const startGame = () => {
-}
-
-export const OnlineGame = () => {
-  const [playerColor, setPlayerColor] = useState("white")
-  const [isOnline, setIsOnline] = useState(false)
-  return (
-    <div id="game-page-container">
-      <Board playerColor={playerColor} setPlayerColor={setPlayerColor} isOnline={isOnline} setIsOnline={setIsOnline} />
-      <div id="right-side">
-      </div >
-    </div >
-  )
-}
 
 export const PlayPage = () => {
   const [playerColor, setPlayerColor] = useState("white")

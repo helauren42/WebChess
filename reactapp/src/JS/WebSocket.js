@@ -8,8 +8,9 @@ export class MainWebSocketManager {
     this.sessionToken = ""
     this.activeUsers = []
     this.setActiveUsers = null
+    this.onlineGame = null
   }
-  baseInit(_sessionToken, _activeUsers, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory, _navigate) {
+  baseInit(_sessionToken, _activeUsers, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory, _navigate, _setGameData) {
     this.sessionToken = _sessionToken
     this.activeUsers = _activeUsers
     this.setActiveUsers = _setActiveUsers
@@ -17,6 +18,7 @@ export class MainWebSocketManager {
     this.globalChatHistory = _globalChatHistory
     this.setGlobalChatHistory = _setGlobalChatHistory
     this.navigate = _navigate
+    this.setGameData = _setGameData
     this.WS = new WebSocket(`${WEBSOCKET_URL}`)
     this.WS.addEventListener('open', () => {
       this.websocketSendMessage("newConnection", {})
@@ -39,8 +41,8 @@ export class WebSocketManager extends MainWebSocketManager {
   constructor() {
     super()
   }
-  init(_sessionToken, _activeUsers, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory, _navigate) {
-    this.baseInit(_sessionToken, _activeUsers, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory, _navigate)
+  init(_sessionToken, _activeUsers, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory, _navigate, _setGameData) {
+    this.baseInit(_sessionToken, _activeUsers, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory, _navigate, _setGameData)
     this.WS.addEventListener("close", () => {
       displayDialogWebsocketDisconnectionError()
     })
@@ -50,6 +52,7 @@ export class WebSocketManager extends MainWebSocketManager {
       const type = recv["type"]
       console.log("received type: ", type)
       const data = JSON.parse(recv["data"])
+      console.log("data: ", data)
       switch (type) {
         case "activeUsers":
           this.setActiveUsers(data)
@@ -61,6 +64,7 @@ export class WebSocketManager extends MainWebSocketManager {
           displayDialogGameInvitation(data["challenger"])
           break
         case "startOnlineGame":
+          this.setGameData(data)
           this.startOnlineGame()
           break
       }

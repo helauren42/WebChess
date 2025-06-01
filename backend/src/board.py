@@ -2,19 +2,19 @@ import pydantic
 from enum import Enum
 
 class Pieces(Enum):
-    EMPTY = 0
-    WHITE_PAWN = 1
-    WHITE_KNIGHT = 2
-    WHITE_BISHOP = 3
-    WHITE_ROOK = 4
-    WHITE_QUEEN = 5
-    WHITE_KING = 6
-    BLACK_PAWN = 7
-    BLACK_KNIGHT = 8
-    BLACK_BISHOP = 9
-    BLACK_ROOK = 10
-    BLACK_QUEEN = 11
-    BLACK_KING = 12
+    EMPTY = ""
+    WHITE_PAWN = "wp"
+    WHITE_KNIGHT = "wn"
+    WHITE_BISHOP = "wb"
+    WHITE_ROOK = "wr"
+    WHITE_QUEEN = "wq"
+    WHITE_KING = "wk"
+    BLACK_PAWN = "bp"
+    BLACK_KNIGHT = "bn"
+    BLACK_BISHOP = "bb"
+    BLACK_ROOK = "br"
+    BLACK_QUEEN = "bq"
+    BLACK_KING = "bk"
 
 class Cell():
     def __init__(self, posX:int, posY:int, _piece: Pieces) -> None:
@@ -22,12 +22,30 @@ class Cell():
         self.y: int = posY
         self.piece: Pieces = _piece
     def __str__(self) -> str:
-        return str(self.piece)
+        return str(self.piece.value)
 
 class Board():
     def __init__(self)->None:
         self.board = self.initialize_board()
-    def initialize_board(self):
+    def __str__(self) -> str:
+        ret = ""
+        for row in self.board:
+            for x in range(8):
+                cell:Cell = row[x]
+                ret += cell.__str__() + ';'
+            ret += '\n'
+        return ret
+
+    def sendFormat(self)->list[list[str]]:
+      ret = []
+      for y in range(8):
+        row = []
+        for x in range(8):
+          row.append(self.board[y][x].piece.value)
+        ret.append(row)
+      return ret
+        
+    def initialize_board(self)->list[list[Cell]]:
         board = []
         white_pieces = [
             Pieces.WHITE_ROOK, Pieces.WHITE_KNIGHT, Pieces.WHITE_BISHOP,
@@ -56,15 +74,6 @@ class Board():
                 row.append(Cell(x, y, piece))
             board.append(row)
         return board
-
-    def __str__(self) -> str:
-        ret = ""
-        for row in self.board:
-            for x in range(8):
-                cell:Cell = row[x]
-                ret += cell.__str__() + ';'
-            ret += '\n'
-        return ret
 
 if __name__ == "__main__":
     board = Board()

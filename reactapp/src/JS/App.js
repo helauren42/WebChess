@@ -5,7 +5,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import '../CSS/App.css'
 import { HomePage } from "./Home.js"
 import { NavBar } from './NavBar';
-import { PlayPage, OnlineGame } from './Game/Play.js'
+import { PlayPage } from './Game/Play.js'
+import { OnlineGame } from './Game/Game.js';
 import { LoginPage } from './Login.js'
 import { SignupPage } from './Signup.js'
 import { SocialPage } from './Social.js'
@@ -13,6 +14,7 @@ import { AccountPage } from './Account.js'
 import { SOCKET_ADDRESS } from './Const';
 import { WebSocketManager } from './WebSocket.js'
 import { DialogServerConnectionError, DialogWebsocketDisconnectionError, DialogGameInvitation, displayDialogServerConnectionError } from './Dialogs';
+import { GAME_MODE_HOTSEAT, GAME_MODE_ONLINE } from './Game/Game';
 
 export const AppContext = createContext()
 export const AccountContext = createContext()
@@ -32,6 +34,7 @@ const App = () => {
   const [accountUsername, setAccountUsername] = useState("")
   const [globalChatHistory, setGlobalChatHistory] = useState([])
   const [activeUsers, setActiveUsers] = useState([])
+  const [gameData, setGameData] = useState({})
   const navigate = useNavigate()
   const globalChatHistoryRef = useRef();
   globalChatHistoryRef.current = globalChatHistory;
@@ -91,10 +94,9 @@ const App = () => {
     }
     else {
       fetchUsername()
-      WS.init(sessionToken, activeUsers, setActiveUsers, accountUsername, globalChatHistoryRef, setGlobalChatHistory, navigate)
+      WS.init(sessionToken, activeUsers, setActiveUsers, accountUsername, globalChatHistoryRef, setGlobalChatHistory, navigate, setGameData)
     }
   }, [signedIn])
-
   return (
     <AppContext.Provider value={[signedIn, setSignedIn]}>
       <SocialContext.Provider value={[activeUsers, setActiveUsers, globalChatHistory, setGlobalChatHistory]}>
@@ -102,9 +104,8 @@ const App = () => {
           <NavBar />
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/play" element={<PlayPage />}>
-              <Route path="play/online" element={<OnlineGame />} />
-            </Route>
+            <Route path="/play" element={<PlayPage />} />
+            <Route path="/play/online" element={<OnlineGame gameMode={GAME_MODE_ONLINE} gameData={gameData} />} />
             <Route path="/social" element={<SocialPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
