@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import '../../CSS/Play.css'
 import '../../CSS/Game.css'
 
-import { positionPieceImages } from './Game'
+import { positionPieceImages } from './BoardActions.js'
 
-export const BoardWhite = ({ onClickSquare, gameData }) => {
+export const BoardWhite = ({ gameData, onClickSquare }) => {
   console.log("White Board")
   useEffect(() => {
     console.log("effect to positionPieceImages")

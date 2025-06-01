@@ -1,14 +1,15 @@
 import { WS } from '../WebSocket.js'
 import { SOCKET_ADDRESS } from '../Const';
+import { PIECE_IMAGES } from './Images.js';
 import { displayDialogServerConnectionError } from '../Dialogs'
 
 export const changeSquareColor = (square) => {
   console.log("changing square color")
   const color = square.className.search("white") >= 0 ? "white" : "black"
   if (color == "white")
-    square.style.backgroundColor = "#DBDCDC"
+    square.style.backgroundColor = "#745555"
   else
-    square.style.backgroundColor = "#353535"
+    square.style.backgroundColor = "#745555"
 }
 
 export const resetSquareColor = (square) => {
@@ -46,5 +47,28 @@ export const makeMove = async (from, to) => {
   console.log(resp)
   if (resp == null || resp.status != 200)
     return failure
+}
+
+export const positionPieceImages = (board) => {
+  if (!board)
+    return
+  console.log("positionPieceImages()")
+  for (let y = 0; y < 8; y++) {
+    for (let x = 0; x < 8; x++) {
+      const piece = board[y][x]
+      const idName = `img-row-${y}-col-${x}`
+      const elem = document.getElementById(idName)
+      if (piece == "" && elem.title != "") {
+        elem.style.display = "none"
+        elem.removeAttribute("src")
+        elem.title = ""
+      }
+      else if (elem.title != piece) {
+        elem.style.display = "inline"
+        elem.src = PIECE_IMAGES[piece]
+        elem.title = piece
+      }
+    }
+  }
 }
 

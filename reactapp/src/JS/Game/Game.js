@@ -2,42 +2,54 @@ import { useEffect, useState } from 'react'
 import { BoardWhite } from './BoardWhite'
 import { BoardBlack } from './BoardBlack'
 import { PIECE_IMAGES } from './Images.js'
+import { resetSquareColor, getPos, changeSquareColor, makeMove } from './BoardActions.js';
 
 export const GAME_MODE_ONLINE = 0
 export const GAME_MODE_HOTSEAT = 1
-
-export const positionPieceImages = (board) => {
-  if (!board)
-    return
-  for (let y = 0; y < 8; y++) {
-    for (let x = 0; x < 8; x++) {
-      const piece = board[y][x]
-      const idName = `img-row-${y}-col-${x}`
-      console.log("id name: ", idName)
-      const elem = document.getElementById(idName)
-      if (piece == "") {
-        elem.style.display = "none"
-        elem.removeAttribute("src")
-      }
-      else {
-        elem.style.display = "inline"
-        elem.src = PIECE_IMAGES[piece]
-      }
-      console.log(elem.src)
-    }
-  }
-}
+const WHITE_PIECES = ["rw", "nw", "bw", "qw", "kw", "pw"]
+const BLACK_PIECES = ["rb", "nb", "bb", "qb", "kb", "pb"]
 
 export const OnlineGame = ({ gameMode, gameData }) => {
   console.log("OnlineGame")
   const [playerColor, setPlayerColor] = useState("")
+  const [selectedSquare, setSelectedSquare] = useState(null)
+  const onSelectedSquareChange = (() => {
+    console.log("selectedPiece: ", selectedSquare)
+  }, [selectedSquare])
+  const isPlayerColor = (squarePos) => {
+    const piece = gameData["board"][squarePos[0]][squarePos[1]]
+    console.log("clicked piece: ", piece)
+    if (playerColor == "white" && WHITE_PIECES.includes(piece))
+      return true
+    if (playerColor == "black" && BLACK_PIECES.includes(piece))
+      return true
+    return false
+  }
+  const resetSelection = (square) => {
+    console.log("resetting selection")
+    setSelectedSquare(null)
+    resetSquareColor(square)
+  }
+
+  const onClickSquare = async (event) => {
+    const square = event.target
+    const squarePos = getPos(square)
+    console.log(squarePos)
+    const isSamePiece = selectedSquare == square.id
+    console.log("PRE resetting selection")
+    if (isSamePiece || (selectedSquare == "" && !isPlayerColor(squarePos)))
+      return resetSelection(square)
+    if (selectedSquare == null)
+      return setSelectedSquare(square), changeSquareColor(square)
+    const move = await makeMove(getPos(selectedSquare), squarePos)
+  }
   useEffect(() => {
     setPlayerColor(gameData["playerColor"])
-  }, [])
+  }, [gameData])
   console.log(gameData)
   return (
     <div id="game-page-container">
-      {playerColor == "white" ? <BoardWhite playerColor={playerColor} gameData={gameData} /> : <BoardBlack playerColor={playerColor} gameData={gameData} />}
+      {playerColor == "white" ? <BoardWhite gameData={gameData} onClickSquare={onClickSquare} /> : <BoardBlack gameData={gameData} onClickSquare={onClickSquare} />}
       <div id="right-side">
       </div>
     </div >
