@@ -6,7 +6,7 @@ import { PIECE_IMAGES } from './Images.js'
 export const GAME_MODE_ONLINE = 0
 export const GAME_MODE_HOTSEAT = 1
 
-const positionPieceImages = (board) => {
+export const positionPieceImages = (board) => {
   if (!board)
     return
   for (let y = 0; y < 8; y++) {
@@ -15,10 +15,15 @@ const positionPieceImages = (board) => {
       const idName = `img-row-${y}-col-${x}`
       console.log("id name: ", idName)
       const elem = document.getElementById(idName)
-      if (piece == "")
+      if (piece == "") {
+        elem.style.display = "none"
         elem.removeAttribute("src")
-      else
+      }
+      else {
+        elem.style.display = "inline"
         elem.src = PIECE_IMAGES[piece]
+      }
+      console.log(elem.src)
     }
   }
 }
@@ -29,15 +34,10 @@ export const OnlineGame = ({ gameMode, gameData }) => {
   useEffect(() => {
     setPlayerColor(gameData["playerColor"])
   }, [])
-  useEffect(() => {
-    if (!gameData || gameData == {})
-      return
-    positionPieceImages(gameData["board"])
-  }, [gameData])
   console.log(gameData)
   return (
     <div id="game-page-container">
-      {playerColor == "white" ? <BoardWhite playerColor={playerColor} /> : <BoardBlack playerColor={playerColor} />}
+      {playerColor == "white" ? <BoardWhite playerColor={playerColor} gameData={gameData} /> : <BoardBlack playerColor={playerColor} gameData={gameData} />}
       <div id="right-side">
       </div>
     </div >

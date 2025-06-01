@@ -8,5 +8,5 @@
 .board-cell {
   width: 80%;
   aspect-ratio: 1/1;
-  border: none;
+  display: none;
 }

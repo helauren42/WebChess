@@ -1,8 +1,17 @@
+import { useEffect, useState } from 'react'
 import '../../CSS/Play.css'
 import '../../CSS/Game.css'
 
-export const BoardWhite = ({ onClickSquare }) => {
+import { positionPieceImages } from './Game'
+
+export const BoardWhite = ({ onClickSquare, gameData }) => {
   console.log("White Board")
+  useEffect(() => {
+    console.log("effect to positionPieceImages")
+    if (!gameData || gameData == {})
+      return
+    positionPieceImages(gameData["board"])
+  }, [gameData])
   return (
     <div className='board' id="board-white">
       <button className="square white-square" id="row-7-col-0" onClick={(event) => onClickSquare(event)}><img src={null} className="board-cell" id="img-row-7-col-0"></img></button>
