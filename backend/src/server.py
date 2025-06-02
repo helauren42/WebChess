@@ -138,60 +138,61 @@ async def getGlobalChatHistory(req: fastapi.Request):
 async def websocket_endpoint(websocket: WebSocket):
     username = ""
     sessionToken = ""
-    try:
-        await websocket.accept()
-        print("accepted new websocket connection")
-        while True:
-            # User logging in, new active connection
-            recv = await websocket.receive_json()
-            print('websocket recv: ', recv)
-            if recv == "":
-                continue
-            # make sure session token is valid
-            sessionToken = recv["sessionToken"]
-            username = db.fetchUsername(sessionToken)
-            if username is None:
-                print("invalid sessionToken")
-                await websocket.close()
-                raise Exception("entered wrong session token")
-            # handling different websocket requests
-            recvType = recv["type"]
-            print("websocket message type: ", recvType)
-            data = recv["data"]
-            print("data: ", data)
-            match recvType:
-                case "newConnection":
-                    await websocketManager.newConnection(username, websocket, sessionToken)
-                    await websocketManager.msgUpdateActiveUsers()
-                case "globalChat":
-                    message = data["message"]
-                    await websocketManager.msgGlobalChat(message, username)
-                # todo case "disconnect"
-                case "disconnect":
-                    await websocketManager.disconnect(username)
-                case "challengeUser":
-                    challenger = data["challenger"]
-                    challenged = data["challenged"]
-                    if await websocketManager.userIsPlaying(challenged):
-                        await websocketManager.sendAlreadyPlaying(challenger, challenged)
-                        continue
-                    await websocketManager.challengeUser(challenger, challenged)
-                case "acceptChallenge":
-                    challenger = data["challenger"]
-                    challenged = data["challenged"]
-                    if await websocketManager.userIsPlaying(challenger):
-                        await websocketManager.sendAlreadyPlaying(challenger, challenged)
-                        continue
-                    await websocketManager.acceptChallenge(challenger, challenged)
-                # ''' active game '''
-                case "makeMove":
-                    gameId = data["gameId"]
-                    fromPos = Pos(data["fromPos"])
-                    toPos = Pos(data["toPos"])
+    # try:
+    await websocket.accept()
+    print("accepted new websocket connection")
+    while True:
+        # User logging in, new active connection
+        recv = await websocket.receive_json()
+        print('websocket recv: ', recv)
+        if recv == "":
+            continue
+        # make sure session token is valid
+        sessionToken = recv["sessionToken"]
+        username = db.fetchUsername(sessionToken)
+        if username is None:
+            print("invalid sessionToken")
+            await websocket.close()
+            raise Exception("entered wrong session token")
+        # handling different websocket requests
+        recvType = recv["type"]
+        print("websocket message type: ", recvType)
+        data = recv["data"]
+        print("data: ", data)
+        match recvType:
+            case "newConnection":
+                await websocketManager.newConnection(username, websocket, sessionToken)
+                await websocketManager.msgUpdateActiveUsers()
+            case "globalChat":
+                message = data["message"]
+                await websocketManager.msgGlobalChat(message, username)
+            # todo case "disconnect"
+            case "disconnect":
+                await websocketManager.disconnect(username)
+            case "challengeUser":
+                challenger = data["challenger"]
+                challenged = data["challenged"]
+                if await websocketManager.userIsPlaying(challenged):
+                    await websocketManager.sendAlreadyPlaying(challenger, challenged)
+                    continue
+                await websocketManager.challengeUser(challenger, challenged)
+            case "acceptChallenge":
+                challenger = data["challenger"]
+                challenged = data["challenged"]
+                if await websocketManager.userIsPlaying(challenger):
+                    await websocketManager.sendAlreadyPlaying(challenged, challenger)
+                    continue
+                await websocketManager.acceptChallenge(challenger, challenged)
+            # ''' active game '''
+            case "makeMove":
+                gameId = data["gameId"]
+                fromPos = Pos(data["fromPos"])
+                toPos = Pos(data["toPos"])
+                await websocketManager.makeMove(gameId, fromPos, toPos)
 
-    except Exception as e:
-        await websocketManager.removeClosedSockets()
-        print(f"Closed websocket {username} {sessionToken}: ", e.__str__())
+    # except Exception as e:
+    #     await websocketManager.removeClosedSockets()
+    #     print(f"Closed websocket {username} {sessionToken}: ", e.__str__())
 
 if __name__ == "__main__":
     uvicorn.run("server:app", host=HOST, port=PORT, reload=True)

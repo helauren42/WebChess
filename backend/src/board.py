@@ -1,5 +1,6 @@
 import pydantic
 from enum import Enum
+from abc import ABC
 
 class Pieces(Enum):
     EMPTY = ""
@@ -16,10 +17,26 @@ class Pieces(Enum):
     BLACK_QUEEN = "bq"
     BLACK_KING = "bk"
 
+STR_TO_PIECES = {
+    "" : Pieces.EMPTY,
+    "wp" : Pieces.WHITE_PAWN,
+    "wn" : Pieces.WHITE_KNIGHT,
+    "wb" : Pieces.WHITE_BISHOP,
+    "wr" : Pieces.WHITE_ROOK,
+    "wq" : Pieces.WHITE_QUEEN,
+    "wk" : Pieces.WHITE_KING,
+    "bp" : Pieces.BLACK_PAWN,
+    "bn" : Pieces.BLACK_KNIGHT,
+    "bb" : Pieces.BLACK_BISHOP,
+    "br" : Pieces.BLACK_ROOK,
+    "bq" : Pieces.BLACK_QUEEN,
+    "bk" : Pieces.BLACK_KING
+}
+
 class Pos():
     def __init__(self, _pos:dict[str,int]) -> None:
-        self.x: int = _pos["x"]
-        self.y: int = _pos["y"]
+        self.x: int = int(_pos["x"])
+        self.y: int = int(_pos["y"])
 
     def __add__(self, rhs:"Pos") -> "Pos":
         return Pos({"x": self.x + rhs.x, "y": self.y + rhs.y })
@@ -41,27 +58,10 @@ class Cell():
     def __str__(self) -> str:
         return str(self.piece.value)
 
-class Board():
+class AbstractBoard(ABC):
     def __init__(self)->None:
         self.board = self.initialize_board()
-    def __str__(self) -> str:
-        ret = ""
-        for row in self.board:
-            for x in range(8):
-                cell:Cell = row[x]
-                ret += cell.__str__() + ';'
-            ret += '\n'
-        return ret
 
-    def sendFormat(self)->list[list[str]]:
-      ret = []
-      for y in range(8):
-        row = []
-        for x in range(8):
-          row.append(self.board[y][x].piece.value)
-        ret.append(row)
-      return ret
-        
     def initialize_board(self)->list[list[Cell]]:
         board = []
         white_pieces = [
@@ -91,6 +91,51 @@ class Board():
                 row.append(Cell(x, y, piece))
             board.append(row)
         return board
+
+    async def getPiece(self, x:int, y:int)->Pieces:
+        print("get piece x: ", x)
+        print("get piece y: ", y)
+        piece = self.board[y][x].piece
+        print("got piece: ", piece)
+        return piece
+
+    async def emptyPos(self, pos:Pos):
+        self.board[pos.y][pos.x].piece = Pieces.EMPTY
+
+    async def assignPos(self, pos:Pos, piece:Pieces):
+        print(f"pre assign pos x: {pos.x}, y: {pos.y}: ", self.board[pos.y][pos.x].piece)
+        self.board[pos.y][pos.x].piece = piece
+        print(f"post assign pos x: {pos.x}, y: {pos.y}: ", self.board[pos.y][pos.x].piece)
+
+class Board(AbstractBoard):
+    def __init__(self) -> None:
+        super().__init__()
+    def __str__(self) -> str:
+        ret = ""
+        for row in self.board:
+            for x in range(8):
+                cell:Cell = row[x]
+                ret += cell.__str__() + ';'
+            ret += '\n'
+        return ret
+
+    def sendFormat(self)->list[list[str]]:
+        ret = []
+        for y in range(8):
+            row = []
+            for x in range(8):
+                row.append(self.board[y][x].piece.value)
+            ret.append(row)
+        return ret
+        
+    async def makeMove(self, fromPos:Pos, toPos:Pos)-> bool:
+        print(fromPos)
+        print(toPos)
+        fromPiece = await self.getPiece(fromPos.x, fromPos.y)
+        print("from piece: ", fromPiece.value)
+        await self.emptyPos(fromPos)
+        await self.assignPos(toPos, fromPiece)
+        return True
 
 if __name__ == "__main__":
     board = Board()

@@ -173,11 +173,9 @@ class Database(AbstractDb):
             raise Exception(500, "Server failed to create user")
         return True
     def loginUser(self, req: LoginRequest) -> bool:
-        print(1)
         if not self.userExists(req.username):
             print("user does not exist")
             raise Exception("wrong credentials")
-        print(2)
         if self.validLoginPassword(req.username, req.password):
             return True
         print("entered password is wrong")

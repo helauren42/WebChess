@@ -34,6 +34,7 @@ export const OnlineGame = ({ gameMode, gameData }) => {
 
   const onClickSquare = async (event) => {
     const square = event.target
+    console.log("clicked square: ", square)
     const squarePos = getPos(square)
     console.log(squarePos)
     const isSamePiece = selectedSquare == square.id
@@ -45,9 +46,9 @@ export const OnlineGame = ({ gameMode, gameData }) => {
     WS.makeMove(getPos(selectedSquare), squarePos)
   }
   useEffect(() => {
+    console.log(gameData)
     setPlayerColor(gameData["playerColor"])
   }, [gameData])
-  console.log(gameData)
   return (
     <div id="game-page-container">
       {playerColor == "white" ? <BoardWhite gameData={gameData} onClickSquare={onClickSquare} /> : <BoardBlack gameData={gameData} onClickSquare={onClickSquare} />}

@@ -9,6 +9,7 @@ export class MainWebSocketManager {
     this.activeUsers = []
     this.setActiveUsers = null
     this.onlineGame = null
+    this.gameData = {}
   }
   baseInit(_sessionToken, _activeUsers, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory, _navigate, _setGameData) {
     this.sessionToken = _sessionToken
@@ -65,8 +66,13 @@ export class WebSocketManager extends MainWebSocketManager {
           break
         case "startOnlineGame":
           this.setGameData(data)
+          this.gameData = data
           this.startOnlineGame()
           break
+        case "gameUpdate":
+          this.setGameData(data)
+          this.gameData = data
+          console.log("updated game")
         case "alreadyPlaying":
           displayAlertBox("Unavailable", `${data["alreadyPlayingPlayer"]} is already in a game`)
           break
@@ -101,8 +107,9 @@ export class WebSocketManager extends MainWebSocketManager {
     const data = { challenger, challenged }
     this.websocketSendMessage("acceptChallenge", data)
   }
-  makeMove(from, to) {
-    const data = { from, to }
+  makeMove(fromPos, toPos) {
+    console.log("!!!! MAKEMOVE: ", fromPos, ", ", toPos)
+    const data = { "gameId": this.gameData["gameId"], fromPos, toPos }
     this.websocketSendMessage("makeMove", data)
   }
 }
