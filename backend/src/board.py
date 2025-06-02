@@ -1,6 +1,7 @@
 import pydantic
 from enum import Enum
 from abc import ABC
+from typing import Optional
 
 class Pieces(Enum):
     EMPTY = ""
@@ -108,8 +109,20 @@ class AbstractBoard(ABC):
         print(f"post assign pos x: {pos.x}, y: {pos.y}: ", self.board[pos.y][pos.x].piece)
 
 class Board(AbstractBoard):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, boardStr:Optional[str]=None) -> None:
+        if boardStr == None:
+            super().__init__()
+        else:
+            self.board = []
+            rows = boardStr.strip().split('\n')
+            for y, row in enumerate(rows):
+                cells = row.split(';')
+                board_row = []
+                for x, piece_str in enumerate(cells):
+                    piece = STR_TO_PIECES.get(piece_str, Pieces.EMPTY)
+                    board_row.append(Cell(x, y, piece))
+                self.board.append(board_row)
+
     def __str__(self) -> str:
         ret = ""
         for row in self.board:

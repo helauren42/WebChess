@@ -33,3 +33,15 @@ CREATE TABLE IF NOT EXISTS DB_TABLE_GLOBAL_CHAT (
         sender VARCHAR(255) NOT NULL,
         message VARCHAR(255) NOT NULL
 );
+CREATE TABLE IF NOT EXISTS DB_TABLE_ACTIVE_GAMES (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    gameId VARCHAR(255) NOT NULL UNIQUE,
+    challenger VARCHAR(255) NOT NULL,
+    challenged VARCHAR(255) NOT NULL,
+    challengerColor VARCHAR(255) NOT NULL,
+    challengedColor VARCHAR(255) NOT NULL,
+    board TEXT NOT NULL,
+    playerTurn VARCHAR(255) NOT NULL,
+    capturedWhitePieces VARCHAR(255) NOT NULL,
+    capturedBlackPieces VARCHAR(255) NOT NULL
+);

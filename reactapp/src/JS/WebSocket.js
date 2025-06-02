@@ -23,6 +23,7 @@ export class MainWebSocketManager {
     this.WS = new WebSocket(`${WEBSOCKET_URL}`)
     this.WS.addEventListener('open', () => {
       this.websocketSendMessage("newConnection", {})
+      this.websocketSendMessage("getGameData", {})
     })
   }
   websocketSendMessage(type, data) {
@@ -69,10 +70,14 @@ export class WebSocketManager extends MainWebSocketManager {
           this.gameData = data
           this.startOnlineGame()
           break
+        case "getGameData":
+          this.setGameData(data)
+          this.gameData = data
         case "gameUpdate":
           this.setGameData(data)
           this.gameData = data
           console.log("updated game")
+          break
         case "alreadyPlaying":
           displayAlertBox("Unavailable", `${data["alreadyPlayingPlayer"]} is already in a game`)
           break

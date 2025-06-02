@@ -143,6 +143,9 @@ async def websocket_endpoint(websocket: WebSocket):
     print("accepted new websocket connection")
     while True:
         # User logging in, new active connection
+        if len(websocketManager.activeGames) == 0:
+            await websocketManager.fetchActiveGames()
+            print("fetched active games amount: ", len(websocketManager.activeGames))
         recv = await websocket.receive_json()
         print('websocket recv: ', recv)
         if recv == "":
@@ -189,6 +192,10 @@ async def websocket_endpoint(websocket: WebSocket):
                 fromPos = Pos(data["fromPos"])
                 toPos = Pos(data["toPos"])
                 await websocketManager.makeMove(gameId, fromPos, toPos)
+            case "getGameData":
+                if await websocketManager.userIsPlaying(username):
+                    await websocketManager.getGameData(username)
+        print("TOTAL GAMES RUNNING: ", len(websocketManager.activeGames))
 
     # except Exception as e:
     #     await websocketManager.removeClosedSockets()

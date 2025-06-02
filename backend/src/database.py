@@ -9,6 +9,8 @@ from typing import Optional
 import os
 
 from schemas import LoginRequest, SignupRequest
+from board import Board
+from game import OnlineGame
 
 CWD = os.getcwd()
 ENV_PATH = os.path.join(CWD, ".env")
@@ -25,6 +27,7 @@ class AbstractDb():
         self.table_session_token:str = ""
         self.table_persistent_token:str = ""
         self.table_global_chat:str = ""
+        self.table_active_games:str = ""
         self.fetchCredentials()
         self.createDb()
         self.setupCursor()
@@ -46,9 +49,12 @@ class AbstractDb():
                 lines[i] = lines[i].replace("DB_TABLE_EMAIL_VERIFICATION", self.table_email_verification)
                 lines[i] = lines[i].replace("DB_TABLE_SESSION_TOKEN", self.table_session_token)
                 lines[i] = lines[i].replace("DB_TABLE_PERSISTENT_TOKEN", self.table_persistent_token)
-                lines[i] = lines[i].replace("DB_TABLE_GLOBAL_CHAT ", self.table_global_chat)
+                lines[i] = lines[i].replace("DB_TABLE_GLOBAL_CHAT", self.table_global_chat)
+                lines[i] = lines[i].replace("DB_TABLE_ACTIVE_GAMES", self.table_active_games)
+            print("DB build.sql: ")
         with open(f"{DB_DIR}build.sql", "w") as writeFile:
             for line in lines:
+                print(line)
                 writeFile.write(line)
     def createDb(self):
         print("creating database")
@@ -82,6 +88,8 @@ class AbstractDb():
                         self.table_persistent_token = value
                     elif key == "DB_TABLE_GLOBAL_CHAT":
                         self.table_global_chat = value
+                    elif key == "DB_TABLE_ACTIVE_GAMES":
+                        self.table_active_games = value
     def validLoginPassword(self, user, password):
         self.cursor.execute(f"SELECT password FROM {self.table_users} WHERE username=%s", (user,))
         fetched = self.cursor.fetchone()
@@ -180,7 +188,6 @@ class Database(AbstractDb):
             return True
         print("entered password is wrong")
         raise Exception("wrong credentials")
-
     def addGlobalChatMessage(self, time:int, sender:str, message:str):
         query = f"INSERT INTO {self.table_global_chat} (time, sender, message) values(%s,%s,%s)"
         values = (time, sender, message)
@@ -191,14 +198,39 @@ class Database(AbstractDb):
         print(found)
         # todo 
     def getGlobalChatHistory(self):
-        self.cursor.execute('''SELECT * FROM global_chat ORDER BY id DESC LIMIT
-20''')
+        self.cursor.execute('''SELECT * FROM global_chat ORDER BY id DESC LIMIT 20''')
         found = self.cursor.fetchall()
         if found == None:
             raise Exception("Error fetching global chat history from database")
         return found
+    def addActiveGame(self, game:OnlineGame):
+        print("Adding active game")
+        query = f"INSERT INTO {self.table_active_games} (gameId,challenger,challenged,challengerColor,challengedColor,playerTurn,capturedWhitePieces,capturedBlackPieces,board) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        values = game.getSqlValue()
+        print(query)
+        print(values)
+        self.cursor.execute(query, values)
+    def updateActiveGame(self, gameId: str, turnColor: str, board: str):
+        query = f"UPDATE {self.table_active_games} SET turnColor=%s, board=%s WHERE gameId=%s"
+        values = (turnColor, board, gameId)
+        self.cursor.execute(query, values)
+    def getAllActiveGames(self):
+        self.cursor.execute(f"SELECT * FROM {self.table_active_games}")
+        games = self.cursor.fetchall()
+        print("!!!!!!games: ", games)
+        parsed_games = {}
+        for game in games:
+            game_id, challenger, challenged, challenger_color, challenged_color, turn_color, board_str = game
+            board = Board(board_str)
+            parsed_games[game_id] = {
+                'gameId': game_id,
+                'challenger': challenger,
+                'challenged': challenged,
+                'challengerColor': challenger_color,
+                'challengedColor': challenged_color,
+                'turnColor': turn_color,
+                'board': board
+            }
+        return parsed_games
         
 db = Database()
-
-if __name__ == "__main__":
-    db.getGlobalChatHistory()

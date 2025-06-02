@@ -20,11 +20,10 @@ export const resetSquareColor = (square) => {
     square.style.backgroundColor = "black"
 }
 export const getPos = (square) => {
-  console.log("!!!!!!!getPos")
   console.log("clicked ID: ", square.id)
   const elems = square.id.split("-")
-  console.log("length: ", elems.length)
   const ret = elems.length == 4 ? { "y": elems[1], "x": elems[3] } : { "y": elems[2], "x": elems[4] }
+  console.log("clicked square: ", ret)
   return ret
 }
 

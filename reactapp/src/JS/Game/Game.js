@@ -44,6 +44,7 @@ export const OnlineGame = ({ gameMode, gameData }) => {
     if (selectedSquare == null)
       return setSelectedSquare(square), changeSquareColor(square)
     WS.makeMove(getPos(selectedSquare), squarePos)
+    resetSelection(square)
   }
   useEffect(() => {
     console.log(gameData)

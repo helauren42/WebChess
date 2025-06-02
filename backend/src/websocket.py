@@ -8,35 +8,10 @@ from typing import Optional
 from fastapi.websockets import WebSocketState
 from database import db
 from board import Board, Pos
+from game import OnlineGame
 
 GLOBAL_CHAT_HISTORY_SIZE = 50
 
-WHITE = "white"
-BLACK = "black"
-
-class OnlineGame():
-    def __init__(self, _challenger, _challenged, _gameId) -> None:
-        self.gameId = _gameId
-        self.challenged:str = _challenged
-        self.challenger:str = _challenger
-        self.challenger_color:str = random.choice([WHITE, BLACK])
-        self.challenged_color:str =  BLACK if self.challenger_color == WHITE else WHITE
-        self.board:Board = Board()
-        self.playerTurn:str = WHITE
-        self.capturedWhitePieces:list[str] = []
-        self.capturedBlackPieces:list[str] = []
-        self.finished:bool = False
-
-    async def getData(self, player) -> str:
-        data = json.dumps({
-            "challenged":self.challenged,
-            "challenger":self.challenger,
-            "playerColor": self.challenged_color if player == self.challenged else self.challenger_color,
-            "playerTurn":self.playerTurn,
-            "gameId":self.gameId,
-            "board":self.board.sendFormat()
-        })
-        return data
 
 class Connection():
     def __init__(self, _sessionToken, _websocket, _status=0 ) -> None:
@@ -49,22 +24,26 @@ class AbstractWebsocketManager(ABC):
         # username to connection object
         self.connections: dict[str, Connection] = {}
         # gameId to access game
-        self.games:dict[int, OnlineGame] = {}
+        self.activeGames:dict[int, OnlineGame] = {}
+
+    async def fetchActiveGames(self):
+        self.activeGames = db.getAllActiveGames()
 
     async def userIsPlaying(self, username) -> bool:
         if self.connections[username].gameId:
             print("is in game")
             return True
+        print("is not in game")
         return False
 
     async def newGameId(self):
         gameId = None 
-        while gameId == None or self.games.get(gameId) != None:
+        while gameId == None or self.activeGames.get(gameId) != None:
             gameId = random.randint(1,5000)
         return gameId
 
     async def getGameId(self, username) -> Optional[int]:
-        for game in self.games.values():
+        for game in self.activeGames.values():
             if game.challenged == username or game.challenger == username:
                 return game.gameId
         return None
@@ -79,15 +58,16 @@ class AbstractWebsocketManager(ABC):
         return self.connections.keys()
 
     async def sendMessage(self, type: str, data:str, websocket: WebSocket):
-        await websocket.send_json(data={"type": type, "data": data})
+        if websocket.application_state == WebSocketState.CONNECTED:
+            await websocket.send_json(data={"type": type, "data": data})
 
     async def sendGameUpdate(self, gameId, first=False):
         print("sendGameUpdate()")
         msgType = "startOnlineGame" if first else "gameUpdate"
-        challenger = self.games[gameId].challenger
-        challenged = self.games[gameId].challenged
-        data_challenger = await self.games[gameId].getData(challenger)
-        data_challenged = await self.games[gameId].getData(challenged)
+        challenger = self.activeGames[gameId].challenger
+        challenged = self.activeGames[gameId].challenged
+        data_challenger = await self.activeGames[gameId].getData(challenger)
+        data_challenged = await self.activeGames[gameId].getData(challenged)
         await self.sendMessage(msgType, data_challenger, self.connections[challenger].websocket)
         await self.sendMessage(msgType, data_challenged, self.connections[challenged].websocket)
 
@@ -103,7 +83,6 @@ class WebsocketManager(AbstractWebsocketManager):
             await self.sendMessage("activeUsers", data, self.connections[username].websocket)
 
     async def msgGlobalChat(self, message, sender):
-        print("!!!msg msgGlobalChat")
         # time in minutes
         time_minutes = int(time.time() / 60)
         db.addGlobalChatMessage(time_minutes, sender, message)
@@ -153,15 +132,20 @@ class WebsocketManager(AbstractWebsocketManager):
     async def startOnlineGame(self, challenger:str, challenged:str):
         print(f"Starting online game {challenger} vs {challenged}")
         gameId = await self.newGameId()
-        self.games[gameId] = OnlineGame(challenger, challenged, gameId)
+        self.activeGames[gameId] = OnlineGame(challenger, challenged, gameId)
+        game = self.activeGames[gameId]
         await self.setStatusInGame(challenger, gameId)
         await self.setStatusInGame(challenged, gameId)
         await self.sendGameUpdate(gameId, True)
-        print("TOTAL GAMES RUNNING: ", len(self.games))
+        db.addActiveGame(game)
 
-    async def getOnlineGameData(self, player:str):
-        print("getOnlineGameData: ", player)
-        # todo
+    async def getGameData(self, player:str):
+        print("getGameData: ", player)
+        gameId = await self.getGameId(player)
+        if gameId == None:
+            return
+        data = await self.activeGames[gameId].getData(player)
+        await self.sendMessage("getGameData", data, self.connections[player].websocket)
 
     async def sendAlreadyPlaying(self, receptionnist:str, alreadyPlayingPlayer:str):
         print("sending alreadyPlaying")
@@ -169,7 +153,7 @@ class WebsocketManager(AbstractWebsocketManager):
         await self.sendMessage("alreadyPlaying", data, self.connections[receptionnist].websocket)
 
     async def makeMove(self, gameId:int, fromPos:Pos, toPos:Pos):
-        game = self.games[gameId]
+        game = self.activeGames[gameId]
         print("makeMove(): ", await game.getData(game.challenged))
         if await game.board.makeMove(fromPos, toPos):
             print("move done: ", await game.getData(game.challenged))
