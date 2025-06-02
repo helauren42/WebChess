@@ -7,7 +7,7 @@ BLACK = "black"
 
 class OnlineGame():
     def parseGame(self, game:tuple):
-        _gameId, _challenger, _challenged, _challengerColor, _challengedColor, _playerTurn, _capturedWhitePieces, _capturedBlackPieces, _boardStr = game
+        mscId, _gameId, _challenger, _challenged, _challengerColor, _challengedColor, _playerTurn, _capturedWhitePieces, _capturedBlackPieces, _boardStr = game
         board = Board(_boardStr)
         self.gameId = _gameId
         self.challenger = _challenger
