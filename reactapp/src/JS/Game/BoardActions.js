@@ -15,9 +15,9 @@ export const changeSquareColor = (square) => {
 export const resetSquareColor = (square) => {
   const color = square.className.search("white") >= 0 ? "white" : "black"
   if (color == "white")
-    square.style.backgroundColor = "white"
+    square.style.backgroundColor = "#7c4c3e"
   else
-    square.style.backgroundColor = "black"
+    square.style.backgroundColor = "#512a2a"
 }
 export const getPos = (square) => {
   console.log("clicked ID: ", square.id)

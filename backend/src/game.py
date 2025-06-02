@@ -8,18 +8,19 @@ BLACK = "black"
 class OnlineGame():
     def parseGame(self, game:tuple):
         mscId, _gameId, _challenger, _challenged, _challengerColor, _challengedColor, _playerTurn, _capturedWhitePieces, _capturedBlackPieces, _boardStr = game
-        board = Board(_boardStr)
-        self.gameId = _gameId
-        self.challenger = _challenger
-        self.challenged = _challenged
-        self.challengerColor = _challengerColor
-        self.challengedColor = _challengedColor
-        self.playerTurn = _playerTurn
-        self.capturedWhitePieces = _capturedWhitePieces
-        self.capturedBlackPieces = _capturedBlackPieces
-        self.boardStr = _boardStr
+        self.gameId:int = _gameId
+        self.challenger:str = _challenger
+        self.challenged:str = _challenged
+        self.challengerColor:str = _challengerColor
+        self.challengedColor:str = _challengedColor
+        self.playerTurn:str = _playerTurn
+        self.capturedWhitePieces:list[str] = _capturedWhitePieces
+        self.capturedBlackPieces:list[str] = _capturedBlackPieces
+        print("ParseGame board_str: ", _boardStr)
+        self.board:Board = Board(_boardStr)
+        self.finished:bool = False
     def newGame(self, _challenger, _challenged, _gameId) -> None:
-        self.gameId = _gameId
+        self.gameId:int = _gameId
         self.challenger:str = _challenger
         self.challenged:str = _challenged
         self.challengerColor:str = random.choice([WHITE, BLACK])

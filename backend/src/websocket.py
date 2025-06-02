@@ -29,13 +29,6 @@ class AbstractWebsocketManager(ABC):
     async def fetchActiveGames(self):
         self.activeGames = db.getAllActiveGames()
 
-    async def userIsPlaying(self, username) -> bool:
-        if self.connections[username].gameId:
-            print("is in game")
-            return True
-        print("is not in game")
-        return False
-
     async def newGameId(self):
         gameId = None 
         while gameId == None or self.activeGames.get(gameId) != None:
@@ -48,11 +41,12 @@ class AbstractWebsocketManager(ABC):
                 return game.gameId
         return None
 
-    async def setStatusInGame(self, username, gameId):
-        self.connections[username].gameId = gameId
-
-    async def setStatusFree(self, username):
-        self.connections[username].gameId = 0
+    async def userIsPlaying(self, username) -> bool:
+        if self.connections[username].gameId:
+            print("is in game")
+            return True
+        print("is not in game")
+        return False
 
     async def getActiveUsers(self):
         return self.connections.keys()
@@ -135,14 +129,13 @@ class WebsocketManager(AbstractWebsocketManager):
         self.activeGames[gameId] = OnlineGame()
         self.activeGames[gameId].newGame(challenger, challenged, gameId)
         game = self.activeGames[gameId]
-        await self.setStatusInGame(challenger, gameId)
-        await self.setStatusInGame(challenged, gameId)
         await self.sendGameUpdate(gameId, True)
         db.addActiveGame(game)
 
     async def getGameData(self, player:str):
         print("getGameData: ", player)
         gameId = await self.getGameId(player)
+        print("gameId: ", gameId)
         if gameId == None:
             return
         data = await self.activeGames[gameId].getData(player)
@@ -155,7 +148,9 @@ class WebsocketManager(AbstractWebsocketManager):
 
     async def makeMove(self, gameId:int, fromPos:Pos, toPos:Pos):
         game = self.activeGames[gameId]
-        print("makeMove(): ", await game.getData(game.challenged))
+        print("makeMove()")
         if await game.board.makeMove(fromPos, toPos):
             print("move done: ", await game.getData(game.challenged))
+            nextTurn = "black" if game.playerTurn == "white" else "black"
+            db.updateActiveGame(gameId, nextTurn, json.dumps(game.board.sendFormat()))
             await self.sendGameUpdate(gameId)

@@ -200,8 +200,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 toPos = Pos(data["toPos"])
                 await websocketManager.makeMove(gameId, fromPos, toPos)
             case "getGameData":
-                if await websocketManager.userIsPlaying(username):
-                    await websocketManager.getGameData(username)
+                await websocketManager.getGameData(username)
         print("TOTAL GAMES RUNNING: ", len(websocketManager.activeGames))
 
     # except Exception as e:

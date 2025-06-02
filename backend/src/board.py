@@ -2,6 +2,7 @@ import pydantic
 from enum import Enum
 from abc import ABC
 from typing import Optional
+import json
 
 class Pieces(Enum):
     EMPTY = ""
@@ -61,7 +62,7 @@ class Cell():
 
 class AbstractBoard(ABC):
     def __init__(self)->None:
-        self.board = self.initialize_board()
+        self.board:list[list[Cell]] = self.initialize_board()
 
     def initialize_board(self)->list[list[Cell]]:
         board = []
@@ -110,30 +111,20 @@ class AbstractBoard(ABC):
 
 class Board(AbstractBoard):
     def __init__(self, boardStr:Optional[str]=None) -> None:
-        if boardStr == None:
-            super().__init__()
-        else:
-            self.board = []
-            rows = boardStr.strip().split('\n')
-            for y, row in enumerate(rows):
-                cells = row.split(';')
-                board_row = []
-                for x, piece_str in enumerate(cells):
-                    piece = STR_TO_PIECES.get(piece_str, Pieces.EMPTY)
-                    board_row.append(Cell(x, y, piece))
-                self.board.append(board_row)
-
-    def __str__(self) -> str:
-        ret = ""
-        for row in self.board:
-            for x in range(8):
-                cell:Cell = row[x]
-                ret += cell.__str__() + ';'
-            ret += '\n'
-        return ret
+        self.board:list[list[Cell]] = []
+        super().__init__()
+        if boardStr != None:
+            print("boardStr: ", boardStr)
+            list_board = json.loads(boardStr)
+            for y in range(8):
+                row:list[Pieces] = []
+                for x in range(8):
+                    row.append(STR_TO_PIECES[list_board[y][x]])
+                list_board.append(row)
 
     def sendFormat(self)->list[list[str]]:
         ret = []
+        print("self.board: ", self.board)
         for y in range(8):
             row = []
             for x in range(8):

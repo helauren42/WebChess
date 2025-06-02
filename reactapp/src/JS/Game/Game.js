@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { BoardWhite } from './BoardWhite'
 import { BoardBlack } from './BoardBlack'
-import { PIECE_IMAGES } from './Images.js'
 import { resetSquareColor, getPos, changeSquareColor } from './BoardActions.js';
 import { WS } from '../App';
 
@@ -31,7 +30,6 @@ export const OnlineGame = ({ gameMode, gameData }) => {
     setSelectedSquare(null)
     resetSquareColor(square)
   }
-
   const onClickSquare = async (event) => {
     const square = event.target
     console.log("clicked square: ", square)

@@ -208,9 +208,9 @@ class Database(AbstractDb):
         print(query)
         print(values)
         self.cursor.execute(query, values)
-    def updateActiveGame(self, gameId: str, turnColor: str, boardStr: str):
-        query = f"UPDATE {self.table_active_games} SET turnColor=%s, boardStr=%s WHERE gameId=%s"
-        values = (turnColor, boardStr, gameId)
+    def updateActiveGame(self, gameId: str, playerTurn: str, boardStr: str):
+        query = f"UPDATE {self.table_active_games} SET playerTurn=%s, boardStr=%s WHERE gameId=%s"
+        values = (playerTurn, boardStr, gameId)
         self.cursor.execute(query, values)
     def getAllActiveGames(self) -> dict[int, OnlineGame]:
         self.cursor.execute(f"SELECT * FROM {self.table_active_games}")
@@ -218,6 +218,7 @@ class Database(AbstractDb):
         print("!!!!!!games: ", games)
         parsed_games = {}
         for game in games:
+            print("GAME: ", game)
             onlineGame = OnlineGame()
             onlineGame.parseGame(game)
             parsed_games[onlineGame.gameId] = onlineGame
