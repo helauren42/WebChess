@@ -31,6 +31,13 @@ app.add_middleware(
 
 ''' ------------------------------------------------------- ACCOUNT ------------------------------------------------------- '''
 
+@app.get("/validatePersistentToken")
+async def validatePersistentToken(persistentToken:str):
+    username = db.fetchUsername(persistentToken)
+    if username == None:
+        return fastapi.Response(status_code=401)
+    return fastapi.Response()
+
 @app.post("/addSessionToken")
 async def addSessionToken(req:BothTokens):
     try:

@@ -9,8 +9,7 @@ CREATE TABLE IF NOT EXISTS DB_TABLE_USERS (
         email VARCHAR(255) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         total_wins INT DEFAULT 0,
-        total_loss INT DEFAULT 0,
-        current_game VARCHAR(60000) DEFAULT NULL
+        total_loss INT DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS DB_TABLE_EMAIL_VERIFICATION (
         email VARCHAR(255) NOT NULL PRIMARY KEY,
@@ -40,8 +39,8 @@ CREATE TABLE IF NOT EXISTS DB_TABLE_ACTIVE_GAMES (
     challenged VARCHAR(255) NOT NULL,
     challengerColor VARCHAR(255) NOT NULL,
     challengedColor VARCHAR(255) NOT NULL,
-    board TEXT NOT NULL,
     playerTurn VARCHAR(255) NOT NULL,
     capturedWhitePieces VARCHAR(255) NOT NULL,
-    capturedBlackPieces VARCHAR(255) NOT NULL
+    capturedBlackPieces VARCHAR(255) NOT NULL,
+    boardStr TEXT NOT NULL
 );

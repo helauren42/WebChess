@@ -58,8 +58,8 @@ class AbstractWebsocketManager(ABC):
         return self.connections.keys()
 
     async def sendMessage(self, type: str, data:str, websocket: WebSocket):
-        if websocket.application_state == WebSocketState.CONNECTED:
-            await websocket.send_json(data={"type": type, "data": data})
+        print(f"sending message type: {type}\ndata: {data}")
+        await websocket.send_json(data={"type": type, "data": data})
 
     async def sendGameUpdate(self, gameId, first=False):
         print("sendGameUpdate()")
@@ -132,7 +132,8 @@ class WebsocketManager(AbstractWebsocketManager):
     async def startOnlineGame(self, challenger:str, challenged:str):
         print(f"Starting online game {challenger} vs {challenged}")
         gameId = await self.newGameId()
-        self.activeGames[gameId] = OnlineGame(challenger, challenged, gameId)
+        self.activeGames[gameId] = OnlineGame()
+        self.activeGames[gameId].newGame(challenger, challenged, gameId)
         game = self.activeGames[gameId]
         await self.setStatusInGame(challenger, gameId)
         await self.setStatusInGame(challenged, gameId)

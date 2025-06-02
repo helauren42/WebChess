@@ -46,6 +46,7 @@ export class WebSocketManager extends MainWebSocketManager {
   init(_sessionToken, _activeUsers, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory, _navigate, _setGameData) {
     this.baseInit(_sessionToken, _activeUsers, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory, _navigate, _setGameData)
     this.WS.addEventListener("close", () => {
+      console.log("websocket closed")
       displayDialogWebsocketDisconnectionError()
     })
     this.WS.onmessage = (event) => {

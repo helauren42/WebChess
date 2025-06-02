@@ -51,10 +51,8 @@ class AbstractDb():
                 lines[i] = lines[i].replace("DB_TABLE_PERSISTENT_TOKEN", self.table_persistent_token)
                 lines[i] = lines[i].replace("DB_TABLE_GLOBAL_CHAT", self.table_global_chat)
                 lines[i] = lines[i].replace("DB_TABLE_ACTIVE_GAMES", self.table_active_games)
-            print("DB build.sql: ")
         with open(f"{DB_DIR}build.sql", "w") as writeFile:
             for line in lines:
-                print(line)
                 writeFile.write(line)
     def createDb(self):
         print("creating database")
@@ -205,32 +203,24 @@ class Database(AbstractDb):
         return found
     def addActiveGame(self, game:OnlineGame):
         print("Adding active game")
-        query = f"INSERT INTO {self.table_active_games} (gameId,challenger,challenged,challengerColor,challengedColor,playerTurn,capturedWhitePieces,capturedBlackPieces,board) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        query = f"INSERT INTO {self.table_active_games} (gameId,challenger,challenged,challengerColor,challengedColor,playerTurn,capturedWhitePieces,capturedBlackPieces,boardStr) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
         values = game.getSqlValue()
         print(query)
         print(values)
         self.cursor.execute(query, values)
-    def updateActiveGame(self, gameId: str, turnColor: str, board: str):
-        query = f"UPDATE {self.table_active_games} SET turnColor=%s, board=%s WHERE gameId=%s"
-        values = (turnColor, board, gameId)
+    def updateActiveGame(self, gameId: str, turnColor: str, boardStr: str):
+        query = f"UPDATE {self.table_active_games} SET turnColor=%s, boardStr=%s WHERE gameId=%s"
+        values = (turnColor, boardStr, gameId)
         self.cursor.execute(query, values)
-    def getAllActiveGames(self):
+    def getAllActiveGames(self) -> dict[int, OnlineGame]:
         self.cursor.execute(f"SELECT * FROM {self.table_active_games}")
         games = self.cursor.fetchall()
         print("!!!!!!games: ", games)
         parsed_games = {}
         for game in games:
-            game_id, challenger, challenged, challenger_color, challenged_color, turn_color, board_str = game
-            board = Board(board_str)
-            parsed_games[game_id] = {
-                'gameId': game_id,
-                'challenger': challenger,
-                'challenged': challenged,
-                'challengerColor': challenger_color,
-                'challengedColor': challenged_color,
-                'turnColor': turn_color,
-                'board': board
-            }
+            onlineGame = OnlineGame()
+            onlineGame.parseGame(game)
+            parsed_games[onlineGame.gameId] = onlineGame
         return parsed_games
         
 db = Database()

@@ -40,8 +40,25 @@ const App = () => {
   globalChatHistoryRef.current = globalChatHistory;
   let sessionToken = getCookie("sessionToken")
   const persistentToken = getCookie("persistentToken")
+  console.log("sessionToken: ", sessionToken)
+
   const createSessionTokenFromPersistentToken = async () => {
+    // verify persistent token is still valid delete persistent token if no longer valid
+    const validate = await fetch(`${SOCKET_ADDRESS}/validatePersistentToken?persistentToken=${persistentToken}`).then((resp) => {
+      return resp
+    }).catch((e) => {
+      displayDialogServerConnectionError()
+      return null
+    })
+    if (!validate || validate.status != 200) {
+      document.cookie = `persistentToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+      console.log("persistent token no longer valid")
+      return
+    }
+
+    // persistent token valid so let's set session token
     sessionToken = crypto.randomUUID()
+    console.log("sessionToken created: ", sessionToken)
     document.cookie = `sessionToken=${sessionToken}; path=/; SameSite=None; Secure`;
     const resp = await fetch(`${SOCKET_ADDRESS}/addSessionToken`, {
       method: "POST",
@@ -71,6 +88,7 @@ const App = () => {
       return resp
     }).catch((e) => {
       console.log("could not fetch username from cookie: ", e)
+      console.log("token: ", token)
       return null
     })
     if (resp != null && resp.status == 200) {
