@@ -2,7 +2,7 @@ import { useEffect, useContext, useState } from 'react'
 import '../CSS/Social.css'
 import { SocialContext, WS, AccountContext } from './App'
 import { SOCKET_ADDRESS } from './Const'
-import { displayDialogServerConnectionError } from './Dialogs'
+import { displayDialogServerConnectionError, displayAlertBox } from './Dialogs'
 
 const chatMessageContainer = (message, pos) => {
   const elem = document.createElement('div')
@@ -65,6 +65,16 @@ const getGlobalChatHistory = async () => {
 const sendChallenge = (challenger, challenged) => {
   console.log("sending challenge challenger: ", challenger, ", challenged: ", challenged)
   WS.sendChallenge(challenger, challenged)
+  const elem = document.getElementById(`challenge-icon-${challenged}`)
+  console.log("!!!!!!!! elem: ", elem)
+  elem.textContent = '⏳'
+  elem.onclick = () => {
+    displayAlertBox("Patience", `Please wait, you have recently challenged ${challenged} to a game`)
+  }
+  setTimeout(() => {
+    elem.textContent = '🆚';
+    elem.onclick = (ev) => sendChallenge(challenger, challenged)
+  }, 10000)
 }
 export const SocialPage = () => {
   const [activeUsers, setActiveUsers, globalChatHistory, setGlobalChatHistory] = useContext(SocialContext)
@@ -128,7 +138,9 @@ export const SocialPage = () => {
         middleElem.append(usernameElement)
         const challengeIcon = document.createElement("span")
         challengeIcon.textContent = '🆚';
-        challengeIcon.id = "challenge-icon"
+        challengeIcon.className = "challenge-icon"
+        challengeIcon.id = `challenge-icon-${username}`
+        console.log("!!!!!!!!!! challengeIcon id: ", challengeIcon.id)
         challengeIcon.title = "challenge user"
         const messageIcon = document.createElement("span")
         messageIcon.textContent = '✉️';
