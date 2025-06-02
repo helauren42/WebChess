@@ -27,3 +27,4 @@ class BothTokens(BaseModel):
 
 class Token(BaseModel):
     token:str
+

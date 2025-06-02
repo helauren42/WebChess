@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from database import db
 from schemas import BothTokens, LoginRequest, SignupRequest, VerifyCodeRequest, VerifyEmailRequest, SessionToken, Token
 from emailManager import EmailManager
+from board import Pos
 
 logging.basicConfig(filename="logs.log", encoding='utf-8', level=logging.DEBUG)
 
@@ -171,11 +172,23 @@ async def websocket_endpoint(websocket: WebSocket):
                 case "challengeUser":
                     challenger = data["challenger"]
                     challenged = data["challenged"]
+                    if await websocketManager.userIsPlaying(challenged):
+                        await websocketManager.sendAlreadyPlaying(challenger, challenged)
+                        continue
                     await websocketManager.challengeUser(challenger, challenged)
                 case "acceptChallenge":
                     challenger = data["challenger"]
                     challenged = data["challenged"]
+                    if await websocketManager.userIsPlaying(challenger):
+                        await websocketManager.sendAlreadyPlaying(challenger, challenged)
+                        continue
                     await websocketManager.acceptChallenge(challenger, challenged)
+                # ''' active game '''
+                case "makeMove":
+                    gameId = data["gameId"]
+                    fromPos = Pos(data["fromPos"])
+                    toPos = Pos(data["toPos"])
+
     except Exception as e:
         await websocketManager.removeClosedSockets()
         print(f"Closed websocket {username} {sessionToken}: ", e.__str__())

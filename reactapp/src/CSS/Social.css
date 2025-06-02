@@ -89,7 +89,7 @@
   justify-content: space-evenly;
 }
 
-#challenge-icon {
+.challenge-icon {
   cursor: pointer;
 }
 

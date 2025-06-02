@@ -1,5 +1,5 @@
 import { WEBSOCKET_URL } from "./Const"
-import { displayDialogGameInvitation, displayDialogWebsocketDisconnectionError } from "./Dialogs"
+import { displayAlertBox, displayDialogGameInvitation, displayDialogWebsocketDisconnectionError } from "./Dialogs"
 
 export class MainWebSocketManager {
   constructor() {
@@ -67,6 +67,9 @@ export class WebSocketManager extends MainWebSocketManager {
           this.setGameData(data)
           this.startOnlineGame()
           break
+        case "alreadyPlaying":
+          displayAlertBox("Unavailable", `${data["alreadyPlayingPlayer"]} is already in a game`)
+          break
       }
     }
   }
@@ -97,6 +100,10 @@ export class WebSocketManager extends MainWebSocketManager {
   acceptChallenger(challenger, challenged) {
     const data = { challenger, challenged }
     this.websocketSendMessage("acceptChallenge", data)
+  }
+  makeMove(from, to) {
+    const data = { from, to }
+    this.websocketSendMessage("makeMove", data)
   }
 }
 

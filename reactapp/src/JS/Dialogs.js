@@ -28,9 +28,6 @@ export const displayAlertBox = (title, content) => {
 }
 
 export const AlertBox = () => {
-  useEffect(() => {
-    displayAlertBox("Alert", "Something went wrong I guess")
-  })
   return (
     <div id="alert-box">
       <h2 id="alert-box-title"></h2>

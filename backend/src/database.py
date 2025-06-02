@@ -123,19 +123,13 @@ class Database(AbstractDb):
     def fetchUsername(self, token) -> Optional[str]:
         query = f"SELECT username FROM {self.table_session_token} WHERE session_token=%s"
         values = (token,)
-        print("query: ", query)
-        print("values: ", values)
         self.cursor.execute(query, values)
         found = self.cursor.fetchone()
-        print("!!! search from session Token: ", found)
         if found != None:
             return found[0]
         query = f"SELECT username FROM {self.table_persistent_token} WHERE persistent_token=%s"
         self.cursor.execute(query, values)
         found = self.cursor.fetchone()
-        print("!!! search from persistent Token: ", found)
-        print("query:", query)
-        print("values: ", values)
         if found != None:
             return found[0]
         return None
@@ -190,11 +184,9 @@ class Database(AbstractDb):
         raise Exception("wrong credentials")
 
     def addGlobalChatMessage(self, time:int, sender:str, message:str):
-        print("adding global chat message!!!!!!!!!!!")
         query = f"INSERT INTO {self.table_global_chat} (time, sender, message) values(%s,%s,%s)"
         values = (time, sender, message)
         self.cursor.execute(query, values)
-        print("done!!!!!!!!")
     def trimGlobalChatTable(self):
         self.cursor.execute(f"SELECT * FROM {self.table_global_chat}")
         found = self.cursor.fetchall()

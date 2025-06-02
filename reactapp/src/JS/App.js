@@ -13,7 +13,7 @@ import { SocialPage } from './Social.js'
 import { AccountPage } from './Account.js'
 import { SOCKET_ADDRESS } from './Const';
 import { WebSocketManager } from './WebSocket.js'
-import { DialogServerConnectionError, DialogWebsocketDisconnectionError, DialogGameInvitation, displayDialogServerConnectionError } from './Dialogs';
+import { AlertBox, displayAlertBox, DialogServerConnectionError, DialogWebsocketDisconnectionError, DialogGameInvitation, displayDialogServerConnectionError } from './Dialogs';
 import { GAME_MODE_HOTSEAT, GAME_MODE_ONLINE } from './Game/Game';
 
 export const AppContext = createContext()
@@ -40,9 +40,6 @@ const App = () => {
   globalChatHistoryRef.current = globalChatHistory;
   let sessionToken = getCookie("sessionToken")
   const persistentToken = getCookie("persistentToken")
-  useEffect(() => {
-    console.log("!!!!!!!!!! updated history for global chat: ", globalChatHistory)
-  }, [globalChatHistory])
   const createSessionTokenFromPersistentToken = async () => {
     sessionToken = crypto.randomUUID()
     document.cookie = `sessionToken=${sessionToken}; path=/; SameSite=None; Secure`;
@@ -114,6 +111,7 @@ const App = () => {
           <DialogServerConnectionError />
           <DialogWebsocketDisconnectionError />
           <DialogGameInvitation accountUsername={accountUsername} />
+          <AlertBox />
         </AccountContext.Provider>
       </SocialContext.Provider>
     </AppContext.Provider >

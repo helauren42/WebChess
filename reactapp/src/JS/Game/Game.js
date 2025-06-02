@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { BoardWhite } from './BoardWhite'
 import { BoardBlack } from './BoardBlack'
 import { PIECE_IMAGES } from './Images.js'
-import { resetSquareColor, getPos, changeSquareColor, makeMove } from './BoardActions.js';
+import { resetSquareColor, getPos, changeSquareColor } from './BoardActions.js';
+import { WS } from '../App';
 
 export const GAME_MODE_ONLINE = 0
 export const GAME_MODE_HOTSEAT = 1
@@ -41,7 +42,7 @@ export const OnlineGame = ({ gameMode, gameData }) => {
       return resetSelection(square)
     if (selectedSquare == null)
       return setSelectedSquare(square), changeSquareColor(square)
-    const move = await makeMove(getPos(selectedSquare), squarePos)
+    WS.makeMove(getPos(selectedSquare), squarePos)
   }
   useEffect(() => {
     setPlayerColor(gameData["playerColor"])

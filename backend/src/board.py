@@ -16,6 +16,23 @@ class Pieces(Enum):
     BLACK_QUEEN = "bq"
     BLACK_KING = "bk"
 
+class Pos():
+    def __init__(self, _pos:dict[str,int]) -> None:
+        self.x: int = _pos["x"]
+        self.y: int = _pos["y"]
+
+    def __add__(self, rhs:"Pos") -> "Pos":
+        return Pos({"x": self.x + rhs.x, "y": self.y + rhs.y })
+
+    def __sub__(self, rhs:"Pos") -> "Pos":
+        return Pos({"x": self.x - rhs.x, "y": self.y - rhs.y })
+
+    def getMove(self, rhs:"Pos") -> "Pos":
+        return Pos({"x": rhs.x - self.x, "y": rhs.y - self.y })
+
+    def __str__(self) -> str:
+        return f"x: {self.x}, y: {self.y}"
+
 class Cell():
     def __init__(self, posX:int, posY:int, _piece: Pieces) -> None:
         self.x: int = posX

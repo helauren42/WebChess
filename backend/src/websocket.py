@@ -47,6 +47,13 @@ class AbstractWebsocketManager(ABC):
         # gameId to access game
         self.games:dict[int, OnlineGame] = {}
 
+    async def userIsPlaying(self, username) -> bool:
+        for game in self.games.values():
+            if game.challenged == username or game.challenger == username:
+                print("is playing")
+                return True
+        return False
+
     async def newGameId(self):
         gameId = None 
         while gameId == None or self.games.get(gameId) != None:
@@ -134,4 +141,9 @@ class WebsocketManager(AbstractWebsocketManager):
         data_challenged = await self.games[gameId].getData("challenged")
         await self.sendMessage("startOnlineGame", data_challenger, self.connections[challenger].websocket)
         await self.sendMessage("startOnlineGame", data_challenged, self.connections[challenged].websocket)
+        print("TOTAL GAMES RUNNING: ", len(self.games))
+
+    async def sendAlreadyPlaying(self, receptionnist:str, alreadyPlayingPlayer:str):
+        data = json.dumps({"alreadyPlayingPlayer":alreadyPlayingPlayer})
+        await self.sendMessage("alreadyPlaying", data, self.connections[receptionnist].websocket)
 
