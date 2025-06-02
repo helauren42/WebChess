@@ -58,3 +58,35 @@ dialog {
   display: inline;
   margin: 0;
 }
+
+#alert-box {
+  position: fixed;
+  display: none;
+  border: 0.07rem solid black;
+  background-color: white;
+  z-index: 100;
+  color: black;
+  top: 10%;
+  left: 60%;
+  height: 20%;
+  width: 20%;
+  padding: 2%;
+  flex-direction: column;
+  justify-content: space-between;
+  opacity: 100%;
+}
+
+#alert-box-title {
+  width: 100%;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  color: #b51010;
+  width: 100%;
+  border-bottom: 0.07rem solid black;
+}
+
+#alert-box-content {
+  display: grid;
+  place-items: center;
+}

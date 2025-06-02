@@ -1,6 +1,44 @@
 import { SOCKET_ADDRESS } from './Const';
+import { useEffect } from 'react'
 import "../CSS/Dialogs.css"
 import { WS } from './App.js'
+
+export const displayAlertBox = (title, content) => {
+  const titleElem = document.getElementById("alert-box-title")
+  titleElem.innerText = title
+  const contentElem = document.getElementById("alert-box-content")
+  contentElem.innerText = content
+  const alertBox = document.getElementById("alert-box")
+  alertBox.style.display = "flex"
+  let opacity = 100
+  const reduction = 0.7
+  const sleep = 12
+  setTimeout(() => {
+    const intervalId = setInterval(() => {
+      const opacityLevel = `${opacity}%`
+      alertBox.style.opacity = opacityLevel
+      opacity -= reduction
+      if (opacity <= 0) {
+        alertBox.style.opacity = "100%"
+        alertBox.style.display = "none"
+        clearInterval(intervalId)
+      }
+    }, sleep)
+  }, 1000)
+}
+
+export const AlertBox = () => {
+  useEffect(() => {
+    displayAlertBox("Alert", "Something went wrong I guess")
+  })
+  return (
+    <div id="alert-box">
+      <h2 id="alert-box-title"></h2>
+      <p id="alert-box-content"></p>
+      <p className="ghost"></p>
+    </div>
+  )
+}
 
 export const displayDialogServerConnectionError = () => {
   const elem = document.getElementById("dialog-server-connection-error")
@@ -44,7 +82,7 @@ export const displayDialogGameInvitation = (challenger) => {
 }
 export const hideDialogGameInvitation = (challenger) => {
   const elem = document.getElementById("dialog-websocket-game-invitation")
-  elem.style.display = "none"
+  elem.close()
 }
 
 export const DialogGameInvitation = ({ accountUsername }) => {
