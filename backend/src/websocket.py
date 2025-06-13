@@ -7,11 +7,11 @@ from typing import Optional
 
 from fastapi.websockets import WebSocketState
 from database import db
-from board import Board, Pos
 from game import OnlineGame
+from validMove import ValidateMove
+from cell import Cell, Pos
 
 GLOBAL_CHAT_HISTORY_SIZE = 50
-
 
 class Connection():
     def __init__(self, _sessionToken, _websocket, _status=0 ) -> None:
@@ -28,6 +28,11 @@ class AbstractWebsocketManager(ABC):
 
     async def fetchActiveGames(self):
         self.activeGames = db.getAllActiveGames()
+
+    async def printActiveGames(self):
+        ret = []
+        for game in self.activeGames.values():
+            print(str(game))
 
     async def newGameId(self):
         gameId = None 
@@ -149,8 +154,12 @@ class WebsocketManager(AbstractWebsocketManager):
     async def makeMove(self, gameId:int, fromPos:Pos, toPos:Pos):
         game = self.activeGames[gameId]
         print("makeMove()")
-        if await game.board.makeMove(fromPos, toPos):
-            print("move done: ", await game.getData(game.challenged))
-            nextTurn = "black" if game.playerTurn == "white" else "black"
-            db.updateActiveGame(gameId, nextTurn, json.dumps(game.board.sendFormat()))
-            await self.sendGameUpdate(gameId)
+        # validate move
+        oldBoard:list[list[Cell]] = game.board.board
+        await game.board.makeMove(fromPos, toPos)
+        newBoard:list[list[Cell]] = game.board.board
+        validateMove = ValidateMove(oldBoard, newBoard, game.playerTurn)
+        print("move done: ", await game.getData(game.challenged))
+        nextTurn = "black" if game.playerTurn == "white" else "white"
+        db.updateActiveGame(gameId, nextTurn, json.dumps(game.board.sendFormat()))
+        await self.sendGameUpdate(gameId)

@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from database import db
 from schemas import BothTokens, LoginRequest, SignupRequest, VerifyCodeRequest, VerifyEmailRequest, SessionToken, Token
 from emailManager import EmailManager
-from board import Pos
+from cell import Pos
 
 logging.basicConfig(filename="logs.log", encoding='utf-8', level=logging.DEBUG)
 
@@ -152,7 +152,8 @@ async def websocket_endpoint(websocket: WebSocket):
         # User logging in, new active connection
         if len(websocketManager.activeGames) == 0:
             await websocketManager.fetchActiveGames()
-            print("fetched active games amount: ", len(websocketManager.activeGames))
+            print("!!! fetched active games amount: ", len(websocketManager.activeGames))
+            await websocketManager.printActiveGames()
         recv = await websocket.receive_json()
         print('websocket recv: ', recv)
         if recv == "":

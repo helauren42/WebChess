@@ -1,11 +1,13 @@
 import json
 import random
 from board import Board
-
-WHITE = "white"
-BLACK = "black"
+from const import WHITE, BLACK, EMPTY
 
 class OnlineGame():
+    def __str__(self) -> str:
+        return f"{self.gameId}: {self.challenger} vs {self.challenged}\n" + \
+          f"playerTurn: {self.playerTurn}\n" + \
+          f"board:\n{self.board}"
     def parseGame(self, game:tuple):
         mscId, _gameId, _challenger, _challenged, _challengerColor, _challengedColor, _playerTurn, _capturedWhitePieces, _capturedBlackPieces, _boardStr = game
         self.gameId:int = _gameId

@@ -215,7 +215,6 @@ class Database(AbstractDb):
     def getAllActiveGames(self) -> dict[int, OnlineGame]:
         self.cursor.execute(f"SELECT * FROM {self.table_active_games}")
         games = self.cursor.fetchall()
-        print("!!!!!!games: ", games)
         parsed_games = {}
         for game in games:
             print("GAME: ", game)
