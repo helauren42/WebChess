@@ -1,7 +1,7 @@
-import { SOCKET_ADDRESS } from './Const';
+import { SOCKET_ADDRESS } from './Const.jsx';
 import { useEffect } from 'react'
 import "../CSS/Dialogs.css"
-import { WS } from './App.js'
+import { WS } from './App.jsx'
 
 export const displayAlertBox = (title, content) => {
   const titleElem = document.getElementById("alert-box-title")

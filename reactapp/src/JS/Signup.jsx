@@ -1,7 +1,7 @@
 import { useState, createContext, useContext } from "react";
 import { Link, useNavigate } from 'react-router-dom'
 import { SOCKET_ADDRESS } from "./Const";
-import { AppContext } from "./App.js"
+import { AppContext } from "./App.jsx"
 
 export const SignupContext = createContext()
 

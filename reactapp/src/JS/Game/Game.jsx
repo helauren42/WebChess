@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { BoardWhite } from './BoardWhite'
-import { BoardBlack } from './BoardBlack'
-import { resetSquareColor, getPos, changeSquareColor } from './BoardActions.js';
-import { WS } from '../App';
+import { BoardWhite } from './BoardWhite.jsx'
+import { BoardBlack } from './BoardBlack.jsx'
+import { resetSquareColor, getPos, changeSquareColor } from './BoardActions.jsx';
+import { WS } from '../App.jsx';
 
 export const GAME_MODE_ONLINE = 0
 export const GAME_MODE_HOTSEAT = 1

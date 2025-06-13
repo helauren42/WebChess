@@ -1,7 +1,7 @@
-import { WS } from '../WebSocket.js'
-import { SOCKET_ADDRESS } from '../Const';
-import { PIECE_IMAGES } from './Images.js';
-import { displayDialogServerConnectionError } from '../Dialogs'
+import { WS } from '../WebSocket.jsx'
+import { SOCKET_ADDRESS } from '../Const.jsx';
+import { PIECE_IMAGES } from './Images.jsx';
+import { displayDialogServerConnectionError } from '../Dialogs.jsx'
 
 export const changeSquareColor = (square) => {
   console.log("changing square color: ", square.id)

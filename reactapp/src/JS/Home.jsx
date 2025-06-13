@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { AppContext } from "./App.js"
+import { AppContext } from "./App.jsx"
 
 export const HomePage = () => {
   const [signedIn, setSignedIn] = useContext(AppContext)

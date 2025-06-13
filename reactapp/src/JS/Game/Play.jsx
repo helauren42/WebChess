@@ -1,8 +1,8 @@
 import { useState, useEffect, useContext } from 'react';
-import { WS } from '../WebSocket.js'
-import { displayDialogServerConnectionError } from '../Dialogs'
+import { WS } from '../WebSocket.jsx'
+import { displayDialogServerConnectionError } from '../Dialogs.jsx'
 import '../../CSS/Play.css'
-import { BoardWhite } from './BoardWhite.js'
+import { BoardWhite } from './BoardWhite.jsx'
 
 export const PlayPage = () => {
   const [playerColor, setPlayerColor] = useState("white")

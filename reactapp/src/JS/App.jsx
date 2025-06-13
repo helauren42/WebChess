@@ -3,18 +3,18 @@ import { Routes, Route } from 'react-router-dom'
 import { Link, useNavigate } from 'react-router-dom'
 
 import '../CSS/App.css'
-import { HomePage } from "./Home.js"
-import { NavBar } from './NavBar';
-import { PlayPage } from './Game/Play.js'
-import { OnlineGame } from './Game/Game.js';
-import { LoginPage } from './Login.js'
-import { SignupPage } from './Signup.js'
-import { SocialPage } from './Social.js'
-import { AccountPage } from './Account.js'
-import { SOCKET_ADDRESS } from './Const';
-import { WebSocketManager } from './WebSocket.js'
-import { AlertBox, displayAlertBox, DialogServerConnectionError, DialogWebsocketDisconnectionError, DialogGameInvitation, displayDialogServerConnectionError } from './Dialogs';
-import { GAME_MODE_HOTSEAT, GAME_MODE_ONLINE } from './Game/Game';
+import { HomePage } from "./Home.jsx"
+import { NavBar } from './NavBar.jsx';
+import { PlayPage } from './Game/Play.jsx'
+import { OnlineGame } from './Game/Game.jsx';
+import { LoginPage } from './Login.jsx'
+import { SignupPage } from './Signup.jsx'
+import { SocialPage } from './Social.jsx'
+import { AccountPage } from './Account.jsx'
+import { SOCKET_ADDRESS } from './Const.jsx';
+import { WebSocketManager } from './WebSocket.jsx'
+import { AlertBox, displayAlertBox, DialogServerConnectionError, DialogWebsocketDisconnectionError, DialogGameInvitation, displayDialogServerConnectionError } from './Dialogs.jsx';
+import { GAME_MODE_HOTSEAT, GAME_MODE_ONLINE } from './Game/Game.jsx';
 
 export const AppContext = createContext()
 export const AccountContext = createContext()

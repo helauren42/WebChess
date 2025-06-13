@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import '../../CSS/Play.css'
 import '../../CSS/Game.css'
 
-import { positionPieceImages } from './BoardActions.js'
+import { positionPieceImages } from './BoardActions.jsx'
 
 export const BoardBlack = ({ gameData, onClickSquare }) => {
   console.log("Black Board")

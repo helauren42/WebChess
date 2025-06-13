@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { AppContext, AccountContext } from "./App.js"
+import { AppContext, AccountContext } from "./App.jsx"
 import { Link, useNavigate } from 'react-router-dom'
 import '../CSS/Account.css'
 
