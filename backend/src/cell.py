@@ -36,7 +36,7 @@ class Cell():
         self.piece: Piecenum = _piece
         self.color = EMPTY if self.piece.value == "" else WHITE if self.piece.value[0] == "w" else BLACK
     def __str__(self) -> str:
-        return str(self.piece.value)
+        return f"Cell {self.x}:{self.y} Piece: {str(self.piece.value)}, color: {self.color}"
     def changePiece(self, _piece: Piecenum):
         self.piece: Piecenum = _piece
         self.color = EMPTY if self.piece.value == "" else WHITE if self.piece.value[0] == "w" else BLACK

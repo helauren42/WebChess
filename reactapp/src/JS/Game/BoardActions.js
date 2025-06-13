@@ -4,20 +4,23 @@ import { PIECE_IMAGES } from './Images.js';
 import { displayDialogServerConnectionError } from '../Dialogs'
 
 export const changeSquareColor = (square) => {
-  console.log("changing square color")
-  const color = square.className.search("white") >= 0 ? "white" : "black"
+  console.log("changing square color: ", square.id)
+  const elem = square.id.length <= 11 ? square : square.parentElement
+  const color = elem.className.search("white") >= 0 ? "white" : "black"
   if (color == "white")
-    square.style.backgroundColor = "#745555"
+    elem.style.backgroundColor = "#745555"
   else
-    square.style.backgroundColor = "#745555"
+    elem.style.backgroundColor = "#745555"
 }
 
 export const resetSquareColor = (square) => {
+  const elem = square.id.length <= 11 ? square : square.parentElement
   const color = square.className.search("white") >= 0 ? "white" : "black"
+  console.log("!!!! resetSquareColor id: ", elem)
   if (color == "white")
-    square.style.backgroundColor = "#7c4c3e"
+    elem.style.backgroundColor = "#7c4c3e"
   else
-    square.style.backgroundColor = "#512a2a"
+    elem.style.backgroundColor = "#512a2a"
 }
 export const getPos = (square) => {
   console.log("clicked ID: ", square.id)

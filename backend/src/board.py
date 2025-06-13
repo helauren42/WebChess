@@ -61,9 +61,7 @@ class Board(AbstractBoard):
         super().__init__()
         if boardStr != None:
             self.board:list[list[Cell]] = []
-            print("boardStr: ", boardStr)
             list_board = json.loads(boardStr)
-            print("list_board: ", list_board)
             for y in range(8):
                 row:list[Cell] = []
                 for x in range(8):

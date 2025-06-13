@@ -159,7 +159,10 @@ class WebsocketManager(AbstractWebsocketManager):
         await game.board.makeMove(fromPos, toPos)
         newBoard:list[list[Cell]] = game.board.board
         validateMove = ValidateMove(oldBoard, newBoard, game.playerTurn)
+        if not validateMove:
+            return
         print("move done: ", await game.getData(game.challenged))
         nextTurn = "black" if game.playerTurn == "white" else "white"
+        game.playerTurn = nextTurn
         db.updateActiveGame(gameId, nextTurn, json.dumps(game.board.sendFormat()))
         await self.sendGameUpdate(gameId)

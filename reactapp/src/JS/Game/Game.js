@@ -25,24 +25,28 @@ export const OnlineGame = ({ gameMode, gameData }) => {
       return true
     return false
   }
-  const resetSelection = (square) => {
+  const resetSelection = () => {
     console.log("resetting selection")
+    resetSquareColor(selectedSquare)
     setSelectedSquare(null)
-    resetSquareColor(square)
   }
   const onClickSquare = async (event) => {
-    const square = event.target
-    console.log("clicked square: ", square)
-    const squarePos = getPos(square)
+    const clickedSquare = event.target
+    console.log("clicked square: ", clickedSquare)
+    console.log("curr selected square: ", selectedSquare)
+    const squarePos = getPos(clickedSquare)
     console.log(squarePos)
-    const isSamePiece = selectedSquare == square.id
+    const isSamePiece = selectedSquare == clickedSquare.id
     console.log("PRE resetting selection")
     if (isSamePiece || (selectedSquare == "" && !isPlayerColor(squarePos)))
-      return resetSelection(square)
+      return resetSelection()
     if (selectedSquare == null)
-      return setSelectedSquare(square), changeSquareColor(square)
-    WS.makeMove(getPos(selectedSquare), squarePos)
-    resetSelection(square)
+      return setSelectedSquare(clickedSquare), changeSquareColor(clickedSquare)
+    console.log("playerTurn: ", gameData["playerTurn"])
+    console.log("playerColor: ", playerColor)
+    if (gameData["playerTurn"] == playerColor)
+      WS.makeMove(getPos(selectedSquare), squarePos)
+    resetSelection()
   }
   useEffect(() => {
     console.log(gameData)

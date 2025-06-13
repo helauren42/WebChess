@@ -23,6 +23,9 @@ class AbstractPiece(ABC):
                 return True
         return False
 
+class Empty(AbstractPiece):
+    def __init__(self, _cell: Cell) -> None:
+        super().__init__(_cell)
 class Pawn(AbstractPiece):
     def __init__(self, _cell: Cell) -> None:
         super().__init__(_cell)
@@ -75,8 +78,9 @@ class ValidateMove():
         self.playerInCheck:bool = self.isPlayerInCheck()
         self.opponentIsCheckMate:bool = False
         self.opponentIsImmobilized:bool = False
-    def create_piece(self, piece_type: Piecenum, cell: Cell) -> AbstractPiece:
+    def createPiece(self, piece_type: Piecenum, cell: Cell) -> AbstractPiece:
         piece_map = {
+            Piecenum.EMPTY: Empty,
             Piecenum.WHITE_PAWN: Pawn,
             Piecenum.WHITE_KNIGHT: Knight,
             Piecenum.WHITE_BISHOP: Bishop,
@@ -103,8 +107,11 @@ class ValidateMove():
         for y in range(8):
             for x in range(8):
                 cell:Cell = self.newBoard[y][x]
+                print(cell)
+                print(cell.color)
+                print(self.opponentColor)
                 if cell.color == self.opponentColor:
-                    piece:AbstractPiece = self.create_piece(cell.piece, cell)
+                    piece:AbstractPiece = self.createPiece(cell.piece, cell)
                     if piece.canMove(self.kingPos):
                         return True
         return False
