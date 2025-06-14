@@ -8,9 +8,9 @@ export const changeSquareColor = (square) => {
   const elem = square.id.length <= 11 ? square : square.parentElement
   const color = elem.className.search("white") >= 0 ? "white" : "black"
   if (color == "white")
-    elem.style.backgroundColor = "#745555"
+	elem.style.backgroundColor = "#745555"
   else
-    elem.style.backgroundColor = "#745555"
+	elem.style.backgroundColor = "#745555"
 }
 
 export const resetSquareColor = (square) => {
@@ -18,9 +18,9 @@ export const resetSquareColor = (square) => {
   const color = square.className.search("white") >= 0 ? "white" : "black"
   console.log("!!!! resetSquareColor id: ", elem)
   if (color == "white")
-    elem.style.backgroundColor = "#7c4c3e"
+	elem.style.backgroundColor = "#7c4c3e"
   else
-    elem.style.backgroundColor = "#512a2a"
+	elem.style.backgroundColor = "#512a2a"
 }
 export const getPos = (square) => {
   console.log("clicked ID: ", square.id)
@@ -32,24 +32,24 @@ export const getPos = (square) => {
 
 export const positionPieceImages = (board) => {
   if (!board)
-    return
+	return
   console.log("positionPieceImages()")
   for (let y = 0; y < 8; y++) {
-    for (let x = 0; x < 8; x++) {
-      const piece = board[y][x]
-      const idName = `img-row-${y}-col-${x}`
-      const elem = document.getElementById(idName)
-      if (piece == "" && elem.title != "") {
-        elem.style.display = "none"
-        elem.removeAttribute("src")
-        elem.title = ""
-      }
-      else if (elem.title != piece) {
-        elem.style.display = "inline"
-        elem.src = PIECE_IMAGES[piece]
-        elem.title = piece
-      }
-    }
+	for (let x = 0; x < 8; x++) {
+	  const piece = board[y][x]
+	  const idName = `img-row-${y}-col-${x}`
+	  const elem = document.getElementById(idName)
+	  if (piece == "" && elem.title != "") {
+		elem.style.display = "none"
+		elem.removeAttribute("src")
+		elem.title = ""
+	  }
+	  else if (elem.title != piece) {
+		elem.style.display = "inline"
+		elem.src = PIECE_IMAGES[piece]
+		elem.title = piece
+	  }
+	}
   }
 }
 

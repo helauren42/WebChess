@@ -14,26 +14,26 @@ export const displayAlertBox = (title, content) => {
   const reduction = 0.7
   const sleep = 12
   setTimeout(() => {
-    const intervalId = setInterval(() => {
-      const opacityLevel = `${opacity}%`
-      alertBox.style.opacity = opacityLevel
-      opacity -= reduction
-      if (opacity <= 0) {
-        alertBox.style.opacity = "100%"
-        alertBox.style.display = "none"
-        clearInterval(intervalId)
-      }
-    }, sleep)
+	const intervalId = setInterval(() => {
+	  const opacityLevel = `${opacity}%`
+	  alertBox.style.opacity = opacityLevel
+	  opacity -= reduction
+	  if (opacity <= 0) {
+		alertBox.style.opacity = "100%"
+		alertBox.style.display = "none"
+		clearInterval(intervalId)
+	  }
+	}, sleep)
   }, 1000)
 }
 
 export const AlertBox = () => {
   return (
-    <div id="alert-box">
-      <h2 id="alert-box-title"></h2>
-      <p id="alert-box-content"></p>
-      <p className="ghost"></p>
-    </div>
+	<div id="alert-box">
+	  <h2 id="alert-box-title"></h2>
+	  <p id="alert-box-content"></p>
+	  <p className="ghost"></p>
+	</div>
   )
 }
 
@@ -44,13 +44,13 @@ export const displayDialogServerConnectionError = () => {
 
 export const DialogServerConnectionError = () => {
   return (
-    <dialog className="dialog" id="dialog-server-connection-error">
-      <div className="dialog-content">
-        <h1>Connection Error</h1>
-        <p>Failed to connect to server please refresh the page</p>
-        <span className="ghost"></span>
-      </div>
-    </dialog>
+	<dialog className="dialog" id="dialog-server-connection-error">
+	  <div className="dialog-content">
+		<h1>Connection Error</h1>
+		<p>Failed to connect to server please refresh the page</p>
+		<span className="ghost"></span>
+	  </div>
+	</dialog>
   )
 }
 
@@ -61,13 +61,13 @@ export const displayDialogWebsocketDisconnectionError = () => {
 
 export const DialogWebsocketDisconnectionError = () => {
   return (
-    <dialog className="dialog" id="dialog-websocket-disconnection-error">
-      <div className="dialog-content">
-        <h1>Connection Error</h1>
-        <p>You have been disconnected please refresh the page</p>
-        <span className="ghost"></span>
-      </div>
-    </dialog>
+	<dialog className="dialog" id="dialog-websocket-disconnection-error">
+	  <div className="dialog-content">
+		<h1>Connection Error</h1>
+		<p>You have been disconnected please refresh the page</p>
+		<span className="ghost"></span>
+	  </div>
+	</dialog>
   )
 }
 
@@ -84,28 +84,28 @@ export const hideDialogGameInvitation = (challenger) => {
 
 export const DialogGameInvitation = ({ accountUsername }) => {
   const acceptInvitation = () => {
-    const challenger = document.getElementById("challenger-text-name")
-    WS.acceptChallenger(challenger.innerText, accountUsername)
+	const challenger = document.getElementById("challenger-text-name")
+	WS.acceptChallenger(challenger.innerText, accountUsername)
   }
   return (
-    <dialog className="dialog" id="dialog-websocket-game-invitation">
-      <div className="dialog-content">
-        <div>
-          <h1 className="challenger-text">You have been challenged to a game by </h1>
-          <h1 className="challenger-text" id="challenger-text-name"></h1>
-          <h1 className="challenger-text">!</h1>
-        </div>
-        <p className="ghost"></p>
-        <div className="invite-response">
-          <button className="invite-button invite-reject" onClick={(e) => {
-            hideDialogGameInvitation()
-          }}>reject</button>
-          <button className="invite-button invite-accept" onClick={(e) => {
-            hideDialogGameInvitation()
-            acceptInvitation()
-          }}>accept</button>
-        </div>
-      </div>
-    </dialog >
+	<dialog className="dialog" id="dialog-websocket-game-invitation">
+	  <div className="dialog-content">
+		<div>
+		  <h1 className="challenger-text">You have been challenged to a game by </h1>
+		  <h1 className="challenger-text" id="challenger-text-name"></h1>
+		  <h1 className="challenger-text">!</h1>
+		</div>
+		<p className="ghost"></p>
+		<div className="invite-response">
+		  <button className="invite-button invite-reject" onClick={(e) => {
+			hideDialogGameInvitation()
+		  }}>reject</button>
+		  <button className="invite-button invite-accept" onClick={(e) => {
+			hideDialogGameInvitation()
+			acceptInvitation()
+		  }}>accept</button>
+		</div>
+	  </div>
+	</dialog >
   )
 }

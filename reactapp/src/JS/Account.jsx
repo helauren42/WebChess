@@ -11,15 +11,15 @@ export const AccountPage = () => {
   const [signedIn, setSignedIn] = useContext(AppContext)
   const [accountUsername, setAccountUsername] = useContext(AccountContext)
   return (
-    <div id="account-page-container">
-      <Link to={"/login"}>
-        <h1>{accountUsername}</h1>
-        <button onClick={() => {
-          makeSignoutRequest()
-          setSignedIn(false)
-          document.cookie = `persistentToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
-        }}>Log out </button>
-      </Link>
-    </div>
+	<div id="account-page-container">
+	  <Link to={"/login"}>
+		<h1>{accountUsername}</h1>
+		<button onClick={() => {
+		  makeSignoutRequest()
+		  setSignedIn(false)
+		  document.cookie = `persistentToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+		}}>Log out </button>
+	  </Link>
+	</div>
   )
 }
