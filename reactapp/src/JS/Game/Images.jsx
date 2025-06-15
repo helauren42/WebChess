@@ -12,16 +12,16 @@ import blackQueenImg from '../../images/b_queen.png';
 import blackKingImg from '../../images/b_king.png';
 
 export const PIECE_IMAGES = {
-  "wp": whitePawnImg,
-  "wn": whiteKnightImg,
-  "wb": whiteBishopImg,
-  "wr": whiteRookImg,
-  "wq": whiteQueenImg,
-  "wk": whiteKingImg,
-  "bp": blackPawnImg,
-  "bn": blackKnightImg,
-  "bb": blackBishopImg,
-  "br": blackRookImg,
-  "bq": blackQueenImg,
-  "bk": blackKingImg,
+	"wp": whitePawnImg,
+	"wn": whiteKnightImg,
+	"wb": whiteBishopImg,
+	"wr": whiteRookImg,
+	"wq": whiteQueenImg,
+	"wk": whiteKingImg,
+	"bp": blackPawnImg,
+	"bn": blackKnightImg,
+	"bb": blackBishopImg,
+	"br": blackRookImg,
+	"bq": blackQueenImg,
+	"bk": blackKingImg,
 };

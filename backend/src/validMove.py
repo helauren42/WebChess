@@ -7,6 +7,7 @@ class AbstractPiece(ABC):
     def __init__(self, _cell:Cell) -> None:
         super().__init__()
         self.cell = _cell
+        self.type = self.cell.piece.value
         self.validNormalVectors:list[tuple] = []
         self.validDirectionVectors:list[tuple] = []
     def canMove(self, destPos: Pos) -> bool:
