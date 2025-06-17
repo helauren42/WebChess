@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 import { BoardWhite } from './BoardWhite.jsx'
 import { BoardBlack } from './BoardBlack.jsx'
 import { resetSquareColor, getPos, changeSquareColor } from './BoardActions.jsx';
@@ -15,6 +16,7 @@ export const OnlineGame = ({ gameMode, gameData }) => {
 	console.log("OnlineGame")
 	const [playerColor, setPlayerColor] = useState("")
 	const [selectedSquare, setSelectedSquare] = useState(null)
+	const navigate = useNavigate()
 	const onSelectedSquareChange = (() => {
 		console.log("!!! selection change")
 		console.log("selectedPiece: ", selectedSquare)
@@ -59,6 +61,7 @@ export const OnlineGame = ({ gameMode, gameData }) => {
 	}
 	const userResign = async () => {
 		WS.sendUserResign()
+    // handle redirection setting game state to finished game etc..
 	}
 	useEffect(() => {
 		console.log(gameData)

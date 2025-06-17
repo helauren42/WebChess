@@ -1,110 +1,17 @@
 from abc import ABC
 from enum import Enum
+from typing import Optional
 
 from cell import Cell, Pos
-from const import BLACK, EMPTY, WHITE, Piecenum
-
-
-class AbstractPiece(ABC):
-    def __init__(self, _cell: Cell) -> None:
-        super().__init__()
-        self.cell = _cell
-        self.type = self.cell.piece.value
-        self.validNormalVectors: list[tuple] = []
-        self.validDirectionVectors: list[tuple] = []
-
-    def canMove(self, destPos: Pos) -> bool:
-        currPos = self.cell.getPos()
-        moveVector = currPos.getMove(destPos)
-        for vector in self.validDirectionVectors:
-            if moveVector.isEqual(vector[0], vector[1]):
-                return True
-        if len(self.validNormalVectors) == 0 or not (
-            moveVector.x == moveVector.y
-            or moveVector.x == 0
-            and moveVector.y
-            or moveVector.x
-            and moveVector.y == 0
-        ):
-            return False
-        moveVector.normalize()
-        for vector in self.validNormalVectors:
-            if moveVector.isEqual(vector[0], vector[1]):
-                return True
-        return False
-
-
-class Empty(AbstractPiece):
-    def __init__(self, _cell: Cell) -> None:
-        super().__init__(_cell)
-
-
-class Pawn(AbstractPiece):
-    def __init__(self, _cell: Cell) -> None:
-        super().__init__(_cell)
-        if self.cell.color == WHITE and self.cell.y == 1:
-            self.validDirectionVectors = [(0, 1), (0, 2)]
-        elif self.cell.color == WHITE:
-            self.validDirectionVectors = [(0, 1)]
-        elif self.cell.color == BLACK and self.cell.y == 6:
-            self.validDirectionVectors = [(0, -1), (0, -2)]
-        elif self.cell.color == BLACK:
-            self.validDirectionVectors = [(0, -1)]
-
-
-class Rook(AbstractPiece):
-    def __init__(self, _cell: Cell) -> None:
-        super().__init__(_cell)
-        self.validNormalVectors = [(0, 1), (1, 0)]
-
-
-class Bishop(AbstractPiece):
-    def __init__(self, _cell: Cell) -> None:
-        super().__init__(_cell)
-        self.validNormalVectors = [(1, 1)]
-
-
-class Queen(AbstractPiece):
-    def __init__(self, _cell: Cell) -> None:
-        super().__init__(_cell)
-        self.validNormalVectors = [(1, 1), (0, 1), (1, 0)]
-
-
-class Knight(AbstractPiece):
-    def __init__(self, _cell: Cell) -> None:
-        super().__init__(_cell)
-        self.validDirectionVectors = [
-            (2, 1),
-            (1, 2),
-            (-1, 2),
-            (-2, 1),
-            (-2, -1),
-            (-1, -2),
-            (1, -2),
-            (2, -1),
-        ]
-
-
-class King(AbstractPiece):
-    def __init__(self, _cell: Cell) -> None:
-        super().__init__(_cell)
-        self.validDirectionVectors = [
-            (0, 1),
-            (1, 0),
-            (0, -1),
-            (-1, 0),
-            (1, 1),
-            (-1, -1),
-            (1, -1),
-            (-1, 1),
-        ]
+from const import BLACK, EMPTY, STR_TO_PIECES, WHITE, Piecenum
+from pieces import AbstractPiece, createPiece
 
 
 class ValidateMove:
     def __init__(self) -> None:
         pass
 
-    def test(
+    async def test(
         self,
         _oldBoard: list[list[Cell]],
         _newBoard: list[list[Cell]],
@@ -117,31 +24,13 @@ class ValidateMove:
         self.newBoard: list[list[Cell]] = _newBoard
         self.playerColor: str = _playerColor
         self.opponentColor: str = BLACK if _playerColor == WHITE else WHITE
-        self.kingPos = self.getKingPos()
-        self.playerInCheck: bool = self.isPlayerInCheck()
+        self.kingPos:Pos = await self.getKingPos()
+        self.playerInCheck: bool = await self.isPlayerInCheck()
         self.opponentIsCheckMate: bool = False
         self.opponentIsImmobilized: bool = False
-        self.state: Optional[bool] = None
+        self.valid: bool = True if not self.playerInCheck else False
 
-    def createPiece(self, piece_type: Piecenum, cell: Cell) -> AbstractPiece:
-        piece_map = {
-            Piecenum.EMPTY: Empty,
-            Piecenum.WHITE_PAWN: Pawn,
-            Piecenum.WHITE_KNIGHT: Knight,
-            Piecenum.WHITE_BISHOP: Bishop,
-            Piecenum.WHITE_ROOK: Rook,
-            Piecenum.WHITE_QUEEN: Queen,
-            Piecenum.WHITE_KING: King,
-            Piecenum.BLACK_PAWN: Pawn,
-            Piecenum.BLACK_KNIGHT: Knight,
-            Piecenum.BLACK_BISHOP: Bishop,
-            Piecenum.BLACK_ROOK: Rook,
-            Piecenum.BLACK_QUEEN: Queen,
-            Piecenum.BLACK_KING: King,
-        }
-        return piece_map[piece_type](cell)
-
-    def getKingPos(self) -> Pos:
+    async def getKingPos(self) -> Pos:
         kingPiecenum = (
             Piecenum.WHITE_KING if self.playerColor == WHITE else Piecenum.BLACK_KING
         )
@@ -151,16 +40,16 @@ class ValidateMove:
                     return Pos({"x": x, "y": y})
         return Pos({"x": 0, "y": 0})
 
-    def isPlayerInCheck(self):
+    async def isPlayerInCheck(self):
         for y in range(8):
             for x in range(8):
                 cell: Cell = self.newBoard[y][x]
-                print(cell)
-                print(cell.color)
-                print(self.opponentColor)
                 if cell.color == self.opponentColor:
-                    piece: AbstractPiece = self.createPiece(cell.piece, cell)
-                    if piece.canMove(self.kingPos):
+                    piece:AbstractPiece = await createPiece(cell.piece, cell)
+                    print("here2")
+                    print(self.kingPos)
+                    print("type: ", type(self.kingPos))
+                    if await piece.canMove(self.kingPos):
                         print("player is being checked")
                         return True
         print("player is not checked, player is free to move")

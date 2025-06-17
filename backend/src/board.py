@@ -6,6 +6,7 @@ import json
 
 from const import Piecenum, STR_TO_PIECES, PIECES_TO_STR
 from cell import Cell, Pos
+from pieces import createPiece, AbstractPiece
 
 class AbstractBoard(ABC):
     def __init__(self)->None:
@@ -91,13 +92,14 @@ class Board(AbstractBoard):
             ret.append(row)
         return ret
 
-    async def makeMove(self, fromPos:Pos, toPos:Pos):
-        print(fromPos)
-        print(toPos)
-        fromPiece = await self.getPiece(fromPos.x, fromPos.y)
-        print("from piece: ", fromPiece.value)
+    async def canMove(self, fromPos:Pos, toPos:Pos, pieceNum):
+        cell = Cell(fromPos.x, fromPos.y, pieceNum)
+        print("making move with piece: ", pieceNum.value)
+        objectPiece:AbstractPiece = await createPiece(pieceNum, cell)
+        await objectPiece.canMove(toPos)
+    async def makeMove(self, fromPos:Pos, toPos:Pos, pieceNum):
         await self.emptyPos(fromPos)
-        await self.assignPos(toPos, fromPiece)
+        await self.assignPos(toPos, pieceNum)
 
 if __name__ == "__main__":
     board = Board()

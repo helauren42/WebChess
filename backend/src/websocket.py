@@ -204,10 +204,15 @@ class WebsocketManager(AbstractWebsocketManager):
         print("makeMove()")
         # validate move
         oldBoard: list[list[Cell]] = game.board.board
-        await game.board.makeMove(fromPos, toPos)
+        pieceNum = await game.board.getPiece(fromPos.x, fromPos.y)
+        if await game.board.canMove(fromPos, toPos, pieceNum) == False:
+            print("move is not valid for piece")
+            return
+        await game.board.makeMove(fromPos, toPos, pieceNum) 
         newBoard: list[list[Cell]] = game.board.board
-        VALIDATE_MOVE.test(oldBoard, newBoard, game.playerTurn)
-        if not VALIDATE_MOVE.state:
+        await VALIDATE_MOVE.test(oldBoard, newBoard, game.playerTurn)
+        if not VALIDATE_MOVE.valid:
+            print("move not valid, new board state invalid")
             return
         print("move done: ", await game.getData(game.challenged))
         nextTurn = "black" if game.playerTurn == "white" else "white"
