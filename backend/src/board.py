@@ -69,7 +69,6 @@ class Board(AbstractBoard):
                     piece:Piecenum = STR_TO_PIECES[list_board[y][x]]
                     row.append(Cell(x, y, piece))
                 self.board.append(row)
-
     def __str__(self) -> str:
         ret = ""
         for y in range(8):
@@ -96,7 +95,7 @@ class Board(AbstractBoard):
         cell = Cell(fromPos.x, fromPos.y, pieceNum)
         print("making move with piece: ", pieceNum.value)
         objectPiece:AbstractPiece = await createPiece(pieceNum, cell)
-        await objectPiece.canMove(toPos)
+        return await objectPiece.canMove(toPos)
     async def makeMove(self, fromPos:Pos, toPos:Pos, pieceNum):
         await self.emptyPos(fromPos)
         await self.assignPos(toPos, pieceNum)

@@ -9,34 +9,32 @@ class AbstractPiece(ABC):
         super().__init__()
         self.cell = _cell
         self.type = self.cell.piece.value
-        self.validNormalVectors: list[tuple] = []
+        self.validNormalAbsolutVectors: list[tuple] = []
         self.validDirectionVectors: list[tuple] = []
 
-    async def canMove(self, destPos: Optional[Any]=None) -> bool:
+    async def canMove(self, destPos:Pos) -> bool:
         print("can move received destPos: ", destPos)
-        print("type is: ", type(destPos))
-        print("here!????")
-        print("x: ", self.cell.x)
-        print("y: ", self.cell.y)
-        print("self.cell: ", self.cell)
         currPos = self.cell.getPos()
-        print("curr pos: ", currPos)
         moveVector = currPos.getMove(destPos)
+        print("moveVector: ", moveVector)
+        print("validDirectionVectors", self.validDirectionVectors)
+        print("validNormalAbsoluteVectors", self.validNormalAbsolutVectors)
         for vector in self.validDirectionVectors:
             if moveVector.isEqual(vector[0], vector[1]):
                 return True
-        if len(self.validNormalVectors) == 0 or not (
+        if len(self.validNormalAbsolutVectors) == 0 or not (
             moveVector.x == moveVector.y
-            or moveVector.x == 0
-            and moveVector.y
-            or moveVector.x
-            and moveVector.y == 0
+            or moveVector.x == - moveVector.y
+            or (moveVector.x == 0 and moveVector.y)
+            or (moveVector.x and moveVector.y == 0)
         ):
             return False
-        moveVector.normalize()
-        for vector in self.validNormalVectors:
+        moveVector.normalizeAndAbs()
+        print("moveVectorNormAbs: ", moveVector)
+        for vector in self.validNormalAbsolutVectors:
             if moveVector.isEqual(vector[0], vector[1]):
                 return True
+        print("no vector match found")
         return False
 
 
@@ -61,19 +59,19 @@ class Pawn(AbstractPiece):
 class Rook(AbstractPiece):
     def __init__(self, _cell: Cell) -> None:
         super().__init__(_cell)
-        self.validNormalVectors = [(0, 1), (1, 0)]
+        self.validNormalAbsolutVectors = [(0, 1), (1, 0)]
 
 
 class Bishop(AbstractPiece):
     def __init__(self, _cell: Cell) -> None:
         super().__init__(_cell)
-        self.validNormalVectors = [(1, 1)]
+        self.validNormalAbsolutVectors = [(1, 1)]
 
 
 class Queen(AbstractPiece):
     def __init__(self, _cell: Cell) -> None:
         super().__init__(_cell)
-        self.validNormalVectors = [(1, 1), (0, 1), (1, 0)]
+        self.validNormalAbsolutVectors = [(1, 1), (0, 1), (1, 0)]
 
 
 class Knight(AbstractPiece):

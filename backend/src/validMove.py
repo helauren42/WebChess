@@ -41,16 +41,16 @@ class ValidateMove:
         return Pos({"x": 0, "y": 0})
 
     async def isPlayerInCheck(self):
+        print("isPlayerInCheck()")
         for y in range(8):
             for x in range(8):
                 cell: Cell = self.newBoard[y][x]
                 if cell.color == self.opponentColor:
                     piece:AbstractPiece = await createPiece(cell.piece, cell)
-                    print("here2")
                     print(self.kingPos)
                     print("type: ", type(self.kingPos))
                     if await piece.canMove(self.kingPos):
-                        print("player is being checked")
+                        print(f"player is being checked by {piece.type} {piece.cell}")
                         return True
         print("player is not checked, player is free to move")
         return False

@@ -21,15 +21,20 @@ class Pos:
     def getMove(self, rhs: "Pos") -> "Pos":
         return Pos({"x": rhs.x - self.x, "y": rhs.y - self.y})
 
-    def normalize(self) -> None:
-        if not (self.x == self.y or self.x == 0 and self.y or self.x and self.y == 0):
-            return
+    def normalizeAndAbs(self) -> None:
+        print("start Hey!: ", self.x)
+        print("start Hey!: ", self.y)
         absX = abs(self.x)
         absY = abs(self.y)
         divide = absX if absX > absY else absY
-        self.x //= divide
-        self.y //= divide
-
+        self.x = absX
+        self.y = absY
+        if self.x:
+            self.x //= divide
+        if self.y:
+            self.y //= divide
+        print("Hey!: ", self.x)
+        print("Hey!: ", self.y)
 
 class Cell:
     def __init__(self, posX: int, posY: int, _piece: Piecenum) -> None:
