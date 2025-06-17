@@ -9,6 +9,9 @@ class AbstractPiece(ABC):
         super().__init__()
         self.cell = _cell
         self.currPos = self.cell.getPos()
+        print("!!!!!!!!!! setting self color: ", self.cell.color)
+        print(self.currPos)
+        self.color = self.cell.color
         self.type = self.cell.piece.value
         self.validNormalAbsolutVectors: list[tuple] = []
         self.validDirectionVectors: list[tuple] = []
@@ -57,8 +60,22 @@ class AbstractPiece(ABC):
                 return False
         return True
 
+    async def validDestPiece(self, destCell:Cell) -> bool:
+        print("destination cell color: ", destCell.color)
+        print("self cell color: ", self.color)
+        print(self.color == "white")
+        print(destCell.color == "white")
+        if self.color == destCell.color:
+            print("ret false")
+            return False
+        print("ret true")
+        return True
+
     async def canMove(self, destPos:Pos, destPiece:Piecenum, board:list[list[Cell]]) -> bool:
         print("can move received destPos: ", destPos)
+        if await self.validDestPiece(board[destPos.y][destPos.x]) == False:
+            print("Dest piece is incompatible")
+            return False
         if await self.validVectorMove(destPos) == False:
             print("move is not a valid vector")
             return False
@@ -125,6 +142,13 @@ class Knight(AbstractPiece):
             (-1, -2),
             (-2, -1)
         ]
+    #todo
+    async def validDestPiece(self, destCell:Cell) -> bool:
+        if self.color == "white" and destCell.piece.name == "WHITE_ROOK":
+            return True
+        if self.color == destCell.color:
+            return False
+        return True
 
     async def canTravel(self, destPos:Pos, destPiece:Piecenum, board:list[list[Cell]]) -> bool:
         return True
