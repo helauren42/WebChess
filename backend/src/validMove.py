@@ -49,7 +49,7 @@ class ValidateMove:
                     piece:AbstractPiece = await createPiece(cell.piece, cell)
                     print(self.kingPos)
                     print("type: ", type(self.kingPos))
-                    if await piece.canMove(self.kingPos):
+                    if await piece.canMove(self.kingPos, STR_TO_PIECES["wk"], self.oldBoard):
                         print(f"player is being checked by {piece.type} {piece.cell}")
                         return True
         print("player is not checked, player is free to move")

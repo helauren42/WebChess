@@ -205,8 +205,9 @@ class WebsocketManager(AbstractWebsocketManager):
         # validate move
         oldBoard: list[list[Cell]] = game.board.board
         pieceNum = await game.board.getPiece(fromPos.x, fromPos.y)
+        destPiece = await game.board.getPiece(toPos.x, toPos.y)
         print("!!!!!!!!!!")
-        if await game.board.canMove(fromPos, toPos, pieceNum) == False:
+        if await game.board.canMove(fromPos, toPos, pieceNum, destPiece, oldBoard) == False:
             print("move is not valid for piece")
             return
         await game.board.makeMove(fromPos, toPos, pieceNum) 

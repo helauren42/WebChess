@@ -91,11 +91,11 @@ class Board(AbstractBoard):
             ret.append(row)
         return ret
 
-    async def canMove(self, fromPos:Pos, toPos:Pos, pieceNum):
+    async def canMove(self, fromPos:Pos, toPos:Pos, pieceNum:Piecenum, destPiece:Piecenum, board:list[list[Cell]]):
         cell = Cell(fromPos.x, fromPos.y, pieceNum)
         print("making move with piece: ", pieceNum.value)
         objectPiece:AbstractPiece = await createPiece(pieceNum, cell)
-        return await objectPiece.canMove(toPos)
+        return await objectPiece.canMove(toPos, destPiece, board)
     async def makeMove(self, fromPos:Pos, toPos:Pos, pieceNum):
         await self.emptyPos(fromPos)
         await self.assignPos(toPos, pieceNum)
