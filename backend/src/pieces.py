@@ -17,6 +17,8 @@ class AbstractPiece(ABC):
 
     async def validVectorMove(self, destPos:Pos) -> bool:
         moveVector = self.currPos.getMove(destPos)
+        xSign = 1 if moveVector.x >= 0 else -1
+        ySign = 1 if moveVector.y >= 0 else -1
         self.vectorMove = moveVector
         print("moveVector: ", moveVector)
         print("validDirectionVectors", self.validDirectionVectors)
@@ -36,7 +38,7 @@ class AbstractPiece(ABC):
         print("moveVectorNormAbs: ", moveVector)
         for vector in self.validNormalAbsolutVectors:
             if moveVector.isEqual(vector[0], vector[1]):
-                self.utilizedVector = Pos({"x": vector[0], "y": vector[1]})
+                self.utilizedVector = Pos({"x": xSign * vector[0], "y": ySign * vector[1]})
                 return True
         print("no vector match found")
         return False
@@ -45,11 +47,13 @@ class AbstractPiece(ABC):
         if self.utilizedVector == None:
             return False
         pos:Pos = self.currPos
+        print("utilizedVector: ", self.utilizedVector)
         while True:
             pos = pos + self.utilizedVector
             if pos.isEqual(destPos.x, destPos.y):
                 break
-            if board[destPos.y][destPos.x].piece.name != "EMPTY":
+            print("board[destPos.y][destPos.x].piece.name: ", board[pos.y][pos.x].piece.name)
+            if board[pos.y][pos.x].piece.name != "EMPTY":
                 return False
         return True
 
