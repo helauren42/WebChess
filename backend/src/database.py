@@ -222,5 +222,17 @@ class Database(AbstractDb):
             onlineGame.parseGame(game)
             parsed_games[onlineGame.gameId] = onlineGame
         return parsed_games
+    def storeGameResult(self, gameId, winner, loser):
+        query = f"update users set total_wins=total_wins+1 where username=%s" 
+        values = (winner, )
+        self.cursor.execute(query, values)
+        query = f"update users set total_loss=total_loss+1 where username=%s" 
+        values = (loser, )
+        self.cursor.execute(query, values)
+    def removeActiveGame(self, gameId):
+        query = f"DELETE FROM active_games WHERE gameId=%s"
+        values = (gameId, )
+        self.cursor.execute(query, values)
         
 db = Database()
+

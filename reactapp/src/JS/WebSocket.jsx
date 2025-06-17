@@ -118,5 +118,9 @@ export class WebSocketManager extends MainWebSocketManager {
 		const data = { "gameId": this.gameData["gameId"], fromPos, toPos }
 		this.websocketSendMessage("makeMove", data)
 	}
+	sendUserResign() {
+		const data = { "gameId": this.gameData["gameId"], "username": this.username }
+		this.websocketSendMessage("userResign", data)
+	}
 }
 

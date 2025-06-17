@@ -3,6 +3,8 @@ import { BoardWhite } from './BoardWhite.jsx'
 import { BoardBlack } from './BoardBlack.jsx'
 import { resetSquareColor, getPos, changeSquareColor } from './BoardActions.jsx';
 import { WS } from '../App.jsx';
+import { SOCKET_ADDRESS } from '../Const.jsx';
+import { WebSocketManager } from '../WebSocket.jsx';
 
 export const GAME_MODE_ONLINE = 0
 export const GAME_MODE_HOTSEAT = 1
@@ -55,6 +57,9 @@ export const OnlineGame = ({ gameMode, gameData }) => {
 			WS.makeMove(getPos(selectedSquare), squarePos)
 		resetSelection()
 	}
+	const userResign = async () => {
+		WS.sendUserResign()
+	}
 	useEffect(() => {
 		console.log(gameData)
 		setPlayerColor(gameData["playerColor"])
@@ -63,6 +68,7 @@ export const OnlineGame = ({ gameMode, gameData }) => {
 		<div id="game-page-container">
 			{playerColor == "white" ? <BoardWhite gameData={gameData} onClickSquare={onClickSquare} /> : <BoardBlack gameData={gameData} onClickSquare={onClickSquare} />}
 			<div id="right-side">
+				<button id="resign" onClick={() => userResign()}>resign</button>
 			</div>
 		</div >
 	)

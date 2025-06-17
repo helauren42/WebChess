@@ -209,7 +209,8 @@ async def websocket_endpoint(websocket: WebSocket):
             if len(websocketManager.activeGames) == 0:
                 await websocketManager.fetchActiveGames()
                 print(
-                    "!!! fetched active games amount: ", len(websocketManager.activeGames)
+                    "!!! fetched active games amount: ",
+                    len(websocketManager.activeGames),
                 )
                 await websocketManager.printActiveGames()
             recv = await websocket.receive_json()
@@ -230,7 +231,9 @@ async def websocket_endpoint(websocket: WebSocket):
             print("data: ", data)
             match recvType:
                 case "newConnection":
-                    await websocketManager.newConnection(username, websocket, sessionToken)
+                    await websocketManager.newConnection(
+                        username, websocket, sessionToken
+                    )
                     await websocketManager.msgUpdateActiveUsers()
                 case "globalChat":
                     message = data["message"]
@@ -242,14 +245,18 @@ async def websocket_endpoint(websocket: WebSocket):
                     challenger = data["challenger"]
                     challenged = data["challenged"]
                     if await websocketManager.userIsPlaying(challenged):
-                        await websocketManager.sendAlreadyPlaying(challenger, challenged)
+                        await websocketManager.sendAlreadyPlaying(
+                            challenger, challenged
+                        )
                         continue
                     await websocketManager.challengeUser(challenger, challenged)
                 case "acceptChallenge":
                     challenger = data["challenger"]
                     challenged = data["challenged"]
                     if await websocketManager.userIsPlaying(challenger):
-                        await websocketManager.sendAlreadyPlaying(challenged, challenger)
+                        await websocketManager.sendAlreadyPlaying(
+                            challenged, challenger
+                        )
                         continue
                     await websocketManager.acceptChallenge(challenger, challenged)
                 # ''' active game '''
@@ -258,9 +265,12 @@ async def websocket_endpoint(websocket: WebSocket):
                     fromPos = Pos(data["fromPos"])
                     toPos = Pos(data["toPos"])
                     await websocketManager.makeMove(gameId, fromPos, toPos)
+                case "userResign":
+                    gameId = data["gameId"]
+                    username = data["username"]
+                    await websocketManager.userResign(gameId, username)
                 case "getGameData":
                     await websocketManager.getGameData(username)
-            print("TOTAL GAMES RUNNING: ", len(websocketManager.activeGames))
 
     except Exception as e:
         await websocketManager.removeClosedSockets()

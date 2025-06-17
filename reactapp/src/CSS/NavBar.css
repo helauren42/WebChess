@@ -1,5 +1,5 @@
 #navbar {
-  position: absolute;
+  position: relative;
   width: 100%;
   background-color: var(--primary-color);
   display: flex;
@@ -58,7 +58,7 @@
 #nav-login {
   display: block;
   padding: 0.5rem;
-  font-family: 'Chewy';
+  font-family: "Chewy";
   margin-right: 1rem;
   text-align: center;
   font-size: 1.8rem;
@@ -74,5 +74,4 @@
   #nav-links {
     font-size: 1.2rem;
   }
-
 }
