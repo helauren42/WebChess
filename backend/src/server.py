@@ -19,13 +19,14 @@ from schemas import (
     VerifyEmailRequest,
 )
 from utils import HOST, ORIGIN, PORT
-from websocket import WebsocketManager
+from websocket import Connection, Matchmaker, MatchmakerConnection, WebsocketManager
 
 logging.basicConfig(filename="logs.log", encoding="utf-8", level=logging.DEBUG)
 
 app = fastapi.FastAPI()
 emailManager = EmailManager()
 websocketManager = WebsocketManager()
+matchMaker = Matchmaker()
 
 origins = [ORIGIN]
 
@@ -258,7 +259,7 @@ async def websocket_endpoint(websocket: WebSocket):
                             challenged, challenger
                         )
                         continue
-                    await websocketManager.acceptChallenge(challenger, challenged)
+                    await websocketManager.startOnlineGame(challenger, challenged)
                 # ''' active game '''
                 case "makeMove":
                     gameId = data["gameId"]
@@ -276,6 +277,32 @@ async def websocket_endpoint(websocket: WebSocket):
         await websocketManager.removeClosedSockets()
         print(f"Closed websocket {username} {sessionToken}: ", e.__str__())
 
+@app.websocket("/matchmaking")
+async def matchmaking(websocket: WebSocket):
+    sessionToken = ""
+    try:
+        await websocket.accept()
+        print("accepted new matchmaking websocket connection")
+        while True:
+            sessionToken = await websocket.receive_text()
+            print("websocket recv: ", sessionToken)
+            if sessionToken == "":
+                continue
+            username = db.fetchUsername(sessionToken)
+            if username is None:
+                print("invalid sessionToken")
+                await websocket.close()
+                raise Exception("entered wrong session token")
+            if len(matchMaker.connections) > 0:
+                opponent = matchMaker.connections[0].username
+                await websocketManager.startOnlineGame(username, opponent)
+            connection = MatchmakerConnection(sessionToken, websocket, username)
+            matchMaker.connections.append(connection)
+
+    except Exception as e:
+        print(f"Matchmaking websocket closed: ", e)
+        if sessionToken != "":
+            matchMaker.removeConnection(sessionToken)
 
 if __name__ == "__main__":
     uvicorn.run("server:app", host=HOST, port=PORT, reload=True)

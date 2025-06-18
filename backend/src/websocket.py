@@ -22,6 +22,25 @@ class Connection:
         self.websocket: WebSocket = _websocket
         self.gameId: int = _status
 
+class MatchmakerConnection:
+    def __init__(self, _sessionToken:str, _websocket:WebSocket, _username:str)-> None:
+        self.sessionToken: str = _sessionToken
+        self.username:str = _username
+        self.websocket: WebSocket = _websocket
+
+class Matchmaker:
+    def __init__(self) -> None:
+        self.connections:list[MatchmakerConnection] = []
+    def removeConnection(self, sessionToken:str):
+        for connection in self.connections:
+            if connection.sessionToken == sessionToken:
+                self.connections.remove(connection)
+                return
+    def removeConnectionUsername(self, username:str):
+        for connection in self.connections:
+            if connection.sessionToken == username:
+                self.connections.remove(connection)
+                return
 
 class AbstractWebsocketManager(ABC):
     def __init__(self):
@@ -77,8 +96,32 @@ class AbstractWebsocketManager(ABC):
         await self.sendMessage(
             msgType, data_challenged, self.connections[challenged].websocket
         )
+    async def userResign(self, gameId, username):
+        game = self.activeGames.pop(gameId)
+        # todo
+        winner = game.challenger if game.challenger != username else game.challenged
+        loser = game.challenger if game.challenger == username else game.challenged
+        db.storeGameResult(gameId, winner, loser)
+        db.removeActiveGame(gameId)
+
+    async def resignOtherGames(self, player: str):
+            toResign = []
+            for game in self.activeGames.values():
+                print("active gameId: ", game.gameId)
+                print("player: ", player)
+                print("challenger: ", game.challenger)
+                print("challenged: ", game.challenged)
+                if game.challenger == player or game.challenged == player:
+                    print("removing it!")
+                    toResign.append(game.gameId)
+                else:
+                    print("not removing this game")
+            for gameId in toResign:
+                await self.userResign(gameId=gameId, username=player)
 
     async def startOnlineGame(self, challenger: str, challenged: str):
+        await self.resignOtherGames(challenger)
+        await self.resignOtherGames(challenged)
         print(f"Starting online game {challenger} vs {challenged}")
         gameId = await self.newGameId()
         self.activeGames[gameId] = OnlineGame()
@@ -86,7 +129,6 @@ class AbstractWebsocketManager(ABC):
         game = self.activeGames[gameId]
         await self.sendGameUpdate(gameId, True)
         db.addActiveGame(game)
-
 
 class WebsocketManager(AbstractWebsocketManager):
     def __init__(self):
@@ -155,28 +197,6 @@ class WebsocketManager(AbstractWebsocketManager):
         self.connections[username] = new_connection
         print("currently online: ", await self.getActiveUsers())
 
-    async def resignOtherGames(self, player: str):
-        toResign = []
-        for game in self.activeGames.values():
-            print("active gameId: ", game.gameId)
-            print("player: ", player)
-            print("challenger: ", game.challenger)
-            print("challenged: ", game.challenged)
-            if game.challenger == player or game.challenged == player:
-                print("removing it!")
-                toResign.append(game.gameId)
-            else:
-                print("not removing this game")
-
-        for gameId in toResign:
-            await self.userResign(gameId=gameId, username=player)
-
-    async def acceptChallenge(self, challenger: str, challenged: str):
-        print(f"{challenged} accepted challenge from {challenger}")
-        await self.resignOtherGames(challenger)
-        await self.resignOtherGames(challenged)
-        await self.startOnlineGame(challenger, challenged)
-
     async def challengeUser(self, challenger: str, challenged: str):
         print(f"received challenge challenger: {challenger}, challenged: {challenged} ")
         data = json.dumps({"challenger": challenger})
@@ -222,10 +242,5 @@ class WebsocketManager(AbstractWebsocketManager):
         db.updateActiveGame(gameId, nextTurn, json.dumps(game.board.sendFormat()))
         await self.sendGameUpdate(gameId)
 
-    async def userResign(self, gameId, username):
-        game = self.activeGames.pop(gameId)
-        # todo
-        winner = game.challenger if game.challenger != username else game.challenged
-        loser = game.challenger if game.challenger == username else game.challenged
-        db.storeGameResult(gameId, winner, loser)
-        db.removeActiveGame(gameId)
+    
+
