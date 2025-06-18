@@ -13,7 +13,7 @@ export const PlayPage = () => {
   return (
     <div id="game-page-container">
       <BoardWhite gameData={null} onClickSquare={onClickSquare} />
-      <div id="right-side">
+      <div className="navbar-pseudo" id="right-side">
         <div id="select-mode">
           <div id="select-mode-title-container">
             <p className="select-mode-title">Play chess online on</p>

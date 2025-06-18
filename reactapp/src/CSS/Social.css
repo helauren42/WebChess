@@ -159,6 +159,8 @@
       rgba(0, 0, 0, 0.05) 10deg 20deg);
   z-index: 1;
   pointer-events: none;
+  border-left: 0.1rem solid var(--border-color);
+  border-right: 0.1rem solid var(--border-color);
 }
 
 #message-history-blurr {
@@ -171,8 +173,8 @@
   z-index: 12;
   top: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(12px);
 }
 
 #message-history-blurr::before {
@@ -180,7 +182,7 @@
   height: 100%;
   width: 100%;
   content: "";
-  background: linear-gradient(160deg, rgba(90, 30, 45, 0.2), transparent, rgba(50, 50, 80, 0.4));
+  background: linear-gradient(160deg, rgba(60, 30, 45, 0.2), transparent, rgba(50, 50, 80, 0.4));
 }
 
 #input-message {
@@ -230,15 +232,15 @@
 /* } */
 /**/
 #chat-message-user {
-  background-color: rgba(155, 155, 255, 0.21);
-  backdrop-filter: blur(10px);
+  background-color: rgba(55, 55, 125, 0.31);
+  backdrop-filter: blur(20px);
   right: 0%;
 }
 
 #chat-message-other {
-  background-color: rgba(215, 155, 175, 0.21);
+  background-color: rgba(105, 95, 185, 0.31);
   left: 0%;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(20px);
 }
 
 #global-message-title {
