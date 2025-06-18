@@ -130,7 +130,7 @@ const App = () => {
               <Route path="/" element={<HomePage />} />
               <Route path="/play" element={<PlayPage />} />
               <Route path="/play/online" element={<OnlineGame gameMode={GAME_MODE_ONLINE} gameData={gameData} />} />
-              <Route path="/play/matchmaking" element={<MatchMaking />} />
+              <Route path="/play/matchmaking" element={<MatchMaking sessionToken={sessionToken} />} />
               <Route path="/social" element={<SocialPage screenWidth={screenWidth} />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />

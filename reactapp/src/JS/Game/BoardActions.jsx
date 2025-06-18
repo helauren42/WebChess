@@ -19,8 +19,8 @@ export const resetSquareColor = (square) => {
   if (!square)
     return
   const elem = square.id.length <= 11 ? square : square.parentElement
-  const color = square.className.search("white") >= 0 ? "white" : "black"
-  console.log("!!!! resetSquareColor id: ", elem)
+  const color = elem.className.search("white") >= 0 ? "white" : "black"
+  console.log("resetSquareColor id: ", elem)
   if (color == "white")
     elem.style.backgroundColor = "var(--white-square)"
   else

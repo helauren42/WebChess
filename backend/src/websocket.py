@@ -120,9 +120,9 @@ class AbstractWebsocketManager(ABC):
                 await self.userResign(gameId=gameId, username=player)
 
     async def startOnlineGame(self, challenger: str, challenged: str):
+        print(f"Starting online game {challenger} vs {challenged}")
         await self.resignOtherGames(challenger)
         await self.resignOtherGames(challenged)
-        print(f"Starting online game {challenger} vs {challenged}")
         gameId = await self.newGameId()
         self.activeGames[gameId] = OnlineGame()
         self.activeGames[gameId].newGame(challenger, challenged, gameId)

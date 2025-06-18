@@ -4,12 +4,16 @@ import { useNavigate } from "react-router-dom"
 import { SOCKET_ADDRESS } from "./Const";
 import { useEffect } from "react";
 
-export const MatchMaking = () => {
+export const MatchMaking = ({ sessionToken }) => {
   const navigate = useNavigate()
   const ws = new WebSocket(`${SOCKET_ADDRESS}/matchmaking`)
   useEffect(() => {
+    ws.addEventListener("open", () => {
+      ws.send(sessionToken)
+    })
     return () => {
-      ws.close()
+      console.log("closed matchmaking WebSocket")
+      ws.close(1000, "matchmaking page closed by client")
     }
   }, [])
   return (

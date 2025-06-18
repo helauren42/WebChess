@@ -293,6 +293,7 @@ async def matchmaking(websocket: WebSocket):
                 print("invalid sessionToken")
                 await websocket.close()
                 raise Exception("entered wrong session token")
+            print("current connection matchmaking: ", len(matchMaker.connections))
             if len(matchMaker.connections) > 0:
                 opponent = matchMaker.connections[0].username
                 await websocketManager.startOnlineGame(username, opponent)
