@@ -1,9 +1,17 @@
 import "../CSS/MatchMaking.css"
 
 import { useNavigate } from "react-router-dom"
+import { SOCKET_ADDRESS } from "./Const";
+import { useEffect } from "react";
 
 export const MatchMaking = () => {
   const navigate = useNavigate()
+  const ws = new WebSocket(`${SOCKET_ADDRESS}/matchmaking`)
+  useEffect(() => {
+    return () => {
+      ws.close()
+    }
+  }, [])
   return (
     <div className="matchmaking-main">
       <div id="dialog">

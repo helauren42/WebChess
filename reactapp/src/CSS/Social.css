@@ -143,7 +143,7 @@
   content: "";
   width: 100%;
   height: 100%;
-  background: linear-gradient(315deg, rgba(190, 170, 210, 0.25), rgba(150, 80, 130, 0.3), rgba(100, 90, 160, 0.25));
+  background: linear-gradient(315deg, rgba(190, 170, 210, 0.25), rgba(130, 80, 110, 0.2), rgba(100, 90, 160, 0.25));
   z-index: 1;
   pointer-events: none;
 }
@@ -155,8 +155,8 @@
   bottom: 0;
   width: 100%;
   height: 100%;
-  background: repeating-conic-gradient(rgba(255, 255, 255, 0.05) 0deg 10deg,
-      rgba(0, 0, 0, 0.05) 10deg 20deg);
+  background: repeating-conic-gradient(rgba(255, 255, 255, 0.05) 0deg 5deg,
+      rgba(0, 0, 0, 0.05) 5deg 10deg);
   z-index: 1;
   pointer-events: none;
   border-left: 0.1rem solid var(--border-color);
@@ -174,7 +174,7 @@
   top: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(8px);
 }
 
 #message-history-blurr::before {
@@ -232,15 +232,13 @@
 /* } */
 /**/
 #chat-message-user {
-  background-color: rgba(55, 55, 125, 0.31);
-  backdrop-filter: blur(20px);
+  background-color: rgba(55, 55, 125, 0.21);
   right: 0%;
 }
 
 #chat-message-other {
-  background-color: rgba(105, 95, 185, 0.31);
+  background-color: rgba(105, 95, 185, 0.13);
   left: 0%;
-  backdrop-filter: blur(20px);
 }
 
 #global-message-title {
