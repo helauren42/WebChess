@@ -35,6 +35,7 @@ const App = () => {
   const [globalChatHistory, setGlobalChatHistory] = useState([])
   const [activeUsers, setActiveUsers] = useState([])
   const [gameData, setGameData] = useState({})
+  const [screenWidth, setScreenWidth] = useState()
   const navigate = useNavigate()
   const globalChatHistoryRef = useRef();
   globalChatHistoryRef.current = globalChatHistory;
@@ -103,6 +104,13 @@ const App = () => {
   if (persistentToken && !sessionToken)
     createSessionTokenFromPersistentToken()
   useEffect(() => {
+    const handleResize = () => {
+      setScreenWidth(window.innerWidth)
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  useEffect(() => {
     if (signedIn == false) {
       document.cookie = `sessionToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
     }
@@ -121,7 +129,7 @@ const App = () => {
               <Route path="/" element={<HomePage />} />
               <Route path="/play" element={<PlayPage />} />
               <Route path="/play/online" element={<OnlineGame gameMode={GAME_MODE_ONLINE} gameData={gameData} />} />
-              <Route path="/social" element={<SocialPage />} />
+              <Route path="/social" element={<SocialPage screenWidth={screenWidth} />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/account" element={<AccountPage />} />

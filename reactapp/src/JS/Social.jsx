@@ -76,7 +76,7 @@ const sendChallenge = (challenger, challenged) => {
     elem.onclick = (ev) => sendChallenge(challenger, challenged)
   }, 10000)
 }
-export const SocialPage = () => {
+export const SocialPage = ({ screenWidth }) => {
   const [activeUsers, setActiveUsers, globalChatHistory, setGlobalChatHistory] = useContext(SocialContext)
   const [globalInput, setGlobalInput] = useState("")
   const [accountUsername] = useContext(AccountContext)
@@ -127,7 +127,7 @@ export const SocialPage = () => {
     if (scrollToBottom)
       parent.scrollTop = parent.scrollHeight
     console.log("!!!!: ", getComputedStyle(document.querySelector("#message-history")).overflowY)
-  }, [globalChatHistory, accountUsername])
+  }, [globalChatHistory, accountUsername, screenWidth])
   useEffect(() => {
     createChatHistory(setGlobalChatHistory)
   }, [])
@@ -197,17 +197,19 @@ export const SocialPage = () => {
   }
   return (
     <div id='social-page-container' >
-      <div className="whole-width" id="global-message-container">
+      <div className="whole-width" id="global-message-page-container">
         <div id="ghost"></div>
-        <section id="global-message-section">
-          <h3 id="global-message-title" className='navbar-pseudo'>Global Chat</h3>
-          <section id="message-history">
+        <div id="center-message-section">
+          <section id="global-message-section">
+            <h3 id="global-message-title" className='navbar-pseudo'>Global Chat</h3>
+            <section id="message-history">
+            </section>
+            <input id="input-message" type="text" onInput={(e) => updateInput(e)} onKeyDown={(e) => {
+              if (e.key == 'Enter') onSubmit(e)
+            }
+            }></input>
           </section>
-          <input id="input-message" type="text" onInput={(e) => updateInput(e)} onKeyDown={(e) => {
-            if (e.key == 'Enter') onSubmit(e)
-          }
-          }></input>
-        </section>
+        </div>
         <section id='active-users-container' className="light-reflection">
           <div id="active-users-title-container" className="navbar-pseudo">
             <h1 id='active-users-title' >Active Users</h1>
