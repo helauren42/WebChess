@@ -1,0 +1,45 @@
+.matchmaking-main {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  place-items: center;
+}
+
+#dialog {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 1rem;
+}
+
+#dialog-text {
+  font-size: 2.5rem;
+}
+
+.loader {
+  width: 40px;
+  height: 40px;
+  border: 4px dashed var(--navbar-text-color);
+  border-top: 4px dotted var(--black-square);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+#dialog-btn {
+  border-radius: 2rem;
+  padding: 1rem;
+  font-size: 1.2rem;
+  margin-top: 2rem;
+}

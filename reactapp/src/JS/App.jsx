@@ -15,6 +15,7 @@ import { SOCKET_ADDRESS } from './Const.jsx';
 import { WebSocketManager } from './WebSocket.jsx'
 import { AlertBox, displayAlertBox, DialogServerConnectionError, DialogWebsocketDisconnectionError, DialogGameInvitation, displayDialogServerConnectionError } from './Dialogs.jsx';
 import { GAME_MODE_HOTSEAT, GAME_MODE_ONLINE } from './Game/Game.jsx';
+import { MatchMaking } from './MatchMaking';
 
 export const AppContext = createContext()
 export const AccountContext = createContext()
@@ -129,6 +130,7 @@ const App = () => {
               <Route path="/" element={<HomePage />} />
               <Route path="/play" element={<PlayPage />} />
               <Route path="/play/online" element={<OnlineGame gameMode={GAME_MODE_ONLINE} gameData={gameData} />} />
+              <Route path="/play/matchmaking" element={<MatchMaking />} />
               <Route path="/social" element={<SocialPage screenWidth={screenWidth} />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />

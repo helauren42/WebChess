@@ -1,11 +1,13 @@
 import { useState, useEffect, useContext } from 'react';
 import { WS } from '../WebSocket.jsx'
 import { displayDialogServerConnectionError } from '../Dialogs.jsx'
+import { useNavigate } from 'react-router-dom'
 import '../../CSS/Play.css'
 import { BoardWhite } from './BoardWhite.jsx'
 
 export const PlayPage = () => {
   const [playerColor, setPlayerColor] = useState("white")
+  const navigate = useNavigate()
   const onClickSquare = () => {
     console.log("empty on click square")
     return
@@ -22,12 +24,15 @@ export const PlayPage = () => {
           <div className="ghost"><p></p></div>
           <div id="play-buttons-container">
             <button className="rs-buttons" id="button-play-hotseat">Play Hotseat</button>
-            <button className="rs-buttons" id="button-play-online" onSubmit={(e) => { }}>Play Online</button>
+            <button className="rs-buttons" id="button-play-online" onClick={(e) => {
+              console.log("clicked play online");
+              navigate("/play/matchmaking")
+            }}>Play Online</button>
           </div>
           <div className="ghost"><p></p></div>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 
