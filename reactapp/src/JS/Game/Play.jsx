@@ -23,7 +23,7 @@ export const PlayPage = () => {
           </div>
           <div className="ghost"><p></p></div>
           <div id="play-buttons-container">
-            <button className="rs-buttons" id="button-play-hotseat">Play Hotseat</button>
+            {/* <button className="rs-buttons" id="button-play-hotseat">Play Hotseat</button> */}
             <button className="rs-buttons" id="button-play-online" onClick={(e) => {
               console.log("clicked play online");
               navigate("/play/matchmaking")

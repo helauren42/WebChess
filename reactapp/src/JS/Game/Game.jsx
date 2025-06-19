@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { BoardWhite } from './BoardWhite.jsx'
 import { BoardBlack } from './BoardBlack.jsx'
 import { resetSquareColor, getPos, changeSquareColor } from './BoardActions.jsx';
-import { WS } from '../App.jsx';
+import { AccountContext, WS } from '../App.jsx';
 
 import { SOCKET_ADDRESS } from '../Const.jsx';
 import { WebSocketManager } from '../WebSocket.jsx';
@@ -13,9 +13,11 @@ export const GAME_MODE_HOTSEAT = 1
 const WHITE_PIECES = ["rw", "nw", "bw", "qw", "kw", "pw"]
 const BLACK_PIECES = ["rb", "nb", "bb", "qb", "kb", "pb"]
 
-export const OnlineGame = ({ gameMode, gameData }) => {
+export const OnlineGame = ({ accountUsername, gameMode, gameData }) => {
   console.log("OnlineGame")
   const [playerColor, setPlayerColor] = useState("")
+  const [opponentName, setOpponentName] = useState("")
+  const [opponentColor, setOpponentColor] = useState("")
   const [selectedSquare, setSelectedSquare] = useState(null)
   const navigate = useNavigate()
   const onSelectedSquareChange = (() => {
@@ -67,11 +69,27 @@ export const OnlineGame = ({ gameMode, gameData }) => {
   useEffect(() => {
     console.log(gameData)
     setPlayerColor(gameData["playerColor"])
+    const challenger = gameData["challenger"]
+    const challenged = gameData["challenged"]
+    setOpponentName(accountUsername == challenger ? challenged : challenger)
+    console.log(gameData["playerColor"])
+    console.log("!!! opponent color turns out to be: ", gameData["playerColor"] == "white" ? "black" : "white")
+    setOpponentColor(gameData["playerColor"] == "white" ? "black" : "white")
   }, [gameData])
   return (
     <div id="game-page-container">
       {playerColor == "white" ? <BoardWhite gameData={gameData} onClickSquare={onClickSquare} /> : <BoardBlack gameData={gameData} onClickSquare={onClickSquare} />}
-      <div id="right-side">
+      <div className="navbar-pseudo players-right" id="right-side">
+        <div id="players-container">
+          <div className='player-data' id="user-data">
+            <h2 className='player-name'>{accountUsername}</h2>
+            <p className='player-color'>{playerColor}</p>
+          </div>
+          <div className='player-data' id="opponent-data">
+            <h2 className='player-name'>{opponentName}</h2>
+            <p className='player-color'>{opponentColor}</p>
+          </div>
+        </div>
         <button className='rs-buttons' id="resign" onClick={() => userResign()}>resign</button>
       </div>
     </div >

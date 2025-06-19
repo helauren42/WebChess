@@ -227,10 +227,6 @@
   margin-left: 3%;
 }
 
-/* .chat-message-paragraph::before { */
-/*   background: radial-gradient(); */
-/* } */
-/**/
 #chat-message-user {
   background-color: rgba(55, 55, 125, 0.21);
   right: 0%;

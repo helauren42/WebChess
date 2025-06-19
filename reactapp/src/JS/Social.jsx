@@ -162,7 +162,7 @@ export const SocialPage = ({ screenWidth }) => {
         const challengeIcon = document.createElement("span")
         challengeIcon.textContent = '🆚';
         challengeIcon.className = "challenge-icon"
-        challengeIcon.id = `challenge - icon - ${username} `
+        challengeIcon.id = `challenge-icon-${username}`
         console.log("!!!!!!!!!! challengeIcon id: ", challengeIcon.id)
         challengeIcon.title = "challenge user"
         const messageIcon = document.createElement("span")
