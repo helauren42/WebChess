@@ -43,19 +43,17 @@ class AbstractBoard(ABC):
         return board
 
     async def getPiece(self, x:int, y:int)->Piecenum:
-        print("get piece x: ", x)
-        print("get piece y: ", y)
         piece = self.board[y][x].piece
         print("got piece: ", piece)
         return piece
 
     async def emptyPos(self, pos:Pos):
-        self.board[pos.y][pos.x].piece = Piecenum.EMPTY
+        self.board[pos.y][pos.x].changePiece(Piecenum.EMPTY)
 
     async def assignPos(self, pos:Pos, piece:Piecenum):
-        print(f"pre assign pos x: {pos.x}, y: {pos.y}: ", self.board[pos.y][pos.x].piece)
+        print(f"!!!!pre assign pos x: {pos.x}, y: {pos.y}: ", self.board[pos.y][pos.x])
         self.board[pos.y][pos.x].changePiece(piece)
-        print(f"post assign pos x: {pos.x}, y: {pos.y}: ", self.board[pos.y][pos.x].piece)
+        print(f"post assign pos x: {pos.x}, y: {pos.y}: ", self.board[pos.y][pos.x])
 
 class Board(AbstractBoard):
     def __init__(self, boardStr:Optional[str]=None) -> None:
@@ -94,7 +92,9 @@ class Board(AbstractBoard):
     async def canMove(self, fromPos:Pos, toPos:Pos, pieceNum:Piecenum, destPiece:Piecenum, board:list[list[Cell]]):
         cellFrom = Cell(fromPos.x, fromPos.y, pieceNum)
         print("making move with piece: ", pieceNum.value)
+        print("to dest piece: ", destPiece.name)
         pieceFrom:AbstractPiece = await createPiece(pieceNum, cellFrom)
+        print("created piece from: ", pieceFrom.type)
         return await pieceFrom.canMove(toPos, destPiece, board)
     async def makeMove(self, fromPos:Pos, toPos:Pos, pieceNum):
         await self.emptyPos(fromPos)

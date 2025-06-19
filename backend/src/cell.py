@@ -51,12 +51,16 @@ class Cell:
         return f"Cell {self.x}:{self.y} Piece: {str(self.piece.value)}, color: {self.color}"
 
     def changePiece(self, _piece: Piecenum):
+        print("!!!!!!! change piece: ", self.piece)
+        print(self.__str__())
         self.piece: Piecenum = _piece
         self.color = (
             EMPTY
             if self.piece.value == ""
             else WHITE if self.piece.value[0] == "w" else BLACK
         )
+        print("!!!!!!! post piece: ", self.piece)
+        print(self.__str__())
 
     def getPos(self) -> Pos:
         return Pos({"x": self.x, "y": self.y})

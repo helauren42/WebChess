@@ -9,8 +9,6 @@ class AbstractPiece(ABC):
         super().__init__()
         self.cell = _cell
         self.currPos = self.cell.getPos()
-        print("!!!!!!!!!! setting self color: ", self.cell.color)
-        print(self.currPos)
         self.color = self.cell.color
         self.type = self.cell.piece.value
         self.validNormalAbsolutVectors: list[tuple] = []
@@ -73,7 +71,9 @@ class AbstractPiece(ABC):
 
     async def canMove(self, destPos:Pos, destPiece:Piecenum, board:list[list[Cell]]) -> bool:
         print("can move received destPos: ", destPos)
-        if await self.validDestPiece(board[destPos.y][destPos.x]) == False:
+        destCell = board[destPos.y][destPos.x]
+        print("destCell: ", destCell)
+        if await self.validDestPiece(destCell) == False:
             print("Dest piece is incompatible")
             return False
         if await self.validVectorMove(destPos) == False:

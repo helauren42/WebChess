@@ -19,9 +19,9 @@ from schemas import (
     VerifyEmailRequest,
 )
 from utils import HOST, ORIGIN, PORT
-from websocket import Connection, Matchmaker, MatchmakerConnection, WebsocketManager
+from websocket import Matchmaker, MatchmakerConnection, WebsocketManager
 
-logging.basicConfig(filename="logs.log", encoding="utf-8", level=logging.DEBUG)
+logging.basicConfig(filename="logs.log", level=logging.DEBUG)
 
 app = fastapi.FastAPI()
 emailManager = EmailManager()
