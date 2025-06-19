@@ -1,3 +1,4 @@
+from utils import logger
 from abc import ABC
 from enum import Enum
 from typing import Optional
@@ -24,7 +25,7 @@ class ValidateMove:
         self.newBoard: list[list[Cell]] = _newBoard
         self.playerColor: str = _playerColor
         self.opponentColor: str = BLACK if _playerColor == WHITE else WHITE
-        self.kingPos:Pos = await self.getKingPos()
+        self.kingPos: Pos = await self.getKingPos()
         self.playerInCheck: bool = await self.isPlayerInCheck()
         self.opponentIsCheckMate: bool = False
         self.opponentIsImmobilized: bool = False
@@ -41,16 +42,16 @@ class ValidateMove:
         return Pos({"x": 0, "y": 0})
 
     async def isPlayerInCheck(self):
-        print("isPlayerInCheck()")
+        logger.info("isPlayerInCheck()")
         for y in range(8):
             for x in range(8):
                 cell: Cell = self.newBoard[y][x]
                 if cell.color == self.opponentColor:
-                    piece:AbstractPiece = await createPiece(cell.piece, cell)
-                    print(self.kingPos)
-                    print("type: ", type(self.kingPos))
+                    piece: AbstractPiece = await createPiece(cell.piece, cell)
+                    logger.info(f"kingPos: {self.kingPos}")
+                    logger.info(f"type(kingPos): {type(self.kingPos)}")
                     if await piece.canMove(self.kingPos, STR_TO_PIECES["wk"], self.oldBoard):
-                        print(f"player is being checked by {piece.type} {piece.cell}")
+                        logger.info(f"player is being checked by {piece.type} {piece.cell}")
                         return True
-        print("player is not checked, player is free to move")
+        logger.info("player is not checked, player is free to move")
         return False

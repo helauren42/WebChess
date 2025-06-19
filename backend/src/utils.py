@@ -1,4 +1,39 @@
+import logging
+import os
+
 HOST = "127.0.0.1"
 PORT = 6453
 ORIGIN = "http://localhost:3000"
 
+def setup_logging():
+    log_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "logs"))
+    os.makedirs(log_dir, exist_ok=True)
+    log_file = os.path.join(log_dir, "app.log")
+
+    logger = logging.getLogger("chess_app")
+    logger.setLevel(logging.DEBUG)
+    logger.propagate = False  
+
+    logger.handlers.clear()
+
+    file_handler = logging.FileHandler(log_file, mode='a')
+    file_handler.setLevel(logging.DEBUG)
+    file_formatter = logging.Formatter(
+        "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+    )
+    file_handler.setFormatter(file_formatter)
+
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.DEBUG)
+    console_formatter = logging.Formatter(
+        "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+    )
+    console_handler.setFormatter(console_formatter)
+
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
+
+    logger.info("Logging initialized for chess_app")
+    return logger
+
+logger = setup_logging()

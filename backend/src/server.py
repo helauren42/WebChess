@@ -1,4 +1,3 @@
-import logging
 from uuid import uuid4
 
 import fastapi
@@ -18,10 +17,9 @@ from schemas import (
     VerifyCodeRequest,
     VerifyEmailRequest,
 )
-from utils import HOST, ORIGIN, PORT
+from utils import HOST, ORIGIN, PORT, logger
 from websocket import Matchmaker, MatchmakerConnection, WebsocketManager
 
-logging.basicConfig(filename="logs.log", level=logging.DEBUG)
 
 app = fastapi.FastAPI()
 emailManager = EmailManager()
@@ -52,13 +50,13 @@ async def validatePersistentToken(persistentToken: str):
 @app.post("/addSessionToken")
 async def addSessionToken(req: BothTokens):
     try:
-        print("req sessionToken: ", req.sessionToken)
+        logger.info(f"req sessionToken: {req.sessionToken}")
         username = db.fetchUsername(req.persistentToken)
         db.addSessionToken(username, req.sessionToken)
     except Exception as e:
-        print("add session token error: ", e.__str__())
+        logger.error(f"add session token error: {e}")
         return fastapi.responses.JSONResponse(
-            status_code=500, content={"message": e.__str__()}
+            status_code=500, content={"message": str(e)}
         )
     return fastapi.responses.JSONResponse(content={})
 
@@ -69,8 +67,9 @@ async def getPersistentToken(req: SessionToken):
         username = db.fetchUsername(req.sessionToken)
         db.addPersistenceToken()
     except Exception as e:
+        logger.error(f"get persistent token error: {e}")
         return fastapi.responses.JSONResponse(
-            status_code=500, content={"message": e.__str__()}
+            status_code=500, content={"message": str(e)}
         )
     if username == None:
         return fastapi.responses.JSONResponse(status_code=401, content={})
@@ -82,11 +81,9 @@ async def getPersistentToken(req: SessionToken):
 
 @app.post("/fetchUsername")
 async def fetchUsername(req: Token):
-    print(req)
-    token = req.token
-    print("fetchUsername request: ", token)
-    username = db.fetchUsername(token)
-    print("found username: ", username)
+    logger.info(f"fetchUsername request: {req.token}")
+    username = db.fetchUsername(req.token)
+    logger.info(f"found username: {username}")
     if username == None:
         return fastapi.responses.JSONResponse(status_code=401, content={})
     return fastapi.responses.JSONResponse(
@@ -96,13 +93,14 @@ async def fetchUsername(req: Token):
 
 @app.post("/validateForm")
 async def validateForm(req: SignupRequest):
-    print("validateForm request received")
-    print(req)
+    logger.info("validateForm request received")
+    logger.debug(f"validateForm request: {req}")
     try:
         db.validateSignupForm(req)
     except Exception as e:
         status_code = e.args[0]
         message = e.args[1]
+        logger.error(f"validateForm error: {message}")
         return fastapi.responses.JSONResponse(
             status_code=status_code, content={"message": message}
         )
@@ -111,14 +109,14 @@ async def validateForm(req: SignupRequest):
 
 @app.post("/sendVerificationEmail")
 async def sendVerificationEmail(req: VerifyEmailRequest):
-    print("sendVerificationEmail request received")
+    logger.info("sendVerificationEmail request received")
     code = emailManager.sendVerificationEmail(req.username, req.email)
     db.insertValidationCode(req.email, code)
 
 
 @app.post("/validateCode")
 async def validateCode(req: VerifyCodeRequest):
-    print("validateCode request received")
+    logger.info("validateCode request received")
     if db.validateCode(req.email, req.code):
         return fastapi.responses.JSONResponse(
             status_code=200, content={"message": "code is valid"}
@@ -130,12 +128,13 @@ async def validateCode(req: VerifyCodeRequest):
 
 @app.post("/createAccount")
 async def createAccount(req: SignupRequest):
-    print("createAccount request received")
+    logger.info("createAccount request received")
     try:
         db.createAccount(req)
         sessionToken = str(uuid4())
         db.addSessionToken(req.username, sessionToken)
     except Exception as e:
+        logger.error(f"createAccount error: {e}")
         if len(e.args) >= 2:
             status_code = e.args[0]
             message = e.args[1]
@@ -144,7 +143,7 @@ async def createAccount(req: SignupRequest):
             )
         else:
             return fastapi.responses.JSONResponse(
-                status_code=500, content={"message": e.__str__()}
+                status_code=500, content={"message": str(e)}
             )
     return fastapi.responses.JSONResponse(
         status_code=200,
@@ -154,11 +153,11 @@ async def createAccount(req: SignupRequest):
 
 @app.post("/login")
 async def login(req: LoginRequest):
-    print(f"login request received username: {req.username}")
+    logger.info(f"login request received username: {req.username}")
     try:
         db.loginUser(req)
         sessionToken = str(uuid4())
-        print("sessionToken: ", sessionToken)
+        logger.info(f"sessionToken: {sessionToken}")
         db.addSessionToken(req.username, sessionToken)
         persistentToken = ""
         if req.stayLoggedIn:
@@ -173,7 +172,8 @@ async def login(req: LoginRequest):
                 "persistentToken": persistentToken,
             },
         )
-    except:
+    except Exception as e:
+        logger.error(f"login error: {e}")
         return fastapi.responses.JSONResponse(
             status_code=401, content={"message": "wrong credentials"}
         )
@@ -185,13 +185,14 @@ async def login(req: LoginRequest):
 @app.get("/getGlobalChatHistory")
 async def getGlobalChatHistory(req: fastapi.Request):
     try:
-        print("request to getGlobalChatHistory")
+        logger.info("request to getGlobalChatHistory")
         return fastapi.responses.JSONResponse(
             content={"history": db.getGlobalChatHistory()}
         )
     except Exception as e:
+        logger.error(f"getGlobalChatHistory error: {e}")
         return fastapi.responses.JSONResponse(
-            status_code=500, content={"message": e.__str__()}
+            status_code=500, content={"message": str(e)}
         )
 
 
@@ -204,32 +205,31 @@ async def websocket_endpoint(websocket: WebSocket):
     sessionToken = ""
     try:
         await websocket.accept()
-        print("accepted new websocket connection")
+        logger.info("accepted new websocket connection")
         while True:
-            # User logging in, new active connection
+            # User logger.in, new active connection
             if len(websocketManager.activeGames) == 0:
                 await websocketManager.fetchActiveGames()
-                print(
-                    "!!! fetched active games amount: ",
-                    len(websocketManager.activeGames),
+                logger.info(
+                    f"fetched active games amount: {len(websocketManager.activeGames)}"
                 )
                 await websocketManager.printActiveGames()
             recv = await websocket.receive_json()
-            print("websocket recv: ", recv)
+            logger.debug(f"websocket recv: {recv}")
             if recv == "":
                 continue
             # make sure session token is valid
             sessionToken = recv["sessionToken"]
             username = db.fetchUsername(sessionToken)
             if username is None:
-                print("invalid sessionToken")
+                logger.error("invalid sessionToken")
                 await websocket.close()
                 raise Exception("entered wrong session token")
             # handling different websocket requests
             recvType = recv["type"]
-            print("websocket message type: ", recvType)
+            logger.info(f"websocket message type: {recvType}")
             data = recv["data"]
-            print("data: ", data)
+            logger.debug(f"data: {data}")
             match recvType:
                 case "newConnection":
                     await websocketManager.newConnection(
@@ -275,25 +275,26 @@ async def websocket_endpoint(websocket: WebSocket):
 
     except Exception as e:
         await websocketManager.removeClosedSockets()
-        print(f"Closed websocket {username} {sessionToken}: ", e.__str__())
+        logger.error(f"Closed websocket {username} {sessionToken}: {e}")
+
 
 @app.websocket("/matchmaking")
 async def matchmaking(websocket: WebSocket):
     sessionToken = ""
     try:
         await websocket.accept()
-        print("accepted new matchmaking websocket connection")
+        logger.info("accepted new matchmaking websocket connection")
         while True:
             sessionToken = await websocket.receive_text()
-            print("websocket recv: ", sessionToken)
+            logger.debug(f"websocket recv: {sessionToken}")
             if sessionToken == "":
                 continue
             username = db.fetchUsername(sessionToken)
             if username is None:
-                print("invalid sessionToken")
+                logger.error("invalid sessionToken")
                 await websocket.close()
                 raise Exception("entered wrong session token")
-            print("current connection matchmaking: ", len(matchMaker.connections))
+            logger.info(f"current connection matchmaking: {len(matchMaker.connections)}")
             if len(matchMaker.connections) > 0:
                 opponent = matchMaker.connections[0].username
                 await websocketManager.startOnlineGame(username, opponent)
@@ -301,7 +302,7 @@ async def matchmaking(websocket: WebSocket):
             matchMaker.connections.append(connection)
 
     except Exception as e:
-        print(f"Matchmaking websocket closed: ", e)
+        logger.error(f"Matchmaking websocket closed: {e}")
         if sessionToken != "":
             matchMaker.removeConnection(sessionToken)
 

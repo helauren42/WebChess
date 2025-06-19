@@ -1,3 +1,4 @@
+from utils import logger
 from abc import ABC, abstractmethod
 from typing import Any
 from cell import Cell, Pos
@@ -21,9 +22,9 @@ class AbstractPiece(ABC):
         xSign = 1 if moveVector.x >= 0 else -1
         ySign = 1 if moveVector.y >= 0 else -1
         self.vectorMove = moveVector
-        print("moveVector: ", moveVector)
-        print("validDirectionVectors", self.validDirectionVectors)
-        print("validNormalAbsoluteVectors", self.validNormalAbsolutVectors)
+        logger.info(f"moveVector: {moveVector}")
+        logger.info(f"validDirectionVectors: {self.validDirectionVectors}")
+        logger.info(f"validNormalAbsoluteVectors: {self.validNormalAbsolutVectors}")
         for vector in self.validDirectionVectors:
             if moveVector.isEqual(vector[0], vector[1]):
                 self.utilizedVector = Pos({"x": vector[0], "y": vector[1]})
@@ -36,51 +37,51 @@ class AbstractPiece(ABC):
         ):
             return False
         moveVector.normalizeAndAbs()
-        print("moveVectorNormAbs: ", moveVector)
+        logger.info(f"moveVectorNormAbs: {moveVector}")
         for vector in self.validNormalAbsolutVectors:
             if moveVector.isEqual(vector[0], vector[1]):
                 self.utilizedVector = Pos({"x": xSign * vector[0], "y": ySign * vector[1]})
                 return True
-        print("no vector match found")
+        logger.info(f"no vector match found")
         return False
 
     async def canTravel(self, destPos:Pos, destPiece:Piecenum, board:list[list[Cell]]) -> bool:
         if self.utilizedVector == None:
             return False
         pos:Pos = self.currPos
-        print("utilizedVector: ", self.utilizedVector)
+        logger.info(f"utilizedVector: {self.utilizedVector}")
         while True:
             pos = pos + self.utilizedVector
             if pos.isEqual(destPos.x, destPos.y):
                 break
-            print("board[destPos.y][destPos.x].piece.name: ", board[pos.y][pos.x].piece.name)
+            logger.info(f"board[destPos.y][destPos.x].piece.name: {board[pos.y][pos.x].piece.name}")
             if board[pos.y][pos.x].piece.name != "EMPTY":
                 return False
         return True
 
     async def validDestPiece(self, destCell:Cell) -> bool:
-        print("destination cell color: ", destCell.color)
-        print("self cell color: ", self.color)
-        print(self.color == "white")
-        print(destCell.color == "white")
+        logger.info(f"destination cell color: {destCell.color}")
+        logger.info(f"self cell color: {self.color}")
+        logger.info(f"{self.color == 'white'}")
+        logger.info(f"{destCell.color == 'white'}")
         if self.color == destCell.color:
-            print("ret false")
+            logger.info(f"ret false")
             return False
-        print("ret true")
+        logger.info(f"ret true")
         return True
 
     async def canMove(self, destPos:Pos, destPiece:Piecenum, board:list[list[Cell]]) -> bool:
-        print("can move received destPos: ", destPos)
+        logger.info(f"can move received destPos: {destPos}")
         destCell = board[destPos.y][destPos.x]
-        print("destCell: ", destCell)
+        logger.info(f"destCell: {destCell}")
         if await self.validDestPiece(destCell) == False:
-            print("Dest piece is incompatible")
+            logger.info(f"Dest piece is incompatible")
             return False
         if await self.validVectorMove(destPos) == False:
-            print("move is not a valid vector")
+            logger.info(f"move is not a valid vector")
             return False
         if await self.canTravel(destPos, destPiece, board) == False:
-            print("can not travel")
+            logger.info(f"can not travel")
             return False
         return True
 
@@ -104,7 +105,7 @@ class Pawn(AbstractPiece):
             self.validDirectionVectors = [(0, -1), (-1,-1), (1,-1)]
 
     async def canTravel(self, destPos:Pos, destPiece:Piecenum, board:list[list[Cell]]) -> bool:
-        print("dest piece name: ", destPiece.name)
+        logger.info(f"dest piece name: {destPiece.name}")
         if self.vectorMove != None and self.vectorMove.x and self.vectorMove.y and destPiece.name != "EMPTY":
             return True
         elif self.vectorMove != None and self.vectorMove.x == 0 and destPiece.name == "EMPTY":

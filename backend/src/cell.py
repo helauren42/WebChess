@@ -1,3 +1,4 @@
+from utils import logger
 from const import BLACK, EMPTY, WHITE, Piecenum
 
 
@@ -22,8 +23,6 @@ class Pos:
         return Pos({"x": rhs.x - self.x, "y": rhs.y - self.y})
 
     def normalizeAndAbs(self) -> None:
-        print("start Hey!: ", self.x)
-        print("start Hey!: ", self.y)
         absX = abs(self.x)
         absY = abs(self.y)
         divide = absX if absX > absY else absY
@@ -33,8 +32,6 @@ class Pos:
             self.x //= divide
         if self.y:
             self.y //= divide
-        print("Hey!: ", self.x)
-        print("Hey!: ", self.y)
 
 class Cell:
     def __init__(self, posX: int, posY: int, _piece: Piecenum) -> None:
@@ -51,16 +48,14 @@ class Cell:
         return f"Cell {self.x}:{self.y} Piece: {str(self.piece.value)}, color: {self.color}"
 
     def changePiece(self, _piece: Piecenum):
-        print("!!!!!!! change piece: ", self.piece)
-        print(self.__str__())
+        logger.info(f"change piece: {self.__str__()}")
         self.piece: Piecenum = _piece
         self.color = (
             EMPTY
             if self.piece.value == ""
             else WHITE if self.piece.value[0] == "w" else BLACK
         )
-        print("!!!!!!! post piece: ", self.piece)
-        print(self.__str__())
+        logger.info(f"post piece: {self.__str__()}")
 
     def getPos(self) -> Pos:
         return Pos({"x": self.x, "y": self.y})

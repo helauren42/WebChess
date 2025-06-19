@@ -1,4 +1,5 @@
 import json
+from utils import logger
 import random
 
 from board import Board
@@ -34,7 +35,7 @@ class OnlineGame:
         self.playerTurn: str = _playerTurn
         self.capturedWhitePieces: list[str] = _capturedWhitePieces
         self.capturedBlackPieces: list[str] = _capturedBlackPieces
-        print("ParseGame board_str: ", _boardStr)
+        logger.info(f"ParseGame board_str: {_boardStr}")
         self.board: Board = Board(_boardStr)
         self.finished: bool = False
 

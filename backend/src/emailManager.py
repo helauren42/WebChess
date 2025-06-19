@@ -1,4 +1,3 @@
-import logging
 from email.mime.text import MIMEText
 import random
 import smtplib

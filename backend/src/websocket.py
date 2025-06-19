@@ -1,6 +1,7 @@
 import json
 import random
 import time
+from utils import logger
 from abc import ABC
 from typing import Optional
 
@@ -55,7 +56,7 @@ class AbstractWebsocketManager(ABC):
     async def printActiveGames(self):
         ret = []
         for game in self.activeGames.values():
-            print(str(game))
+            logger.info(f"{str(game)}")
 
     async def newGameId(self):
         gameId = None
@@ -71,20 +72,20 @@ class AbstractWebsocketManager(ABC):
 
     async def userIsPlaying(self, username) -> bool:
         if self.connections[username].gameId:
-            print("is in game")
+            logger.info(f"is in game")
             return True
-        print("is not in game")
+        logger.info(f"is not in game")
         return False
 
     async def getActiveUsers(self):
         return self.connections.keys()
 
     async def sendMessage(self, type: str, data: str, websocket: WebSocket):
-        print(f"sending message type: {type}\ndata: {data}")
+        logger.info(f"sending message type: {type}\ndata: {data}")
         await websocket.send_json(data={"type": type, "data": data})
 
     async def sendGameUpdate(self, gameId, first=False):
-        print("sendGameUpdate()")
+        logger.info(f"sendGameUpdate()")
         msgType = "startOnlineGame" if first else "gameUpdate"
         challenger = self.activeGames[gameId].challenger
         challenged = self.activeGames[gameId].challenged
@@ -96,12 +97,6 @@ class AbstractWebsocketManager(ABC):
         await self.sendMessage(
             msgType, data_challenged, self.connections[challenged].websocket
         )
-    
-        
-
-    
-
-    
 
 class WebsocketManager(AbstractWebsocketManager):
     def __init__(self):
@@ -109,7 +104,7 @@ class WebsocketManager(AbstractWebsocketManager):
 
     # connection 
     async def disconnect(self, username: str):
-        print("websocket disconnecting: ", username)
+        logger.info(f"websocket disconnecting: {username}")
         if (
             self.connections[username].websocket.client_state
             != WebSocketState.DISCONNECTED
@@ -117,14 +112,14 @@ class WebsocketManager(AbstractWebsocketManager):
             await self.connections[username].websocket.close()
         self.connections.pop(username)
         await self.msgUpdateActiveUsers()
-        print("currently online: ", self.connections)
+        logger.info(f"currently online: {self.connections}")
 
     async def removeClosedSockets(self):
         toRemove = []
         for username in self.connections.keys():
             websocket = self.connections[username].websocket
-            print("client: ", websocket.client)
-            print("client state: ", websocket.client_state)
+            logger.info(f"client: {websocket.client}")
+            logger.info(f"client state: {websocket.client_state}")
             if websocket.client_state == WebSocketState.DISCONNECTED:
                 toRemove.append(username)
         for username in toRemove:
@@ -134,16 +129,16 @@ class WebsocketManager(AbstractWebsocketManager):
     async def newConnection(
         self, username: str, websocket: WebSocket, sessionToken: str
     ):
-        print("accepted new connection: ", username)
+        logger.info(f"accepted new connection: {username}")
         if (
             self.connections.get(username) != None
             and self.connections[username].sessionToken != sessionToken
         ):
-            print(f"{username} is already connected disconnecting previous session")
+            logger.info(f"{username} is already connected disconnecting previous session")
             await self.disconnect(username)
         new_connection: Connection = Connection(sessionToken, websocket)
         self.connections[username] = new_connection
-        print("currently online: ", await self.getActiveUsers())
+        logger.info(f"currently online: {await self.getActiveUsers()}")
 
     # messages
     async def msgUpdateActiveUsers(self):
@@ -174,23 +169,23 @@ class WebsocketManager(AbstractWebsocketManager):
 
     # game invitation
     async def sendAlreadyPlaying(self, receptionnist: str, alreadyPlayingPlayer: str):
-        print("sending alreadyPlaying")
+        logger.info(f"sending alreadyPlaying")
         data = json.dumps({"alreadyPlayingPlayer": alreadyPlayingPlayer})
         await self.sendMessage(
             "alreadyPlaying", data, self.connections[receptionnist].websocket
         )
 
     async def challengeUser(self, challenger: str, challenged: str):
-        print(f"received challenge challenger: {challenger}, challenged: {challenged} ")
+        logger.info(f"received challenge challenger: {challenger}, challenged: {challenged}")
         data = json.dumps({"challenger": challenger})
         websocket = self.connections[challenged].websocket
         await self.sendMessage("challengeUser", data, websocket)
 
     # game
     async def getGameData(self, player: str):
-        print("getGameData: ", player)
+        logger.info(f"getGameData: {player}")
         gameId = await self.getGameId(player)
-        print("gameId: ", gameId)
+        logger.info(f"gameId: {gameId}")
         if gameId == None:
             return
         data = await self.activeGames[gameId].getData(player)
@@ -198,22 +193,22 @@ class WebsocketManager(AbstractWebsocketManager):
 
     async def makeMove(self, gameId: int, fromPos: Pos, toPos: Pos):
         game = self.activeGames[gameId]
-        print("makeMove()")
+        logger.info(f"makeMove()")
         # validate move
         oldBoard: list[list[Cell]] = game.board.board
         pieceNum = await game.board.getPiece(fromPos.x, fromPos.y)
         destPiece = await game.board.getPiece(toPos.x, toPos.y)
-        print("!!!!!!!!!! pre can move")
+        logger.info(f"pre can move")
         if await game.board.canMove(fromPos, toPos, pieceNum, destPiece, oldBoard) == False:
-            print("move is not valid for piece")
+            logger.info(f"move is not valid for piece")
             return
         await game.board.makeMove(fromPos, toPos, pieceNum) 
         newBoard: list[list[Cell]] = game.board.board
         await VALIDATE_MOVE.test(oldBoard, newBoard, game.playerTurn)
         if not VALIDATE_MOVE.valid:
-            print("move not valid, new board state invalid")
+            logger.info(f"move not valid, new board state invalid")
             return
-        print("move done: ", await game.getData(game.challenged))
+        logger.info(f"move done: {await game.getData(game.challenged)}")
         nextTurn = "black" if game.playerTurn == "white" else "white"
         game.playerTurn = nextTurn
         db.updateActiveGame(gameId, nextTurn, json.dumps(game.board.sendFormat()))
@@ -230,19 +225,16 @@ class WebsocketManager(AbstractWebsocketManager):
     async def resignOtherGames(self, player: str):
             toResign = []
             for game in self.activeGames.values():
-                print("active gameId: ", game.gameId)
-                print("player: ", player)
-                print("challenger: ", game.challenger)
-                print("challenged: ", game.challenged)
+                logger.info(f"active gameId: {game.gameId}, challenger: {game.challenger}, challenged: {game.challenged}")
                 if game.challenger == player or game.challenged == player:
-                    print("removing it!")
+                    logger.info(f"removing it!")
                     toResign.append(game.gameId)
                 else:
-                    print("not removing this game")
+                    logger.info(f"not removing this game")
             for gameId in toResign:
                 await self.userResign(gameId=gameId, username=player)
     async def startOnlineGame(self, challenger: str, challenged: str):
-        print(f"Starting online game {challenger} vs {challenged}")
+        logger.info(f"Starting online game {challenger} vs {challenged}")
         await self.resignOtherGames(challenger)
         await self.resignOtherGames(challenged)
         gameId = await self.newGameId()

@@ -1,5 +1,5 @@
 from datetime import datetime
-import logging
+from utils import logger
 import mysql
 import mysql.connector
 from mysql.connector.abstracts import MySQLCursorAbstract
@@ -55,9 +55,9 @@ class AbstractDb():
             for line in lines:
                 writeFile.write(line)
     def createDb(self):
-        print("creating database")
+        logger.info(f"creating database")
         self.createBuildFile()
-        print("running subprocess excecuting mysql build")
+        logger.info(f"running subprocess excecuting mysql build")
         subprocess.run(f"sudo mysql < {DB_DIR}build.sql", shell=True)
         subprocess.run(["rm build.sql"], shell=True, cwd=DB_DIR)
     def fetchCredentials(self):
@@ -96,10 +96,10 @@ class AbstractDb():
             return True
         return False
     def userExists(self, username):
-        print("username: ", username)
+        logger.info(f"username: {username}")
         self.cursor.execute(f"SELECT username FROM {self.table_users} WHERE username=%s", (username,))
         fetched = self.cursor.fetchone()
-        print("fetched: ", fetched)
+        logger.info(f"fetched: {fetched}")
         if fetched == None:
             return False
         return True
@@ -109,19 +109,19 @@ class AbstractDb():
         # todo
         # return userData
     def fetchUserFromToken(self, token:str):
-        print("searching for token: ", token)
+        logger.info(f"searching for token: {token}")
         self.cursor.execute(f"SELECT * FROM {self.table_users} WHERE sessionToken=%s", (token,))
         columns = self.cursor.fetchone()
-        print("columns: ", columns)
+        logger.info(f"columns: {columns}")
         if columns == None:
            return None
     def insertNewUser(self, req: SignupRequest):
         query = f"INSERT INTO {self.table_users} (username, password, email) VALUES (%s, %s, %s)"
         values = (req.username, req.password, req.email)
-        print("query: ", query)
-        print("values: ", values)
+        logger.info(f"query: {query}")
+        logger.info(f"values: {values}")
         self.cursor.execute(query, values)
-        print("end")
+        logger.info(f"end")
 
 class Database(AbstractDb):
     def __init__(self):
@@ -158,33 +158,33 @@ class Database(AbstractDb):
         self.cursor.execute(query, values)
         found = self.cursor.fetchone()
         if found != None and found[0] == code:
-            print("found code: ", found[0])
+            logger.info(f"found code: {found[0]}")
             self.cursor.execute(f"DELETE FROM {self.table_email_verification} WHERE email=%s", (email,))
             return True
-        print("did not find code found = ", found)
+        logger.info(f"did not find code found = {found}")
         return False
     def validateSignupForm(self, req: SignupRequest):
         usernameAlreadyTaken = self.userExists(req.username)
         if usernameAlreadyTaken:
-            logging.debug(f"username {req.username} already taken")
+            logger.debug(f"username {req.username} already taken")
             raise Exception(409, "Username already taken")
         else:
-            logging.debug(f"username {req.username} available")
+            logger.debug(f"username {req.username} available")
     def createAccount(self, req: SignupRequest) -> bool:
-        print("adding user to db: ", req.username)
+        logger.info(f"adding user to db: {req.username}")
         try:
             self.insertNewUser(req=req)
         except Exception as e:
-            logging.critical(f"Could not write to db: {e.__str__()}")
+            logger.critical(f"Could not write to db: {e}")
             raise Exception(500, "Server failed to create user")
         return True
     def loginUser(self, req: LoginRequest) -> bool:
         if not self.userExists(req.username):
-            print("user does not exist")
+            logger.info(f"user does not exist")
             raise Exception("wrong credentials")
         if self.validLoginPassword(req.username, req.password):
             return True
-        print("entered password is wrong")
+        logger.info(f"entered password is wrong")
         raise Exception("wrong credentials")
     def addGlobalChatMessage(self, time:int, sender:str, message:str):
         query = f"INSERT INTO {self.table_global_chat} (time, sender, message) values(%s,%s,%s)"
@@ -193,7 +193,7 @@ class Database(AbstractDb):
     def trimGlobalChatTable(self):
         self.cursor.execute(f"SELECT * FROM {self.table_global_chat}")
         found = self.cursor.fetchall()
-        print(found)
+        logger.info(f"{found}")
         # todo 
     def getGlobalChatHistory(self):
         self.cursor.execute('''SELECT * FROM global_chat ORDER BY id DESC LIMIT 20''')
@@ -202,11 +202,11 @@ class Database(AbstractDb):
             raise Exception("Error fetching global chat history from database")
         return found
     def addActiveGame(self, game:OnlineGame):
-        print("Adding active game")
+        logger.info(f"Adding active game")
         query = f"INSERT INTO {self.table_active_games} (gameId,challenger,challenged,challengerColor,challengedColor,playerTurn,capturedWhitePieces,capturedBlackPieces,boardStr) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
         values = game.getSqlValue()
-        print(query)
-        print(values)
+        logger.info(f"{query}")
+        logger.info(f"{values}")
         self.cursor.execute(query, values)
     def updateActiveGame(self, gameId: str, playerTurn: str, boardStr: str):
         query = f"UPDATE {self.table_active_games} SET playerTurn=%s, boardStr=%s WHERE gameId=%s"
@@ -217,7 +217,7 @@ class Database(AbstractDb):
         games = self.cursor.fetchall()
         parsed_games = {}
         for game in games:
-            print("GAME: ", game)
+            logger.info(f"GAME: {game}")
             onlineGame = OnlineGame()
             onlineGame.parseGame(game)
             parsed_games[onlineGame.gameId] = onlineGame
@@ -235,4 +235,3 @@ class Database(AbstractDb):
         self.cursor.execute(query, values)
         
 db = Database()
-
