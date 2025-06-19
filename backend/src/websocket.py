@@ -215,12 +215,15 @@ class WebsocketManager(AbstractWebsocketManager):
         await self.sendGameUpdate(gameId)
 
     async def userResign(self, gameId, username):
-        game = self.activeGames.pop(gameId)
+        game = self.activeGames[gameId]
         # todo
         winner = game.challenger if game.challenger != username else game.challenged
         loser = game.challenger if game.challenger == username else game.challenged
         db.storeGameResult(gameId, winner, loser)
         db.removeActiveGame(gameId)
+        self.activeGames[gameId].setGameFinished(winner)
+        await self.sendGameUpdate(gameId)
+        self.activeGames.pop(gameId)
     
     async def resignOtherGames(self, player: str):
             toResign = []

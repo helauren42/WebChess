@@ -29,6 +29,7 @@ class ValidateMove:
         self.playerInCheck: bool = await self.isPlayerInCheck()
         self.opponentIsCheckMate: bool = False
         self.opponentIsImmobilized: bool = False
+        self.isGameOver: bool = True if self.opponentIsImmobilized or self.opponentIsCheckMate else False
         self.valid: bool = True if not self.playerInCheck else False
 
     async def getKingPos(self) -> Pos:
