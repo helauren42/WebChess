@@ -1,20 +1,16 @@
 from datetime import datetime
-from utils import logger
+from utils import getEnv, logger
 import mysql
 import mysql.connector
 from mysql.connector.abstracts import MySQLCursorAbstract
-import sys
 import subprocess
 from typing import Optional
-import os
 
 from schemas import LoginRequest, SignupRequest
 from board import Board
 from game import OnlineGame
 
-CWD = os.getcwd()
-ENV_PATH = os.path.join(CWD, ".env")
-DB_DIR =  os.path.join(os.path.dirname(CWD), "database/")
+from const import ENV_PATH, DB_DIR
 
 class AbstractDb():
     def __init__(self):
@@ -29,8 +25,8 @@ class AbstractDb():
         self.table_global_chat:str = ""
         self.table_active_games:str = ""
         self.fetchCredentials()
-        self.createDb()
         self.setupCursor()
+        self.createDb()
     def setupCursor(self):
         self.cnx = mysql.connector.connect(host=self.host, port=3306, user=self.user, password=self.password, database=self.name, auth_plugin='mysql_native_password', autocommit=True)
         self.cursor = self.cnx.cursor()
@@ -58,7 +54,7 @@ class AbstractDb():
         logger.info(f"creating database")
         self.createBuildFile()
         logger.info(f"running subprocess excecuting mysql build")
-        subprocess.run(f"sudo mysql < {DB_DIR}build.sql", shell=True)
+        subprocess.run(f"mysql -u {getEnv('SYSTEM_USER')} -p{getEnv('SYSTEM_PASSWORD')} < {DB_DIR}build.sql", shell=True)
         subprocess.run(["rm build.sql"], shell=True, cwd=DB_DIR)
     def fetchCredentials(self):
         with open(ENV_PATH, "r") as file:

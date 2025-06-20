@@ -17,7 +17,9 @@ from schemas import (
     VerifyCodeRequest,
     VerifyEmailRequest,
 )
-from utils import HOST, ORIGIN, PORT, logger
+
+from const import HOST, ORIGIN, PORT
+from utils import logger
 from websocket import Matchmaker, MatchmakerConnection, WebsocketManager
 
 

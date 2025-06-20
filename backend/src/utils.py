@@ -1,9 +1,19 @@
 import logging
 import os
 
-HOST = "127.0.0.1"
-PORT = 6453
-ORIGIN = "http://localhost:3000"
+from const import ENV_PATH
+
+def getEnv(variable:str)-> str:
+    with open(ENV_PATH, "r") as file:
+        lines = file.readlines()
+        for line in lines:
+            split = line.split("=")
+            if len(split) == 2:
+                key = split[0].strip()
+                value = split[1].strip()
+                if key == variable:
+                    return value
+    raise Exception(f"Variable {variable} not found in .env")
 
 def setup_logging():
     log_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "logs"))

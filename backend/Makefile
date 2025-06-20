@@ -10,9 +10,7 @@ pymodules: $(VENV_DIR) $(REQUIREMENTS)
 all: pymodules
 	cd src && ../$(VENV_DIR)/bin/python3 server.py
 
-clearPyVenv:
+fclean: clearPyVenv
 	rm -rf $(VENV_DIR)
 
-fclean: clearPyVenv
-
-.PHONY: all clearPyVenv fclean
+.PHONY: all fclean
