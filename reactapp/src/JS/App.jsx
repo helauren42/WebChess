@@ -132,8 +132,8 @@ const App = () => {
               <Route path="/play/online" element={<OnlineGame accountUsername={accountUsername} gameMode={GAME_MODE_ONLINE} gameData={gameData} />} />
               <Route path="/play/matchmaking" element={<MatchMaking sessionToken={sessionToken} />} />
               <Route path="/social" element={<SocialPage screenWidth={screenWidth} />} />
-              <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
+              <Route path="/login" element={<LoginPage />} />
               <Route path="/account" element={<AccountPage />} />
             </Routes>
             <DialogServerConnectionError />

@@ -7,6 +7,7 @@ from database import db
 from emailManager import EmailManager
 from fastapi import WebSocket
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from schemas import (
     BothTokens,
@@ -18,17 +19,16 @@ from schemas import (
     VerifyEmailRequest,
 )
 
-from const import HOST, ORIGIN, PORT
+from const import HOST, ORG_LOCAL, ORG_NPMSTART, PORT
 from utils import logger
 from websocket import Matchmaker, MatchmakerConnection, WebsocketManager
-
 
 app = fastapi.FastAPI()
 emailManager = EmailManager()
 websocketManager = WebsocketManager()
 matchMaker = Matchmaker()
 
-origins = [ORIGIN]
+origins = [ORG_NPMSTART, ORG_LOCAL]
 
 app.add_middleware(
     CORSMiddleware,
@@ -38,6 +38,37 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+app.mount("/static", StaticFiles(directory="../../reactapp/build/static"), name="static")
+
+""" ------------------------------------------------------- WEB PAGE ------------------------------------------------------- """
+
+@app.get("/")
+async def home():
+    return fastapi.responses.FileResponse("../../reactapp/build/index.html")
+
+@app.get("/play")
+async def play():
+    return fastapi.responses.FileResponse("../../reactapp/build/index.html")
+@app.get("/play/online")
+async def playOnline():
+    return fastapi.responses.FileResponse("../../reactapp/build/index.html")
+@app.get("/play/matchmaking")
+async def playMatchmaking():
+    return fastapi.responses.FileResponse("../../reactapp/build/index.html")
+
+@app.get("/social")
+async def social():
+    return fastapi.responses.FileResponse("../../reactapp/build/index.html")
+@app.get("/signup")
+async def signup():
+    return fastapi.responses.FileResponse("../../reactapp/build/index.html")
+@app.get("/login")
+async def login():
+    return fastapi.responses.FileResponse("../../reactapp/build/index.html")
+@app.get("/account")
+async def account():
+    return fastapi.responses.FileResponse("../../reactapp/build/index.html")
 """ ------------------------------------------------------- ACCOUNT ------------------------------------------------------- """
 
 
@@ -153,8 +184,8 @@ async def createAccount(req: SignupRequest):
     )
 
 
-@app.post("/login")
-async def login(req: LoginRequest):
+@app.post("/submitLogin")
+async def submitLogin(req: LoginRequest):
     logger.info(f"login request received username: {req.username}")
     try:
         db.loginUser(req)

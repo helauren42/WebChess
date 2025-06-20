@@ -3,7 +3,8 @@ import os
 
 HOST = "127.0.0.1"
 PORT = 6453
-ORIGIN = "http://localhost:3000"
+ORG_NPMSTART = "http://localhost:3000"
+ORG_LOCAL = "http://localhost:6453"
 
 CWD = os.getcwd()
 ENV_PATH = os.path.join(CWD, ".env")
