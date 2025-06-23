@@ -1,4 +1,5 @@
 from enum import Enum
+from sys import argv
 import os
 
 DB_PORT = 3306

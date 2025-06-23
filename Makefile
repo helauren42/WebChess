@@ -1,8 +1,8 @@
 devFront:
-	reactapp/ && npm start
+	(cd reactapp/ && npm start)
 
 devBack:
-	make all -C backend
+	make dev -C backend
 
 buildFront:
 	(cd reactapp/ && npm run build)

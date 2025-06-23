@@ -6,11 +6,11 @@ from abc import ABC
 from typing import Optional
 
 from cell import Cell, Pos
-from database import db
 from fastapi import WebSocket
 from fastapi.websockets import WebSocketState
 from game import OnlineGame
 from validMove import ValidateMove
+from databaseObject import db
 
 VALIDATE_MOVE = ValidateMove()
 

@@ -2,9 +2,7 @@ from uuid import uuid4
 
 import fastapi
 import uvicorn
-from cell import Pos
-from database import db
-from emailManager import EmailManager
+from sys import argv
 from fastapi import WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -19,9 +17,12 @@ from schemas import (
     VerifyEmailRequest,
 )
 
-from const import HOST, ORG_LOCAL, ORG_NPMSTART, PORT
+from cell import Pos
+from emailManager import EmailManager
 from utils import logger
 from websocket import Matchmaker, MatchmakerConnection, WebsocketManager
+from const import ORG_LOCAL, ORG_NPMSTART, PORT
+from databaseObject import db
 
 app = fastapi.FastAPI()
 emailManager = EmailManager()

@@ -29,7 +29,7 @@ class AbstractDb():
         # self.createDb()
     def setupCursor(self):
         # self.cnx = mysql.connector.connect(host=self.host, port=3306, user=self.user, password=self.password, database=self.name, auth_plugin='mysql_native_password', autocommit=True)
-        self.cnx = mysql.connector.connect(host="db", port=3306, user="chessUser", password="p1", database=self.name, autocommit=True)
+        self.cnx = mysql.connector.connect(host=self.host, port=3306, user=self.user, password=self.password, database=self.name, autocommit=True)
         self.cursor = self.cnx.cursor()
         # self.cursor.execute(f"USE {self.name}")
     def createBuildFile(self):
@@ -40,7 +40,7 @@ class AbstractDb():
             for i in range(len(lines)):
                 lines[i] = lines[i].replace("DB_HOST", self.host)
                 lines[i] = lines[i].replace("DB_USER", self.user)
-                lines[i] = lines[i].replace("MYSQL_ROOT_PASSWORD", self.password)
+                lines[i] = lines[i].replace("DB_PASSWORD", self.password)
                 lines[i] = lines[i].replace("DB_NAME", self.name)
                 lines[i] = lines[i].replace("DB_TABLE_USERS", self.table_users)
                 lines[i] = lines[i].replace("DB_TABLE_EMAIL_VERIFICATION", self.table_email_verification)
@@ -70,7 +70,7 @@ class AbstractDb():
                         self.host = value
                     elif key == "DB_USER":
                         self.user = value
-                    elif key == "MYSQL_ROOT_PASSWORD":
+                    elif key == "DB_PASSWORD":
                         self.password = value
                     elif key == "DB_NAME":
                         self.name = value
@@ -231,5 +231,3 @@ class Database(AbstractDb):
         query = f"DELETE FROM active_games WHERE gameId=%s"
         values = (gameId, )
         self.cursor.execute(query, values)
-        
-db = Database()
