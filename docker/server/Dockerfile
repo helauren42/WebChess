@@ -2,13 +2,7 @@ FROM debian:bookworm
 
 WORKDIR /app
 
-COPY backend/ /app/backend/
-COPY reactapp/ /app/reactapp/
-COPY .env .env
-
 EXPOSE 6453
-
-WORKDIR /app/backend/
 
 RUN apt update && apt install -y \
   python3  \
@@ -22,6 +16,8 @@ RUN apt update && apt install -y \
   pkg-config \
   iputils-ping \
   telnet
+
+WORKDIR /app/backend/
 
 CMD [ "make" , "all" ]
 

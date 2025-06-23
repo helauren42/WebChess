@@ -2,7 +2,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: docker/python/Dockerfile
+      dockerfile: docker/server/Dockerfile
     ports:
       - "6453:6453"
     depends_on:
@@ -11,6 +11,10 @@ services:
     networks:
       - app-network
     restart: always
+    volumes:
+      - ./backend/:/app/backend
+      - ./reactapp/:/app/reactapp
+      - ./.env:/app/.env
 
   db:
     build:
