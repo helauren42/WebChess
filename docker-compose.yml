@@ -2,7 +2,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: DockerfilePython
+      dockerfile: docker/python/Dockerfile
     ports:
       - "6453:6453"
     depends_on:
@@ -12,11 +12,10 @@ services:
       - app-network
     restart: always
 
-
   db:
     build:
       context: .
-      dockerfile: DockerfileMysql
+      dockerfile: docker/mysql/Dockerfile
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 5s
