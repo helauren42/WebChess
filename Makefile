@@ -1,9 +1,30 @@
+devFront:
+	reactapp/ && npm start
+
+devBack:
+	make all -C backend
+
 buildFront:
 	(cd reactapp/ && npm run build)
 
-server:
-	make all -C backend
+dockerUp:
+	docker-compose build --parallel
+	docker-compose up
 
-all: buildFront server
+dockerDown:
+	docker-compose down
 
-.phony: buildFront server
+dockerRe: clean dockerUp
+
+production: buildFront dockerUp
+
+clean:
+	docker-compose down --rmi local
+	docker system prune -f
+
+fclean:
+	docker-compose down -v --rmi local
+	docker system prune -f
+	rm -rf reactapp/build/
+
+.PHONY: devFront devBack buildFront dockerUp production clean fclean

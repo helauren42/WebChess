@@ -26,20 +26,21 @@ class AbstractDb():
         self.table_active_games:str = ""
         self.fetchCredentials()
         self.setupCursor()
-        self.createDb()
+        # self.createDb()
     def setupCursor(self):
-        self.cnx = mysql.connector.connect(host=self.host, port=3306, user=self.user, password=self.password, database=self.name, auth_plugin='mysql_native_password', autocommit=True)
+        # self.cnx = mysql.connector.connect(host=self.host, port=3306, user=self.user, password=self.password, database=self.name, auth_plugin='mysql_native_password', autocommit=True)
+        self.cnx = mysql.connector.connect(host="db", port=3306, user="chessUser", password="p1", database=self.name, autocommit=True)
         self.cursor = self.cnx.cursor()
-        self.cursor.execute(f"USE {self.name}")
+        # self.cursor.execute(f"USE {self.name}")
     def createBuildFile(self):
-        subprocess.run(["touch build.sql"], shell=True, cwd=DB_DIR)
-        lines = []
+        # subprocess.run(["touch build.sql"], shell=True, cwd=DB_DIR)
+        lines:list[str] = []
         with open(f"{DB_DIR}create.sql", "r") as readfile:
             lines = readfile.readlines()
             for i in range(len(lines)):
                 lines[i] = lines[i].replace("DB_HOST", self.host)
                 lines[i] = lines[i].replace("DB_USER", self.user)
-                lines[i] = lines[i].replace("DB_PASSWORD", self.password)
+                lines[i] = lines[i].replace("MYSQL_ROOT_PASSWORD", self.password)
                 lines[i] = lines[i].replace("DB_NAME", self.name)
                 lines[i] = lines[i].replace("DB_TABLE_USERS", self.table_users)
                 lines[i] = lines[i].replace("DB_TABLE_EMAIL_VERIFICATION", self.table_email_verification)
@@ -47,15 +48,16 @@ class AbstractDb():
                 lines[i] = lines[i].replace("DB_TABLE_PERSISTENT_TOKEN", self.table_persistent_token)
                 lines[i] = lines[i].replace("DB_TABLE_GLOBAL_CHAT", self.table_global_chat)
                 lines[i] = lines[i].replace("DB_TABLE_ACTIVE_GAMES", self.table_active_games)
-        with open(f"{DB_DIR}build.sql", "w") as writeFile:
-            for line in lines:
-                writeFile.write(line)
+        return lines
     def createDb(self):
         logger.info(f"creating database")
-        self.createBuildFile()
+        lines = self.createBuildFile()
+        for line in lines:
+            cmd = line.strip("; \n")
+            self.cursor.execute(cmd)
         logger.info(f"running subprocess excecuting mysql build")
-        subprocess.run(f"mysql -u {getEnv('SYSTEM_USER')} -p{getEnv('SYSTEM_PASSWORD')} < {DB_DIR}build.sql", shell=True)
-        subprocess.run(["rm build.sql"], shell=True, cwd=DB_DIR)
+        # subprocess.run(f"mysql -u {getEnv('SYSTEM_USER')} < {DB_DIR}build.sql", shell=True)
+        # subprocess.run(["rm build.sql"], shell=True, cwd=DB_DIR)
     def fetchCredentials(self):
         with open(ENV_PATH, "r") as file:
             lines = file.readlines()
@@ -68,7 +70,7 @@ class AbstractDb():
                         self.host = value
                     elif key == "DB_USER":
                         self.user = value
-                    elif key == "DB_PASSWORD":
+                    elif key == "MYSQL_ROOT_PASSWORD":
                         self.password = value
                     elif key == "DB_NAME":
                         self.name = value

@@ -4,6 +4,7 @@ import os
 from const import ENV_PATH
 
 def getEnv(variable:str)-> str:
+    print("ENV PATH : ", ENV_PATH)
     with open(ENV_PATH, "r") as file:
         lines = file.readlines()
         for line in lines:

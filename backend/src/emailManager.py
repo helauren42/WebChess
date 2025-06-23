@@ -1,6 +1,7 @@
 from email.mime.text import MIMEText
 import random
 import smtplib
+from const import ENV_PATH
 
 class EmailManager():
     def __init__(self) -> None:
@@ -9,7 +10,7 @@ class EmailManager():
         self.fetchSenderCredentials()
 
     def fetchSenderCredentials(self):
-        with open(".env", "r") as file:
+        with open(ENV_PATH, "r") as file:
             lines = file.readlines()
             for line in lines:
                 split_line = line.split("=")

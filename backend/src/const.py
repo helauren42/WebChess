@@ -1,13 +1,15 @@
 from enum import Enum
 import os
 
-HOST = "127.0.0.1"
+DB_PORT = 3306
+
+HOST = "0.0.0.0"
 PORT = 6453
 ORG_NPMSTART = "http://localhost:3000"
 ORG_LOCAL = "http://localhost:6453"
 
 CWD = os.getcwd()
-ENV_PATH = os.path.join(CWD, ".env")
+ENV_PATH = os.path.abspath(os.path.join(CWD, "../../.env"))
 DB_DIR =  os.path.join(os.path.dirname(CWD), "database/")
 
 WHITE = "white"

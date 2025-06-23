@@ -1,0 +1,39 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: DockerfilePython
+    ports:
+      - "6453:6453"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: always
+
+
+  db:
+    build:
+      context: .
+      dockerfile: DockerfileMysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    ports:
+      - "3308:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_ROOT_HOST=%
+    volumes:
+      - /home/${HOST_USER}/.volumes/db-vol:/var/lib/mysql
+    networks:
+      - app-network
+    restart: always
+
+networks:
+  app-network:
+    driver: bridge
+

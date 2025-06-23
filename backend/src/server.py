@@ -340,4 +340,4 @@ async def matchmaking(websocket: WebSocket):
             matchMaker.removeConnection(sessionToken)
 
 if __name__ == "__main__":
-    uvicorn.run("server:app", host=HOST, port=PORT, reload=True)
+    uvicorn.run("server:app", host="0.0.0.0", port=PORT, reload=True)
