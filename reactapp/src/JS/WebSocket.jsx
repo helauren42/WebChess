@@ -4,17 +4,14 @@ import { displayAlertBox, displayDialogGameInvitation, displayDialogWebsocketDis
 export class MainWebSocketManager {
 	constructor() {
 		this.WS = null
-		this.activeUsers = []
 		this.sessionToken = ""
-		this.activeUsers = []
 		this.setActiveUsers = null
 		this.onlineGame = null
 		this.gameData = {}
 	}
-	baseInit(_sessionToken, _activeUsers, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory, _navigate, _setGameData) {
-		console.log("BASE INIT: ", this.sessionToken)
+	baseInit(_sessionToken, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory, _navigate, _setGameData) {
 		this.sessionToken = _sessionToken
-		this.activeUsers = _activeUsers
+		console.log("BASE INIT: ", this.sessionToken)
 		this.setActiveUsers = _setActiveUsers
 		this.username = _username
 		this.globalChatHistory = _globalChatHistory
@@ -41,8 +38,8 @@ export class MainWebSocketManager {
 }
 
 export class WebSocketManager extends MainWebSocketManager {
-	init(_sessionToken, _activeUsers, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory, _navigate, _setGameData) {
-		this.baseInit(_sessionToken, _activeUsers, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory, _navigate, _setGameData)
+	init(_sessionToken, _setActiveUsers, _globalChatHistory, _setGlobalChatHistory, _navigate, _setGameData) {
+		this.baseInit(_sessionToken, _setActiveUsers, _globalChatHistory, _setGlobalChatHistory, _navigate, _setGameData)
 		this.WS.addEventListener("close", () => {
 			console.log("websocket closed")
 			displayDialogWebsocketDisconnectionError()
@@ -65,16 +62,13 @@ export class WebSocketManager extends MainWebSocketManager {
 					displayDialogGameInvitation(data["challenger"])
 					break
 				case "startOnlineGame":
-					this.setGameData(data)
 					this.gameData = data
 					this.startOnlineGame()
 					break
 				case "getGameData":
-					this.setGameData(data)
 					this.gameData = data
 					break
 				case "gameUpdate":
-					this.setGameData(data)
 					this.gameData = data
 					console.log("updated game")
 					break
@@ -120,7 +114,7 @@ export class WebSocketManager extends MainWebSocketManager {
 		this.websocketSendMessage("makeMove", data)
 	}
 	sendUserResign() {
-		const data = { "gameId": this.gameData["gameId"], "username": this.username }
+		const data = { "gameId": this.gameData["gameId"] }
 		this.websocketSendMessage("userResign", data)
 	}
 }

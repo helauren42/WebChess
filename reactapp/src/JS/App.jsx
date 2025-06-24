@@ -93,14 +93,24 @@ const App = () => {
 			console.log("token: ", token)
 			return null
 		})
-		if (resp !== null && resp.status !== 200) {
-			const data = await resp.json()
+		if (!resp) {
+			console.log("Error response")
+			return
+		}
+		const data = await resp.json()
+		console.log("username req data: ", data)
+		if (resp.status !== 200) {
+			console.log("wrong username clearing cookies")
+			document.cookie = `sessionToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+			document.cookie = `persistentToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+			setSignedIn(false)
+		}
+		else {
 			const username = data["username"]
 			console.log("found username: ", username)
 			setAccountUsername(username)
+			setSignedIn(true)
 		}
-		else
-			setSignedIn(false)
 	}
 	// create sessionToken if persistentToken is found
 	if (persistentToken && !sessionToken)
@@ -113,18 +123,14 @@ const App = () => {
 		return () => window.removeEventListener("resize", handleResize);
 	}, []);
 	useEffect(() => {
-		WS.init(sessionToken, activeUsers, setActiveUsers, accountUsername, globalChatHistoryRef, setGlobalChatHistory, navigate, setGameData)
-	}, [sessionToken])
-	useEffect(() => {
-		if (signedIn === false) {
-			console.log("not signed in so removing sessionToken")
-			document.cookie = `sessionToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
-		}
-		else {
-			setSessionToken(getCookie("sessionToken"))
-			setPersistentToken(getCookie("persistentToken"))
+		if (sessionToken) {
+			WS.init(sessionToken, setActiveUsers, globalChatHistoryRef, setGlobalChatHistory, navigate, setGameData)
 			fetchUsername()
 		}
+	}, [sessionToken])
+	useEffect(() => {
+		setSessionToken(getCookie("sessionToken"))
+		setPersistentToken(getCookie("persistentToken"))
 	}, [signedIn])
 	return (
 		<AppContext.Provider value={[signedIn, setSignedIn]}>
@@ -139,7 +145,7 @@ const App = () => {
 							<Route path="/play/matchmaking" element={<MatchMaking sessionToken={sessionToken} />} />
 							<Route path="/social" element={<SocialPage screenWidth={screenWidth} />} />
 							<Route path="/signup" element={<SignupPage />} />
-							<Route path="/login" element={<LoginPage />} />
+							<Route path="/login" element={<LoginPage persistentToken={persistentToken} setPersistentToken={setPersistentToken} />} />
 							<Route path="/account" element={<AccountPage />} />
 						</Routes>
 						<DialogServerConnectionError />
