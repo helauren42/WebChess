@@ -9,13 +9,14 @@ export class MainWebSocketManager {
 		this.onlineGame = null
 		this.gameData = {}
 	}
-	baseInit(_sessionToken, _setActiveUsers, _username, _globalChatHistory, _setGlobalChatHistory, _navigate, _setGameData) {
+	baseInit(_sessionToken, _setActiveUsers, _globalChatHistory, _setGlobalChatHistory, _navigate, _setGameData) {
 		this.sessionToken = _sessionToken
 		console.log("BASE INIT: ", this.sessionToken)
 		this.setActiveUsers = _setActiveUsers
-		this.username = _username
 		this.globalChatHistory = _globalChatHistory
 		this.setGlobalChatHistory = _setGlobalChatHistory
+		console.log("globalChatHistory: ", this.globalChatHistory)
+		console.log("setGlobalChatHistory: ", this.setGlobalChatHistory)
 		this.navigate = _navigate
 		this.setGameData = _setGameData
 		this.WS = new WebSocket(`${WEBSOCKET_URL}`)
@@ -80,12 +81,16 @@ export class WebSocketManager extends MainWebSocketManager {
 			}
 		}
 	}
+	updateChatHistory(update) {
+		this.globalChatHistory = update
+	}
 	// ----------------------------------------------------- RECEIVE -----------------------------------------------------
 	startOnlineGame() {
 		this.navigate("/play/online")
 	}
 	appendToChatHistory(data) {
-		let array = [...this.globalChatHistory.current]
+		let array = this.globalChatHistory
+		console.log("starting array: ", array)
 		let id = 1;
 		if (array.length > 0) {
 			id = array[array.length - 1][0] + 1
@@ -93,6 +98,7 @@ export class WebSocketManager extends MainWebSocketManager {
 		array.unshift([id, data["time"], data["sender"], data["message"]]);
 		if (array.length > 50)
 			array.pop()
+		console.log("messages array: ", array)
 		this.setGlobalChatHistory(array)
 	}
 	// ----------------------------------------------------- SEND-MESSAGE -----------------------------------------------------

@@ -303,7 +303,6 @@ async def websocket_endpoint(websocket: WebSocket):
                     await websocketManager.makeMove(gameId, fromPos, toPos)
                 case "userResign":
                     gameId = data["gameId"]
-                    username = data["username"]
                     await websocketManager.userResign(gameId, username)
                 case "getGameData":
                     await websocketManager.getGameData(username)

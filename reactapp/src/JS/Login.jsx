@@ -4,7 +4,7 @@ import { SOCKET_ADDRESS } from './Const'
 import { AppContext } from './App'
 import '../CSS/Login.css'
 
-export const LoginPage = ({ persistentToken, setPersistentToken }) => {
+export const LoginPage = ({ sessionToken, setSessionToken, persistentToken, setPersistentToken }) => {
 	const [username, setUsername] = useState("")
 	const [password, setPassword] = useState("")
 	const [errorMessage, setErrorMessage] = useState("")
@@ -54,11 +54,13 @@ export const LoginPage = ({ persistentToken, setPersistentToken }) => {
 			return
 		console.log("data: ", data)
 		console.log("setting sessionToken cookie: ", data["sessionToken"])
-		document.cookie = `sessionToken=${data["sessionToken"]}; path=/; SameSite=None;`;
-		console.log("cookies: ", document.cookie)
+		setSessionToken(data["sessionToken"])
+		document.cookie = `sessionToken=${data["sessionToken"]}; path=/; `;
+		const cookies = document.cookie
+		console.log("cookies: ", cookies)
 		if (data["stayLoggedIn"]) {
 			setPersistentToken(data["persistentToken"])
-			document.cookie = `persistentToken=${persistentToken}; max-age=${3600 * 24 * 365}; path=/; SameSite=None;`;
+			document.cookie = `persistentToken=${persistentToken}; max-age=${3600 * 24 * 365}; path=/; `;
 		}
 		navigate("/")
 		setSignedIn(true)

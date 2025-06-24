@@ -40,11 +40,13 @@ const App = () => {
 	const [sessionToken, setSessionToken] = useState(getCookie("sessionToken"))
 	const [persistentToken, setPersistentToken] = useState(getCookie("persistentToken"))
 	const navigate = useNavigate()
-	const globalChatHistoryRef = useRef();
-	globalChatHistoryRef.current = globalChatHistory;
 	console.log("start cookies: ", document.cookie)
-	console.log("sessionToken: ", sessionToken)
 
+	useEffect(() => {
+		const now = globalChatHistory
+		WS.updateChatHistory = now
+		console.log("global chat history use effect: ", now)
+	}, [globalChatHistory])
 	const createSessionTokenFromPersistentToken = async () => {
 		// verify persistent token is still valid delete persistent token if no longer valid
 		const validate = await fetch(`${SOCKET_ADDRESS}/validatePersistentToken?persistentToken=${persistentToken}`).then((resp) => {
@@ -59,9 +61,9 @@ const App = () => {
 			return
 		}
 		// persistent token valid so let's set session token
-		sessionToken = crypto.randomUUID()
+		setSessionToken(crypto.randomUUID())
 		console.log("sessionToken created: ", sessionToken)
-		document.cookie = `sessionToken=${sessionToken}; path=/; SameSite=None;`;
+		document.cookie = `sessionToken=${sessionToken}; path=/;`;
 		const resp = await fetch(`${SOCKET_ADDRESS}/addSessionToken`, {
 			method: "POST",
 			headers: { "Content-type": "application/json" },
@@ -124,7 +126,7 @@ const App = () => {
 	}, []);
 	useEffect(() => {
 		if (sessionToken) {
-			WS.init(sessionToken, setActiveUsers, globalChatHistoryRef, setGlobalChatHistory, navigate, setGameData)
+			WS.init(sessionToken, setActiveUsers, globalChatHistory, setGlobalChatHistory, navigate, setGameData)
 			fetchUsername()
 		}
 	}, [sessionToken])
@@ -145,7 +147,7 @@ const App = () => {
 							<Route path="/play/matchmaking" element={<MatchMaking sessionToken={sessionToken} />} />
 							<Route path="/social" element={<SocialPage screenWidth={screenWidth} />} />
 							<Route path="/signup" element={<SignupPage />} />
-							<Route path="/login" element={<LoginPage persistentToken={persistentToken} setPersistentToken={setPersistentToken} />} />
+							<Route path="/login" element={<LoginPage sessionToken={sessionToken} setSessionToken={setSessionToken} persistentToken={persistentToken} setPersistentToken={setPersistentToken} />} />
 							<Route path="/account" element={<AccountPage />} />
 						</Routes>
 						<DialogServerConnectionError />
