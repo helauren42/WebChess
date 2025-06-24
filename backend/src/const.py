@@ -2,17 +2,29 @@ from enum import Enum
 from sys import argv
 import os
 
-DB_PORT = 3306
-
-HOST = "0.0.0.0"
-PORT = 6453
-ORG_NPMSTART = "http://localhost:3000"
-ORG_LOCAL = "http://localhost:6453"
-
 CWD = os.getcwd()
 ENV_PATH = os.path.abspath(os.path.join(CWD, "../../.env"))
 DB_DIR =  os.path.join(os.path.dirname(CWD), "database/")
 
+def getEnv(variable:str)-> str:
+    print("ENV PATH : ", ENV_PATH)
+    with open(ENV_PATH, "r") as file:
+        lines = file.readlines()
+        for line in lines:
+            split = line.split("=")
+            if len(split) == 2:
+                key = split[0].strip()
+                value = split[1].strip()
+                if key == variable:
+                    return value
+    raise Exception(f"Variable {variable} not found in .env")
+
+DB_PORT = 3306
+PORT = 6453
+ORG_NPMSTART = "http://localhost:3000"
+ORG_LOCAL = "http://localhost:6453"
+
+HOST = getEnv("SERVER_HOST")
 WHITE = "white"
 BLACK = "black"
 EMPTY = "empty"

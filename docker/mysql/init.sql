@@ -44,4 +44,3 @@ CREATE TABLE IF NOT EXISTS active_games (
     capturedBlackPieces VARCHAR(255) NOT NULL,
     boardStr TEXT NOT NULL
 );
-

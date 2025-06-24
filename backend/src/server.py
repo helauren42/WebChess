@@ -21,7 +21,7 @@ from cell import Pos
 from emailManager import EmailManager
 from utils import logger
 from websocket import Matchmaker, MatchmakerConnection, WebsocketManager
-from const import ORG_LOCAL, ORG_NPMSTART, PORT
+from const import ORG_LOCAL, ORG_NPMSTART, PORT, HOST
 from databaseObject import db
 
 app = fastapi.FastAPI()
@@ -69,6 +69,7 @@ async def login():
 @app.get("/account")
 async def account():
     return fastapi.responses.FileResponse("../../reactapp/build/index.html")
+
 """ ------------------------------------------------------- ACCOUNT ------------------------------------------------------- """
 
 
@@ -236,6 +237,7 @@ async def getGlobalChatHistory(req: fastapi.Request):
 async def websocket_endpoint(websocket: WebSocket):
     username = ""
     sessionToken = ""
+    logger.info("websocket connection attempt")
     try:
         await websocket.accept()
         logger.info("accepted new websocket connection")
@@ -310,7 +312,6 @@ async def websocket_endpoint(websocket: WebSocket):
         await websocketManager.removeClosedSockets()
         logger.error(f"Closed websocket {username} {sessionToken}: {e}")
 
-
 @app.websocket("/matchmaking")
 async def matchmaking(websocket: WebSocket):
     sessionToken = ""
@@ -340,4 +341,5 @@ async def matchmaking(websocket: WebSocket):
             matchMaker.removeConnection(sessionToken)
 
 if __name__ == "__main__":
-    uvicorn.run("server:app", host="0.0.0.0", port=PORT, reload=True)
+    # uvicorn.run("server:app", host=HOST, port=PORT, reload=True, ssl_keyfile="../key.pem", ssl_certfile="../cert.pem")
+    uvicorn.run("server:app", host=HOST, port=PORT, reload=True)

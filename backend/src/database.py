@@ -1,5 +1,5 @@
 from datetime import datetime
-from utils import getEnv, logger
+from utils import logger
 import mysql
 import mysql.connector
 from mysql.connector.abstracts import MySQLCursorAbstract
@@ -10,7 +10,7 @@ from schemas import LoginRequest, SignupRequest
 from board import Board
 from game import OnlineGame
 
-from const import ENV_PATH, DB_DIR
+from const import ENV_PATH, DB_DIR, getEnv
 
 class AbstractDb():
     def __init__(self):

@@ -13,3 +13,4 @@ node_modules
 todo.txt
 build/
 app/
+*.pem

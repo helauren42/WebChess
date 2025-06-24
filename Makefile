@@ -1,4 +1,5 @@
 devFront:
+	npm cache clean --force
 	(cd reactapp/ && npm start)
 
 devBack:
@@ -16,7 +17,9 @@ dockerDown:
 
 dockerRe: clean dockerUp
 
-production: buildFront dockerUp
+deploy: fclean buildFront dockerUp
+
+deployBack: clean dockerUp
 
 clean:
 	docker compose down --rmi local
@@ -28,3 +31,4 @@ fclean:
 	rm -rf reactapp/build/
 
 .PHONY: devFront devBack buildFront dockerUp production clean fclean
+

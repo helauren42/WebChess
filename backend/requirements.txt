@@ -2,4 +2,5 @@ mysql
 mysql-connector-python
 fastapi
 uvicorn
+websockets
 pydantic
