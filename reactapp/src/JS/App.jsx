@@ -43,6 +43,9 @@ const App = () => {
 	console.log("start cookies: ", document.cookie)
 
 	useEffect(() => {
+		console.log("gameData: ", gameData)
+	}, [gameData])
+	useEffect(() => {
 		const now = globalChatHistory
 		WS.updateGlobalChat(now)
 		console.log("global chat history use effect: ", now)

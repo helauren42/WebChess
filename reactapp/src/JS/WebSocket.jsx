@@ -67,13 +67,16 @@ export class WebSocketManager extends MainWebSocketManager {
 					break
 				case "startOnlineGame":
 					this.gameData = data
+					this.setGameData(data)
 					this.startOnlineGame()
 					break
 				case "getGameData":
 					this.gameData = data
+					this.setGameData(data)
 					break
 				case "gameUpdate":
 					this.gameData = data
+					this.setGameData(data)
 					console.log("updated game")
 					break
 				case "alreadyPlaying":
