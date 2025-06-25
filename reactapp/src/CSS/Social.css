@@ -137,6 +137,17 @@
 	/* background: linear-gradient(160deg, rgba(50, 25, 80), rgba(65, 30, 75)); */
 }
 
+#global-message-title {
+	display: grid;
+	place-items: center;
+	background-color: var(--primary-color);
+	font-size: 1.6rem;
+	padding: 0.2rem;
+	border-top: 0.1rem solid var(--border-color);
+	border-left: 0.1rem solid var(--border-color);
+	border-right: 0.1rem solid var(--border-color);
+}
+
 #global-message-title::after {
 	position: absolute;
 	top: 100%;
@@ -213,7 +224,7 @@
 }
 
 .chat-message-paragraph {
-	font-size: 1rem;
+	font-size: 1.2rem;
 	margin-left: 3%;
 }
 
@@ -225,14 +236,4 @@
 #chat-message-other {
 	background-color: rgba(105, 95, 185, 0.1);
 	left: 0%;
-}
-
-#global-message-title {
-	display: grid;
-	place-items: center;
-	background-color: var(--primary-color);
-	padding: 0.2rem;
-	border-top: 0.1rem solid var(--border-color);
-	border-left: 0.1rem solid var(--border-color);
-	border-right: 0.1rem solid var(--border-color);
 }

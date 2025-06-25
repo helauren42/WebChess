@@ -77,9 +77,9 @@ const sendChallenge = (challenger, challenged) => {
 	}, 10000)
 }
 export const SocialPage = ({ screenWidth }) => {
+	const [accountUsername] = useContext(AccountContext)
 	const [activeUsers, setActiveUsers, globalChatHistory, setGlobalChatHistory] = useContext(SocialContext)
 	const [globalInput, setGlobalInput] = useState("")
-	const [accountUsername] = useContext(AccountContext)
 	const [firstRender, setFirstRender] = useState(true)
 
 	const createChatHistory = async (setGlobalChatHistory) => {
@@ -117,7 +117,7 @@ export const SocialPage = ({ screenWidth }) => {
 		}
 		if (scrollToBottom)
 			parent.scrollTop = parent.scrollHeight
-	}, [globalChatHistory])
+	}, [globalChatHistory, accountUsername])
 	useEffect(() => {
 		const message_history = document.getElementById("message-history")
 		const elem = document.getElementById("global-message-title")
