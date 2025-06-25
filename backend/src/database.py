@@ -3,11 +3,9 @@ from utils import logger
 import mysql
 import mysql.connector
 from mysql.connector.abstracts import MySQLCursorAbstract
-import subprocess
 from typing import Optional
 
 from schemas import LoginRequest, SignupRequest
-from board import Board
 from game import OnlineGame
 
 from const import ENV_PATH, DB_DIR, DB_PORT
@@ -26,11 +24,10 @@ class AbstractDb:
         self.table_global_chat: str = ""
         self.table_active_games: str = ""
         self.fetchCredentials()
-        self.setupCursor()
+        self.connectCursor()
         # self.createDb()
 
-    def setupCursor(self):
-        # self.cnx = mysql.connector.connect(host=self.host, port=3306, user=self.user, password=self.password, database=self.name, auth_plugin='mysql_native_password', autocommit=True)
+    def connectCursor(self):
         self.cnx = mysql.connector.connect(
             host=self.host,
             port=DB_PORT,
@@ -74,7 +71,7 @@ class AbstractDb:
         lines = self.createBuildFile()
         for line in lines:
             cmd = line.strip("; \n")
-            self.cursor.execute(cmd)
+            self.execute(cmd)
         logger.info("running subprocess excecuting mysql build")
         # subprocess.run(f"mysql -u {getEnv('SYSTEM_USER')} < {DB_DIR}build.sql", shell=True)
         # subprocess.run(["rm build.sql"], shell=True, cwd=DB_DIR)
@@ -109,7 +106,7 @@ class AbstractDb:
                         self.table_active_games = value
 
     def validLoginPassword(self, user, password):
-        self.cursor.execute(
+        self.executeQueryValues(
             f"SELECT password FROM {self.table_users} WHERE username=%s", (user,)
         )
         fetched = self.cursor.fetchone()
@@ -120,7 +117,7 @@ class AbstractDb:
 
     def userExists(self, username):
         logger.info(f"username: {username}")
-        self.cursor.execute(
+        self.executeQueryValues(
             f"SELECT username FROM {self.table_users} WHERE username=%s", (username,)
         )
         fetched = self.cursor.fetchone()
@@ -130,7 +127,7 @@ class AbstractDb:
         return True
 
     def fetchUserData(self, username):
-        self.cursor.execute(
+        self.executeQueryValues(
             f"SELECT * FROM {self.table_users} WHERE username=%s", (username,)
         )
         columns = self.cursor.fetchone()
@@ -139,7 +136,7 @@ class AbstractDb:
 
     def fetchUserFromToken(self, token: str):
         logger.info(f"searching for token: {token}")
-        self.cursor.execute(
+        self.executeQueryValues(
             f"SELECT * FROM {self.table_users} WHERE sessionToken=%s", (token,)
         )
         columns = self.cursor.fetchone()
@@ -156,7 +153,26 @@ class AbstractDb:
     def executeQueryValues(self, query: str, values: tuple):
         logger.info(f"query: {query}")
         logger.info(f"values: {values}")
-        self.cursor.execute(query, values)
+        try:
+            self.cursor.execute(query, values)
+        except Exception as e:
+            logger.info(
+                f"Connection to mysql was closed attempted reconnection and query execution: {e}"
+            )
+            self.connectCursor()
+            self.cursor.execute(query, values)
+            logger.info("reconnection and query executed successfully")
+
+    def execute(self, query: str):
+        try:
+            self.cursor.execute(query)
+        except Exception as e:
+            logger.info(
+                f"Connection to mysql was closed attempted reconnection and query execution: {e}"
+            )
+            self.connectCursor()
+            self.cursor.execute(query)
+            logger.info("reconnection and query executed successfully")
 
 
 class Database(AbstractDb):
@@ -190,7 +206,7 @@ class Database(AbstractDb):
         self.executeQueryValues(query, values)
 
     def insertValidationCode(self, email, code):
-        self.cursor.execute(
+        self.executeQueryValues(
             f"DELETE FROM {self.table_email_verification} WHERE email=%s", (email,)
         )
         query = (
@@ -206,7 +222,7 @@ class Database(AbstractDb):
         found = self.cursor.fetchone()
         if found is not None and found[0] == code:
             logger.info(f"found code: {found[0]}")
-            self.cursor.execute(
+            self.executeQueryValues(
                 f"DELETE FROM {self.table_email_verification} WHERE email=%s", (email,)
             )
             return True
@@ -245,13 +261,13 @@ class Database(AbstractDb):
         self.executeQueryValues(query, values)
 
     def trimGlobalChatTable(self):
-        self.cursor.execute(f"SELECT * FROM {self.table_global_chat}")
+        self.execute(f"SELECT * FROM {self.table_global_chat}")
         found = self.cursor.fetchall()
         logger.info(f"{found}")
         # todo
 
     def getGlobalChatHistory(self):
-        self.cursor.execute("""SELECT * FROM global_chat ORDER BY id DESC LIMIT 20""")
+        self.execute("""SELECT * FROM global_chat ORDER BY id DESC LIMIT 20""")
         found = self.cursor.fetchall()
         if found is None:
             raise Exception("Error fetching global chat history from database")
@@ -269,7 +285,7 @@ class Database(AbstractDb):
         self.executeQueryValues(query, values)
 
     def getAllActiveGames(self) -> dict[int, OnlineGame]:
-        self.cursor.execute(f"SELECT * FROM {self.table_active_games}")
+        self.execute(f"SELECT * FROM {self.table_active_games}")
         games = self.cursor.fetchall()
         parsed_games = {}
         for game in games:
