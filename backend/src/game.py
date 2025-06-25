@@ -38,7 +38,7 @@ class OnlineGame:
         logger.info(f"ParseGame board_str: {_boardStr}")
         self.board: Board = Board(_boardStr)
         self.finished: bool = False
-        #winner is empty string in case of draw
+        # winner is empty string in case of draw
         self.winner: str = ""
 
     def newGame(self, _challenger, _challenged, _gameId) -> None:
@@ -70,7 +70,7 @@ class OnlineGame:
                 "capturedBlackPieces": self.capturedBlackPieces,
                 "board": self.board.sendFormat(),
                 "finished": self.finished,
-                "winner": self.winner
+                "winner": self.winner,
             }
         )
         return data
@@ -87,6 +87,7 @@ class OnlineGame:
             json.dumps(self.capturedBlackPieces),
             json.dumps(self.board.sendFormat()),
         )
+
     def setGameFinished(self, winner):
-      self.finished = True
-      self.winner = winner
+        self.finished = True
+        self.winner = winner
