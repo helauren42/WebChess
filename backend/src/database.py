@@ -10,7 +10,7 @@ from schemas import LoginRequest, SignupRequest
 from board import Board
 from game import OnlineGame
 
-from const import ENV_PATH, DB_DIR, getEnv
+from const import ENV_PATH, DB_DIR, DB_PORT
 
 
 class AbstractDb:
@@ -33,14 +33,13 @@ class AbstractDb:
         # self.cnx = mysql.connector.connect(host=self.host, port=3306, user=self.user, password=self.password, database=self.name, auth_plugin='mysql_native_password', autocommit=True)
         self.cnx = mysql.connector.connect(
             host=self.host,
-            port=3306,
+            port=DB_PORT,
             user=self.user,
             password=self.password,
             database=self.name,
             autocommit=True,
         )
         self.cursor = self.cnx.cursor()
-        # self.cursor.execute(f"USE {self.name}")
 
     def createBuildFile(self):
         # subprocess.run(["touch build.sql"], shell=True, cwd=DB_DIR)
