@@ -100,7 +100,6 @@ export const OnlineGame = ({ accountUsername, gameMode, gameData }) => {
 		const challenged = gameData["challenged"]
 		setOpponentName(accountUsername == challenger ? challenged : challenger)
 		console.log(gameData["playerColor"])
-		console.log("!!! opponent color turns out to be: ", gameData["playerColor"] == "white" ? "black" : "white")
 		setOpponentColor(gameData["playerColor"] == "white" ? "black" : "white")
 		setGameFinished(gameData["finished"])
 		setGameWinner(gameData["winner"])

@@ -44,7 +44,7 @@ const App = () => {
 
 	useEffect(() => {
 		const now = globalChatHistory
-		WS.updateChatHistory = now
+		WS.updateGlobalChat(now)
 		console.log("global chat history use effect: ", now)
 	}, [globalChatHistory])
 	const createSessionTokenFromPersistentToken = async () => {

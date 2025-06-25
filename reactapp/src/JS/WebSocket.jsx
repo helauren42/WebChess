@@ -36,6 +36,9 @@ export class MainWebSocketManager {
 			this.WS = null
 		}
 	}
+	updateGlobalChat(newChat) {
+		this.globalChatHistory = newChat
+	}
 }
 
 export class WebSocketManager extends MainWebSocketManager {
@@ -81,15 +84,12 @@ export class WebSocketManager extends MainWebSocketManager {
 			}
 		}
 	}
-	updateChatHistory(update) {
-		this.globalChatHistory = update
-	}
 	// ----------------------------------------------------- RECEIVE -----------------------------------------------------
 	startOnlineGame() {
 		this.navigate("/play/online")
 	}
 	appendToChatHistory(data) {
-		let array = this.globalChatHistory
+		let array = this.globalChatHistory.slice()
 		console.log("starting array: ", array)
 		let id = 1;
 		if (array.length > 0) {
@@ -99,6 +99,7 @@ export class WebSocketManager extends MainWebSocketManager {
 		if (array.length > 50)
 			array.pop()
 		console.log("messages array: ", array)
+		console.log("set globalChatHistory")
 		this.setGlobalChatHistory(array)
 	}
 	// ----------------------------------------------------- SEND-MESSAGE -----------------------------------------------------
@@ -115,7 +116,7 @@ export class WebSocketManager extends MainWebSocketManager {
 		this.websocketSendMessage("acceptChallenge", data)
 	}
 	makeMove(fromPos, toPos) {
-		console.log("!!!! MAKEMOVE: ", fromPos, ", ", toPos)
+		console.log("Make move: ", fromPos, ", ", toPos)
 		const data = { "gameId": this.gameData["gameId"], fromPos, toPos }
 		this.websocketSendMessage("makeMove", data)
 	}

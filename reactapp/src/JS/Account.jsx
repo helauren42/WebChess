@@ -18,6 +18,7 @@ export const AccountPage = () => {
 					makeSignoutRequest()
 					setSignedIn(false)
 					document.cookie = `persistentToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+					document.cookie = `sessionToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
 				}}>Log out </button>
 			</Link>
 		</div>
