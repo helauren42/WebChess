@@ -14,7 +14,7 @@ export const SignupForm = () => {
 		signupProcess, inputChange
 	} = useContext(SignupContext)
 	return (
-		<div className="account-block">
+		<div className="account-block navbar-pseudo">
 			<h1 className='account-title'>Signup</h1>
 			<form className="account-form" onSubmit={(e) => { signupProcess(e) }}>
 				<div className='input-block'>

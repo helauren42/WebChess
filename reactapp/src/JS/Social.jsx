@@ -96,15 +96,7 @@ export const SocialPage = ({ screenWidth }) => {
 		const parent = document.getElementById("message-history")
 		const blurr = document.createElement('div')
 		blurr.id = "message-history-blurr"
-		const parentRect = parent.getBoundingClientRect()
-		const parentHeight = parentRect.height
-		const parentWidth = parentRect.width
-		const stickyBg = document.createElement('div')
-		stickyBg.style.height = `${parentHeight - convertRemToPixels(0.2)}px`
-		stickyBg.style.width = `${parentWidth - convertRemToPixels(0.2)}px`
-		stickyBg.id = "history-sticky-background"
-		parent.append(stickyBg)
-		stickyBg.append(blurr)
+		parent.append(blurr)
 	}
 	useEffect(() => {
 		console.log("useEffect() creating message blocks")
@@ -125,7 +117,14 @@ export const SocialPage = ({ screenWidth }) => {
 		}
 		if (scrollToBottom)
 			parent.scrollTop = parent.scrollHeight
-	}, [globalChatHistory, accountUsername, screenWidth])
+	}, [globalChatHistory])
+	useEffect(() => {
+		const message_history = document.getElementById("message-history")
+		const elem = document.getElementById("global-message-title")
+		const styles = getComputedStyle(elem, "::after")
+		const height = message_history.clientHeight + "px";
+		elem.style.setProperty('--after-height', height);
+	}, [screenWidth])
 	useEffect(() => {
 		createChatHistory(setGlobalChatHistory)
 	}, [])
@@ -208,9 +207,9 @@ export const SocialPage = ({ screenWidth }) => {
 						}></input>
 					</section>
 				</div>
-				<section id='active-users-container' className="light-reflection">
+				<section id='active-users-container' >
 					<div id="active-users-title-container" className="navbar-pseudo">
-						<h1 id='active-users-title' >Active Users</h1>
+						<h1 id='active-users-title' >Online Users</h1>
 					</div>
 					<div id='active-users-list'></div>
 				</section>

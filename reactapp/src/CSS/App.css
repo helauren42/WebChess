@@ -4,20 +4,21 @@
 }
 
 :root {
-	--button-color: rgb(25, 25, 40);
+	--button-color: rgb(35, 15, 50);
 	--primary-color: rgb(15, 15, 30);
 	--secondary-color: rgb(40, 40, 58);
 	--background-color: rgb(50, 50, 71);
-	--background2: rgb(65, 60, 88);
-	--border-color: rgb(20, 20, 30);
+	--border-color: rgb(28, 20, 35);
+	--light-border: rgb(150, 150, 190);
 	--board-border: rgb(15, 15, 35);
-	--navbar-text-color: rgb(210, 210, 230);
+	--navbar-text-color: rgb(190, 190, 230);
 	--primary-text-color: #0a0a0b;
 	--secondary-text-color: #212225;
 	--red-color: #cb8e8e;
 	--blue-color: #8e96cb;
 	--white-color: #f7f7f7;
 	--other-users: #d6d6d6;
+	--dark-shadow: rgb(20, 10, 30);
 	/* squares */
 	--selected-square: rgb(130, 110, 120);
 	--white-square: rgb(210, 200, 225);
@@ -39,8 +40,8 @@ html {
 body {
 	height: 100vh;
 	width: 100vw;
-	color: white;
-	background-color: var(--background-color);
+	/* background-color: var(--background-color); */
+	/* background: linear-gradient(315deg, rgba(45, 30, 70), rgba(30, 15, 50)); */
 	font-family: "Chewy";
 }
 
@@ -50,13 +51,15 @@ body {
 }
 
 #App {
+	position: relative;
 	height: 100%;
 	width: 100%;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
 	align-items: center;
-	z-index: 1000;
+	z-index: 1;
+	background: linear-gradient(315deg, rgba(45, 30, 75), rgba(40, 15, 60));
 }
 
 a {
@@ -70,10 +73,9 @@ button {
 	border-radius: 1rem;
 	border-style: solid;
 	border-width: 0.1rem;
-	border-color: var(--border-color);
+	border-color: var(--light-border);
 	background-color: var(--button-color);
 	/* color: white; */
-	color: var(--navbar-text-color);
 	font-family: 'Chewy';
 	z-index: 1;
 }
@@ -81,15 +83,17 @@ button {
 button::before {
 	content: "";
 	position: absolute;
+	background: linear-gradient(135deg, rgba(200, 200, 220, 0.1), rgba(20, 10, 50, 0.1));
 	top: 0;
 	left: 0;
-	border-radius: inherit;
 	width: 100%;
 	height: 100%;
-	background: linear-gradient(135deg, rgba(180, 110, 240, 0.18), rgba(130, 110, 190, 0.16));
+	border-radius: inherit;
+	z-index: 6;
 	pointer-events: none;
-	z-index: 2;
 }
+
+
 
 button * {
 	z-index: 3;
@@ -126,6 +130,7 @@ lighter-reflection::before {
 	content: "";
 	background: linear-gradient(135deg, rgba(200, 200, 240, 0.1), rgba(100, 100, 120, 0.1));
 	z-index: 2;
+	pointer-events: none;
 }
 
 lighter-reflection * {
@@ -146,8 +151,9 @@ lighter-reflection * {
 	top: 0;
 	left: 0;
 	border-radius: inherit;
-	background: linear-gradient(155deg, rgba(100, 60, 90, 0.2), rgba(115, 105, 205, 0.2));
+	background: linear-gradient(0deg, rgba(150, 40, 140, 0.2), rgba(125, 105, 205, 0.22));
 	z-index: 11;
+	pointer-events: none;
 }
 
 .navbar-pseudo * {

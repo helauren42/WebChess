@@ -70,7 +70,7 @@ export const LoginPage = ({ sessionToken, setSessionToken, persistentToken, setP
 	}
 	return (
 		<div className="account-base-container">
-			<div className="account-block">
+			<div className="account-block navbar-pseudo">
 				<h1 className='account-title'>Login</h1>
 				<form className="account-form" onSubmit={(e) => { submitLogin(e) }}>
 					<div className='input-block'>

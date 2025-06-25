@@ -1,76 +1,75 @@
 .account-base-container {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
+	height: 100%;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
 }
 
 .account-block {
-  margin-top: 5%;
-  padding: 1rem 5rem;
-  border-color: var(--border-color);
-  border-style: solid;
-  border-width: 0.13rem;
-  box-shadow: 0 0 10px 1px black;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+	padding: 1rem 5rem;
+	border-color: var(--border-color);
+	border-style: solid;
+	border-width: 0.13rem;
+	box-shadow: 0 0 10px 1px black;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 .account-title {
-  margin: 1rem;
-  /* text-shadow: 0px 0px 1px black; */
-  color: var(--secondary-text-color);
+	margin: 1rem;
+	font-size: 2rem;
 }
 
 .input-block {
-  margin-top: 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  /* gap: 1rem; */
-  align-items: center;
+	margin-top: 1rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	/* gap: 1rem; */
+	align-items: center;
 }
 
 .input-header {
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  align-items: flex-start;
+	display: flex;
+	width: 100%;
+	flex-direction: column;
+	align-items: flex-start;
+	font-size: 1.5rem;
 }
 
 .input-input {
-  height: 1.2rem;
-  /* width: 80%; */
-  border-style: solid;
-  border-width: 0.1rem;
-  border-color: var(--border-color);
+	height: 1.2rem;
+	border-style: solid;
+	border-width: 0.1rem;
+	border-color: var(--border-color);
+	background-color: rgb(50, 40, 70);
 }
 
 .account-submit-btn {
-  margin: 0.6rem;
-  background-color: white;
+	margin: 0.6rem;
+	font-size: 1.2rem;
 }
 
 .account-signin-redirect {
-  margin: 0 auto;
-  margin-top: 1rem;
-  font-size: 0.6rem;
+	margin: 0 auto;
+	margin-top: 1.5rem;
+	font-size: 0.9rem;
 }
 
 .account-same-line {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  gap: 1rem;
-  align-items: center;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+	gap: 1rem;
+	align-items: center;
 }
 
 #stay-connected-checkbox {
-  width: 2rem;
-  height: 2rem;
-  accent-color: var(--secondary-text-color);
-  background-color: white;
+	width: 2rem;
+	height: 2rem;
+	accent-color: var(--secondary-text-color);
+	background-color: rgb(50, 40, 70);
 }
