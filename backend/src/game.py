@@ -3,7 +3,7 @@ from utils import logger
 import random
 
 from board import Board
-from const import BLACK, EMPTY, WHITE
+from const import BLACK, WHITE
 
 
 class OnlineGame:
@@ -13,6 +13,12 @@ class OnlineGame:
             + f"playerTurn: {self.playerTurn}\n"
             + f"board:\n{self.board}"
         )
+
+    def updateCaptured(self, captured: str):
+        if self.playerTurn == WHITE:
+            self.capturedBlackPieces.append(captured)
+        elif self.playerTurn == BLACK:
+            self.capturedWhitePieces.append(captured)
 
     def parseGame(self, game: tuple):
         (
@@ -33,9 +39,9 @@ class OnlineGame:
         self.challengerColor: str = _challengerColor
         self.challengedColor: str = _challengedColor
         self.playerTurn: str = _playerTurn
-        self.capturedWhitePieces: list[str] = _capturedWhitePieces
-        self.capturedBlackPieces: list[str] = _capturedBlackPieces
-        logger.info(f"ParseGame board_str: {_boardStr}")
+        self.capturedWhitePieces: list[str] = json.loads(_capturedWhitePieces)
+        self.capturedBlackPieces: list[str] = json.loads(_capturedBlackPieces)
+        logger.info(f"ParseGame captured: {_boardStr}")
         self.board: Board = Board(_boardStr)
         self.finished: bool = False
         # winner is empty string in case of draw

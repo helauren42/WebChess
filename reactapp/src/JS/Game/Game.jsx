@@ -3,26 +3,21 @@ import { useNavigate } from 'react-router-dom';
 import { BoardWhite } from './BoardWhite.jsx'
 import { BoardBlack } from './BoardBlack.jsx'
 import { resetSquareColor, getPos, changeSquareColor } from './BoardActions.jsx';
-import { AccountContext, WS } from '../App.jsx';
-
-import { SOCKET_ADDRESS } from '../Const.jsx';
-import { WebSocketManager } from '../WebSocket.jsx';
+import { WS } from '../App.jsx';
 
 export const GAME_MODE_ONLINE = 0
 export const GAME_MODE_HOTSEAT = 1
-const WHITE_PIECES = ["rw", "nw", "bw", "qw", "kw", "pw"]
-const BLACK_PIECES = ["rb", "nb", "bb", "qb", "kb", "pb"]
 
 const GameBoard = ({ accountUsername, playerColor, opponentName, opponentColor }) => {
 	return (
 		<div id="players-container">
-			<div className='player-data' id="user-data">
-				<h2 className='player-name'>{accountUsername}</h2>
-				<p className='player-color'>{playerColor}</p>
-			</div>
 			<div className='player-data' id="opponent-data">
 				<h2 className='player-name'>{opponentName}</h2>
 				<p className='player-color'>{opponentColor}</p>
+			</div>
+			<div className='player-data' id="user-data">
+				<h2 className='player-name'>{accountUsername}</h2>
+				<p className='player-color'>{playerColor}</p>
 			</div>
 		</div>
 	)

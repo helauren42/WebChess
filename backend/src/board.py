@@ -18,7 +18,7 @@ class AbstractBoard(ABC):
             (7, 7): False,
             "bk": False,
         }
-        self.board: list[list[Cell]] = self.initializeCastlingBoard()
+        self.board: list[list[Cell]] = self.initializeBoard()
 
     def updateHasMoved(self, name: str, pos: Pos) -> None:
         if not (name == "wr" or name == "wk" or name == "br" or name == "bk"):
@@ -174,13 +174,13 @@ class AbstractBoard(ABC):
         self.board[pos.y][pos.x].changePiece(Piecenum.EMPTY)
 
     async def assignPos(self, pos: Pos, piece: Piecenum):
-        logger.info(
-            f"pre assign pos x: {pos.x}, y: {pos.y}: {self.board[pos.y][pos.x]}"
-        )
+        previousPiece = self.board[pos.y][pos.x]
+        logger.info(f"pre assign pos x: {pos.x}, y: {pos.y}: {previousPiece}")
         self.board[pos.y][pos.x].changePiece(piece)
         logger.info(
             f"post assign pos x: {pos.x}, y: {pos.y}: {self.board[pos.y][pos.x]}"
         )
+        return previousPiece
 
 
 class Board(AbstractBoard):
@@ -233,11 +233,12 @@ class Board(AbstractBoard):
         logger.info(f"created piece from: {pieceFrom.type}")
         return await pieceFrom.canMove(toPos, destPiece, board)
 
-    async def makeMove(self, fromPos: Pos, toPos: Pos, pieceNum):
+    async def makeMove(self, fromPos: Pos, toPos: Pos, pieceNum) -> str:
         logger.info("pre make move")
         logger.info(self.__str__())
         await self.emptyPos(fromPos)
-        await self.assignPos(toPos, pieceNum)
+        previousPiece = await self.assignPos(toPos, pieceNum)
+        return previousPiece.piece.value
 
     async def makeCastle(
         self, kingPos: Pos, rookPos: Pos, king: AbstractPiece, rook: AbstractPiece
