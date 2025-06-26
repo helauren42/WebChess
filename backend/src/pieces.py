@@ -1,7 +1,7 @@
 from utils import logger
 from abc import ABC
 from cell import Cell, Pos
-from const import BLACK, WHITE, Piecenum
+from const import BLACK, STR_TO_PIECES, WHITE, Piecenum
 from typing import Optional
 
 
@@ -58,12 +58,14 @@ class AbstractPiece(ABC):
             pos = pos + self.utilizedVector
             if pos.isEqual(destPos.x, destPos.y):
                 break
-            logger.info(
-                f"board[destPos.y][destPos.x].piece.name: {board[pos.y][pos.x].piece.name}"
-            )
             if board[pos.y][pos.x].piece.name != "EMPTY":
                 return False
         return True
+
+    async def canCastleTravel(
+        self, kingPos: Optional[Pos], rookPos: Optional[Pos], board: list[list[Cell]]
+    ) -> bool:
+        return False
 
     async def validDestPiece(self, destCell: Cell) -> bool:
         logger.info(f"destination cell color: {destCell.color}")
@@ -141,6 +143,17 @@ class Rook(AbstractPiece):
         super().__init__(_cell)
         self.validNormalAbsolutVectors = [(0, 1), (1, 0)]
         self.canJump = False
+
+    async def canCastleTravel(
+        self, kingPos: Optional[Pos], rookPos: Optional[Pos], board: list[list[Cell]]
+    ) -> bool:
+        if kingPos is None:
+            return False
+        destX = kingPos.x - 1 if self.currPos.x < kingPos.x else kingPos.x + 1
+        self.utilizedVector = Pos({"x": 1 if destX > self.currPos.x else -1, "y": 0})
+        return await self.canTravel(
+            Pos({"x": destX, "y": self.currPos.x}), STR_TO_PIECES[""], board
+        )
 
 
 class Bishop(AbstractPiece):

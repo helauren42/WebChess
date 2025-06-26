@@ -1,5 +1,3 @@
-import pydantic
-from enum import Enum
 from abc import ABC
 from typing import Optional
 import json
@@ -9,21 +7,61 @@ from const import Piecenum, STR_TO_PIECES, PIECES_TO_STR
 from cell import Cell, Pos
 from pieces import createPiece, AbstractPiece
 
-class AbstractBoard(ABC):
-    def __init__(self)->None:
-        self.board:list[list[Cell]] = self.initialize_board()
 
-    def initialize_board(self)->list[list[Cell]]:
+class AbstractBoard(ABC):
+    def __init__(self) -> None:
+        self.castlingHasMoved = {
+            (0, 0): False,
+            (7, 0): False,
+            "wk": False,
+            (0, 7): False,
+            (7, 7): False,
+            "bk": False,
+        }
+        self.board: list[list[Cell]] = self.initialize_board()
+
+    def updateHasMoved(self, name: str, pos: Pos) -> None:
+        if not (name == "wr" or name == "wk" or name == "br" or name == "bk"):
+            return
+        if name == "bk" or name == "wk":
+            self.castlingHasMoved[name] = True
+            return
+        if (pos.x == 0 or pos.x == 7) and (pos.y == 0 or pos.y == 7):
+            self.castlingHasMoved[(pos.x, pos.y)] = True
+
+    def hasMoved(self, name: str, pos: Pos):
+        if name == "wk" or name == "bk":
+            return self.castlingHasMoved[name]
+        if name == "wr":
+            if pos.y != 0 or (pos.x != 0 and pos.x != 7):
+                return True
+            return self.castlingHasMoved[(pos.x, pos.y)]
+        if name == "wr":
+            if pos.y != 7 or (pos.x != 0 and pos.x != 7):
+                return True
+            return self.castlingHasMoved[(pos.x, pos.y)]
+
+    def initialize_board(self) -> list[list[Cell]]:
         board = []
         white_pieces = [
-            Piecenum.WHITE_ROOK, Piecenum.WHITE_KNIGHT, Piecenum.WHITE_BISHOP,
-            Piecenum.WHITE_QUEEN, Piecenum.WHITE_KING,
-            Piecenum.WHITE_BISHOP, Piecenum.WHITE_KNIGHT, Piecenum.WHITE_ROOK
+            Piecenum.WHITE_ROOK,
+            Piecenum.WHITE_KNIGHT,
+            Piecenum.WHITE_BISHOP,
+            Piecenum.WHITE_QUEEN,
+            Piecenum.WHITE_KING,
+            Piecenum.WHITE_BISHOP,
+            Piecenum.WHITE_KNIGHT,
+            Piecenum.WHITE_ROOK,
         ]
         black_pieces = [
-            Piecenum.BLACK_ROOK, Piecenum.BLACK_KNIGHT, Piecenum.BLACK_BISHOP,
-            Piecenum.BLACK_QUEEN, Piecenum.BLACK_KING,
-            Piecenum.BLACK_BISHOP, Piecenum.BLACK_KNIGHT, Piecenum.BLACK_ROOK
+            Piecenum.BLACK_ROOK,
+            Piecenum.BLACK_KNIGHT,
+            Piecenum.BLACK_BISHOP,
+            Piecenum.BLACK_QUEEN,
+            Piecenum.BLACK_KING,
+            Piecenum.BLACK_BISHOP,
+            Piecenum.BLACK_KNIGHT,
+            Piecenum.BLACK_ROOK,
         ]
         for y in range(8):
             row = []
@@ -43,31 +81,37 @@ class AbstractBoard(ABC):
             board.append(row)
         return board
 
-    async def getPiece(self, x:int, y:int)->Piecenum:
+    async def getPiece(self, x: int, y: int) -> Piecenum:
         piece = self.board[y][x].piece
         logger.info(f"got piece: {piece}")
         return piece
 
-    async def emptyPos(self, pos:Pos):
+    async def emptyPos(self, pos: Pos):
         self.board[pos.y][pos.x].changePiece(Piecenum.EMPTY)
 
-    async def assignPos(self, pos:Pos, piece:Piecenum):
-        logger.info(f"pre assign pos x: {pos.x}, y: {pos.y}: {self.board[pos.y][pos.x]}")
+    async def assignPos(self, pos: Pos, piece: Piecenum):
+        logger.info(
+            f"pre assign pos x: {pos.x}, y: {pos.y}: {self.board[pos.y][pos.x]}"
+        )
         self.board[pos.y][pos.x].changePiece(piece)
-        logger.info(f"post assign pos x: {pos.x}, y: {pos.y}: {self.board[pos.y][pos.x]}")
+        logger.info(
+            f"post assign pos x: {pos.x}, y: {pos.y}: {self.board[pos.y][pos.x]}"
+        )
+
 
 class Board(AbstractBoard):
-    def __init__(self, boardStr:Optional[str]=None) -> None:
+    def __init__(self, boardStr: Optional[str] = None) -> None:
         super().__init__()
         if boardStr is not None:
-            self.board:list[list[Cell]] = []
+            self.board: list[list[Cell]] = []
             list_board = json.loads(boardStr)
             for y in range(8):
-                row:list[Cell] = []
+                row: list[Cell] = []
                 for x in range(8):
-                    piece:Piecenum = STR_TO_PIECES[list_board[y][x]]
+                    piece: Piecenum = STR_TO_PIECES[list_board[y][x]]
                     row.append(Cell(x, y, piece))
                 self.board.append(row)
+
     def __str__(self) -> str:
         ret = ""
         for y in range(8):
@@ -81,7 +125,7 @@ class Board(AbstractBoard):
             ret += line
         return ret
 
-    def sendFormat(self)->list[list[str]]:
+    def sendFormat(self) -> list[list[str]]:
         ret = []
         for y in range(8):
             row = []
@@ -90,16 +134,25 @@ class Board(AbstractBoard):
             ret.append(row)
         return ret
 
-    async def canMove(self, fromPos:Pos, toPos:Pos, pieceNum:Piecenum, destPiece:Piecenum, board:list[list[Cell]]):
+    async def canMove(
+        self,
+        fromPos: Pos,
+        toPos: Pos,
+        pieceNum: Piecenum,
+        destPiece: Piecenum,
+        board: list[list[Cell]],
+    ):
         cellFrom = Cell(fromPos.x, fromPos.y, pieceNum)
         logger.info(f"making move with piece: {pieceNum.value}")
         logger.info(f"to dest piece: {destPiece.name}")
-        pieceFrom:AbstractPiece = await createPiece(pieceNum, cellFrom)
+        pieceFrom: AbstractPiece = await createPiece(pieceNum, cellFrom)
         logger.info(f"created piece from: {pieceFrom.type}")
         return await pieceFrom.canMove(toPos, destPiece, board)
-    async def makeMove(self, fromPos:Pos, toPos:Pos, pieceNum):
+
+    async def makeMove(self, fromPos: Pos, toPos: Pos, pieceNum):
         await self.emptyPos(fromPos)
         await self.assignPos(toPos, pieceNum)
+
 
 if __name__ == "__main__":
     board = Board()

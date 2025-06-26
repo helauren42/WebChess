@@ -4,9 +4,10 @@ import os
 
 CWD = os.getcwd()
 ENV_PATH = os.path.abspath(os.path.join(CWD, "../../.env"))
-DB_DIR =  os.path.join(os.path.dirname(CWD), "database/")
+DB_DIR = os.path.join(os.path.dirname(CWD), "database/")
 
-def getEnv(variable:str)-> str:
+
+def getEnv(variable: str) -> str:
     print("ENV PATH : ", ENV_PATH)
     with open(ENV_PATH, "r") as file:
         lines = file.readlines()
@@ -19,6 +20,7 @@ def getEnv(variable:str)-> str:
                     return value
     raise Exception(f"Variable {variable} not found in .env")
 
+
 DB_PORT = 3306
 PORT = 6453
 ORG_NPMSTART = "http://localhost:3000"
@@ -28,6 +30,7 @@ HOST = getEnv("SERVER_HOST")
 WHITE = "white"
 BLACK = "black"
 EMPTY = "empty"
+
 
 class Piecenum(Enum):
     EMPTY = ""
@@ -44,35 +47,35 @@ class Piecenum(Enum):
     BLACK_QUEEN = "bq"
     BLACK_KING = "bk"
 
+
 STR_TO_PIECES = {
-    "" : Piecenum.EMPTY,
-    "wp" : Piecenum.WHITE_PAWN,
-    "wn" : Piecenum.WHITE_KNIGHT,
-    "wb" : Piecenum.WHITE_BISHOP,
-    "wr" : Piecenum.WHITE_ROOK,
-    "wq" : Piecenum.WHITE_QUEEN,
-    "wk" : Piecenum.WHITE_KING,
-    "bp" : Piecenum.BLACK_PAWN,
-    "bn" : Piecenum.BLACK_KNIGHT,
-    "bb" : Piecenum.BLACK_BISHOP,
-    "br" : Piecenum.BLACK_ROOK,
-    "bq" : Piecenum.BLACK_QUEEN,
-    "bk" : Piecenum.BLACK_KING
+    "": Piecenum.EMPTY,
+    "wp": Piecenum.WHITE_PAWN,
+    "wn": Piecenum.WHITE_KNIGHT,
+    "wb": Piecenum.WHITE_BISHOP,
+    "wr": Piecenum.WHITE_ROOK,
+    "wq": Piecenum.WHITE_QUEEN,
+    "wk": Piecenum.WHITE_KING,
+    "bp": Piecenum.BLACK_PAWN,
+    "bn": Piecenum.BLACK_KNIGHT,
+    "bb": Piecenum.BLACK_BISHOP,
+    "br": Piecenum.BLACK_ROOK,
+    "bq": Piecenum.BLACK_QUEEN,
+    "bk": Piecenum.BLACK_KING,
 }
 
 PIECES_TO_STR = {
-    Piecenum.EMPTY : "  ",
-    Piecenum.WHITE_PAWN : "wp",
-    Piecenum.WHITE_KNIGHT : "wn",
-    Piecenum.WHITE_BISHOP : "wb",
-    Piecenum.WHITE_ROOK : "wr",
-    Piecenum.WHITE_QUEEN : "wq",
-    Piecenum.WHITE_KING : "wk",
-    Piecenum.BLACK_PAWN : "bp",
-    Piecenum.BLACK_KNIGHT : "bn",
-    Piecenum.BLACK_BISHOP : "bb",
-    Piecenum.BLACK_ROOK : "br",
-    Piecenum.BLACK_QUEEN : "bq",
-    Piecenum.BLACK_KING : "bk"
+    Piecenum.EMPTY: "  ",
+    Piecenum.WHITE_PAWN: "wp",
+    Piecenum.WHITE_KNIGHT: "wn",
+    Piecenum.WHITE_BISHOP: "wb",
+    Piecenum.WHITE_ROOK: "wr",
+    Piecenum.WHITE_QUEEN: "wq",
+    Piecenum.WHITE_KING: "wk",
+    Piecenum.BLACK_PAWN: "bp",
+    Piecenum.BLACK_KNIGHT: "bn",
+    Piecenum.BLACK_BISHOP: "bb",
+    Piecenum.BLACK_ROOK: "br",
+    Piecenum.BLACK_QUEEN: "bq",
+    Piecenum.BLACK_KING: "bk",
 }
-

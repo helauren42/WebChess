@@ -1,11 +1,8 @@
 from utils import logger
-from abc import ABC
-from enum import Enum
-from typing import Optional
-
 from cell import Cell, Pos
-from const import BLACK, EMPTY, STR_TO_PIECES, WHITE, Piecenum
+from const import BLACK, STR_TO_PIECES, WHITE, Piecenum
 from pieces import AbstractPiece, createPiece
+from game import OnlineGame
 
 
 class ValidateMove:
@@ -17,7 +14,7 @@ class ValidateMove:
         _oldBoard: list[list[Cell]],
         _newBoard: list[list[Cell]],
         _playerColor: str,
-    ) -> None:
+    ) -> bool:
         # opponent is analyzed for immobility and checkmate after current player makes move as those two would signal end of game
         # for player we only look at conditions that could invalidate his move like if after move he still in check
         # so before make move we look at conditions invalidating move and after make move we check for end game
@@ -29,8 +26,10 @@ class ValidateMove:
         self.playerInCheck: bool = await self.isPlayerInCheck()
         self.opponentIsCheckMate: bool = False
         self.opponentIsImmobilized: bool = False
-        self.isGameOver: bool = True if self.opponentIsImmobilized or self.opponentIsCheckMate else False
-        self.valid: bool = True if not self.playerInCheck else False
+        self.isGameOver: bool = (
+            True if self.opponentIsImmobilized or self.opponentIsCheckMate else False
+        )
+        return True if not self.playerInCheck else False
 
     async def getKingPos(self) -> Pos:
         kingPiecenum = (
@@ -51,8 +50,54 @@ class ValidateMove:
                     piece: AbstractPiece = await createPiece(cell.piece, cell)
                     logger.info(f"kingPos: {self.kingPos}")
                     logger.info(f"type(kingPos): {type(self.kingPos)}")
-                    if await piece.canMove(self.kingPos, STR_TO_PIECES["wk"], self.oldBoard):
-                        logger.info(f"player is being checked by {piece.type} {piece.cell}")
+                    if await piece.canMove(
+                        self.kingPos, STR_TO_PIECES["wk"], self.oldBoard
+                    ):
+                        logger.info(
+                            f"player is being checked by {piece.type} {piece.cell}"
+                        )
                         return True
         logger.info("player is not checked, player is free to move")
         return False
+
+    async def kingCanCastleTravel(
+        self,
+        king: AbstractPiece,
+        rookPos: Pos,
+        board: list[list[Cell]],
+        game: OnlineGame,
+    ) -> bool:
+        destX = king.currPos.x + 2 if king.currPos.x < rookPos.x else king.currPos.x - 2
+        destPos = Pos({"x": destX, "y": king.currPos.y})
+        self.utilizedVector = Pos({"x": 1 if destX > king.currPos.x else -1, "y": 0})
+        pos: Pos = king.currPos
+        while True:
+            pos = pos + self.utilizedVector
+            if board[pos.y][pos.x].piece.name != "EMPTY":
+                return False
+            await game.board.makeMove(king.currPos, pos, STR_TO_PIECES[king.type])
+            self.newBoard = game.board.board
+            if await self.isPlayerInCheck():
+                game.board.board = self.oldBoard
+                return False
+            if pos.isEqual(destPos.x, destPos.y):
+                break
+        game.board.board = self.oldBoard
+        return True
+
+    async def testCastle(
+        self,
+        king: AbstractPiece,
+        rook: AbstractPiece,
+        board: list[list[Cell]],
+        game: OnlineGame,
+    ):
+        logger.info("testCastle()")
+        self.oldBoard = game.board.board
+        self.playerColor: str = game.playerTurn
+        self.opponentColor: str = BLACK if self.playerColor == WHITE else WHITE
+        if not await rook.canCastleTravel(
+            king.currPos, rook.currPos, board
+        ) or not await self.kingCanCastleTravel(king, rook.currPos, board, game):
+            logger.info("castle traveling for rook and king not possible")
+            return False

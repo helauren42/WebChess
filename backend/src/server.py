@@ -39,36 +39,52 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/static", StaticFiles(directory="../../reactapp/build/static"), name="static")
+app.mount(
+    "/static", StaticFiles(directory="../../reactapp/build/static"), name="static"
+)
 
 """ ------------------------------------------------------- WEB PAGE ------------------------------------------------------- """
+
 
 @app.get("/")
 async def home():
     return fastapi.responses.FileResponse("../../reactapp/build/index.html")
 
+
 @app.get("/play")
 async def play():
     return fastapi.responses.FileResponse("../../reactapp/build/index.html")
+
+
 @app.get("/play/online")
 async def playOnline():
     return fastapi.responses.FileResponse("../../reactapp/build/index.html")
+
+
 @app.get("/play/matchmaking")
 async def playMatchmaking():
     return fastapi.responses.FileResponse("../../reactapp/build/index.html")
 
+
 @app.get("/social")
 async def social():
     return fastapi.responses.FileResponse("../../reactapp/build/index.html")
+
+
 @app.get("/signup")
 async def signup():
     return fastapi.responses.FileResponse("../../reactapp/build/index.html")
+
+
 @app.get("/login")
 async def login():
     return fastapi.responses.FileResponse("../../reactapp/build/index.html")
+
+
 @app.get("/account")
 async def account():
     return fastapi.responses.FileResponse("../../reactapp/build/index.html")
+
 
 """ ------------------------------------------------------- ACCOUNT ------------------------------------------------------- """
 
@@ -301,6 +317,11 @@ async def websocket_endpoint(websocket: WebSocket):
                     fromPos = Pos(data["fromPos"])
                     toPos = Pos(data["toPos"])
                     await websocketManager.makeMove(gameId, fromPos, toPos)
+                case "makeCastling":
+                    gameId = data["gameId"]
+                    fromPos = Pos(data["fromPos"])
+                    toPos = Pos(data["toPos"])
+                    await websocketManager.makeCastling(gameId, fromPos, toPos)
                 case "userResign":
                     gameId = data["gameId"]
                     await websocketManager.userResign(gameId, username)
@@ -310,6 +331,7 @@ async def websocket_endpoint(websocket: WebSocket):
     except Exception as e:
         await websocketManager.removeClosedSockets()
         logger.error(f"Closed websocket {username} {sessionToken}: {e}")
+
 
 @app.websocket("/matchmaking")
 async def matchmaking(websocket: WebSocket):
@@ -327,7 +349,9 @@ async def matchmaking(websocket: WebSocket):
                 logger.error("invalid sessionToken")
                 await websocket.close()
                 raise Exception("entered wrong session token")
-            logger.info(f"current connection matchmaking: {len(matchMaker.connections)}")
+            logger.info(
+                f"current connection matchmaking: {len(matchMaker.connections)}"
+            )
             if len(matchMaker.connections) > 0:
                 opponent = matchMaker.connections[0].username
                 await websocketManager.startOnlineGame(username, opponent)
@@ -338,6 +362,7 @@ async def matchmaking(websocket: WebSocket):
         logger.error(f"Matchmaking websocket closed: {e}")
         if sessionToken != "":
             matchMaker.removeConnection(sessionToken)
+
 
 if __name__ == "__main__":
     # uvicorn.run("server:app", host=HOST, port=PORT, reload=True, ssl_keyfile="../key.pem", ssl_certfile="../cert.pem")
