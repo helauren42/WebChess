@@ -59,7 +59,7 @@ class AbstractBoard(ABC):
 class Board(AbstractBoard):
     def __init__(self, boardStr:Optional[str]=None) -> None:
         super().__init__()
-        if boardStr != None:
+        if boardStr is not None:
             self.board:list[list[Cell]] = []
             list_board = json.loads(boardStr)
             for y in range(8):

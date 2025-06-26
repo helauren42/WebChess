@@ -33,6 +33,7 @@ class Pos:
         if self.y:
             self.y //= divide
 
+
 class Cell:
     def __init__(self, posX: int, posY: int, _piece: Piecenum) -> None:
         self.x: int = posX
@@ -41,7 +42,9 @@ class Cell:
         self.color = (
             EMPTY
             if self.piece.value == ""
-            else WHITE if self.piece.value[0] == "w" else BLACK
+            else WHITE
+            if self.piece.value[0] == "w"
+            else BLACK
         )
 
     def __str__(self) -> str:
@@ -53,7 +56,9 @@ class Cell:
         self.color = (
             EMPTY
             if self.piece.value == ""
-            else WHITE if self.piece.value[0] == "w" else BLACK
+            else WHITE
+            if self.piece.value[0] == "w"
+            else BLACK
         )
         logger.info(f"post piece: {self.__str__()}")
 

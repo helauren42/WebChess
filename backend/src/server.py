@@ -76,7 +76,7 @@ async def account():
 @app.get("/validatePersistentToken")
 async def validatePersistentToken(persistentToken: str):
     username = db.fetchUsername(persistentToken)
-    if username == None:
+    if username is None:
         return fastapi.Response(status_code=401)
     return fastapi.Response()
 
@@ -105,7 +105,7 @@ async def getPersistentToken(req: SessionToken):
         return fastapi.responses.JSONResponse(
             status_code=500, content={"message": str(e)}
         )
-    if username == None:
+    if username is None:
         return fastapi.responses.JSONResponse(status_code=401, content={})
     persistentToken = str(uuid4())
     return fastapi.responses.JSONResponse(
@@ -118,7 +118,7 @@ async def fetchUsername(req: Token):
     logger.info(f"fetchUsername request: {req.token}")
     username = db.fetchUsername(req.token)
     logger.info(f"found username: {username}")
-    if username == None:
+    if username is None:
         return fastapi.responses.JSONResponse(status_code=401, content={})
     return fastapi.responses.JSONResponse(
         status_code=200, content={"username": username}

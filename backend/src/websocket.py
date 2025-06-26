@@ -60,7 +60,7 @@ class AbstractWebsocketManager(ABC):
 
     async def newGameId(self):
         gameId = None
-        while gameId == None or self.activeGames.get(gameId) != None:
+        while gameId is None or self.activeGames.get(gameId) is not None:
             gameId = random.randint(1, 5000)
         return gameId
 
@@ -131,7 +131,7 @@ class WebsocketManager(AbstractWebsocketManager):
     ):
         logger.info(f"accepted new connection: {username}")
         if (
-            self.connections.get(username) != None
+            self.connections.get(username) is not None
             and self.connections[username].sessionToken != sessionToken
         ):
             logger.info(f"{username} is already connected disconnecting previous session")
@@ -186,7 +186,7 @@ class WebsocketManager(AbstractWebsocketManager):
         logger.info(f"getGameData: {player}")
         gameId = await self.getGameId(player)
         logger.info(f"gameId: {gameId}")
-        if gameId == None:
+        if gameId is None:
             return
         data = await self.activeGames[gameId].getData(player)
         await self.sendMessage("getGameData", data, self.connections[player].websocket)
@@ -199,7 +199,7 @@ class WebsocketManager(AbstractWebsocketManager):
         pieceNum = await game.board.getPiece(fromPos.x, fromPos.y)
         destPiece = await game.board.getPiece(toPos.x, toPos.y)
         logger.info(f"pre can move")
-        if await game.board.canMove(fromPos, toPos, pieceNum, destPiece, oldBoard) == False:
+        if await game.board.canMove(fromPos, toPos, pieceNum, destPiece, oldBoard) is False:
             logger.info(f"move is not valid for piece")
             return
         await game.board.makeMove(fromPos, toPos, pieceNum) 
