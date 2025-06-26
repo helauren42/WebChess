@@ -69,6 +69,7 @@ class ValidateMove:
     ) -> bool:
         destX = king.currPos.x + 2 if king.currPos.x < rookPos.x else king.currPos.x - 2
         destPos = Pos({"x": destX, "y": king.currPos.y})
+        king.castleDest = destPos
         self.utilizedVector = Pos({"x": 1 if destX > king.currPos.x else -1, "y": 0})
         pos: Pos = king.currPos
         while True:
@@ -77,6 +78,9 @@ class ValidateMove:
                 return False
             await game.board.makeMove(king.currPos, pos, STR_TO_PIECES[king.type])
             self.newBoard = game.board.board
+            print("VERIFY THIS BOARD: ")
+            print(self.newBoard.__str__())
+            self.kingPos: Pos = await self.getKingPos()
             if await self.isPlayerInCheck():
                 game.board.board = self.oldBoard
                 return False
@@ -96,8 +100,10 @@ class ValidateMove:
         self.oldBoard = game.board.board
         self.playerColor: str = game.playerTurn
         self.opponentColor: str = BLACK if self.playerColor == WHITE else WHITE
-        if not await rook.canCastleTravel(
-            king.currPos, rook.currPos, board
-        ) or not await self.kingCanCastleTravel(king, rook.currPos, board, game):
+        if not await rook.canCastleTravel(king.currPos, rook.currPos, board):
+            logger.info("rook can not castle")
+            return False
+        if not await self.kingCanCastleTravel(king, rook.currPos, board, game):
             logger.info("castle traveling for rook and king not possible")
             return False
+        return True

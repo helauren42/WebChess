@@ -123,6 +123,11 @@ export class WebSocketManager extends MainWebSocketManager {
 		const data = { "gameId": this.gameData["gameId"], fromPos, toPos }
 		this.websocketSendMessage("makeMove", data)
 	}
+	makeCastling(fromPos, toPos) {
+		console.log("Make castling: ", fromPos, ", ", toPos)
+		const data = { "gameId": this.gameData["gameId"], fromPos, toPos }
+		this.websocketSendMessage("makeCastling", data)
+	}
 	sendUserResign() {
 		const data = { "gameId": this.gameData["gameId"] }
 		this.websocketSendMessage("userResign", data)

@@ -4,6 +4,7 @@ import time
 from utils import logger
 from abc import ABC
 from typing import Optional
+import copy
 
 from cell import Cell, Pos
 from fastapi import WebSocket
@@ -207,7 +208,7 @@ class WebsocketManager(AbstractWebsocketManager):
         game = self.activeGames[gameId]
         logger.info("makeMove()")
         # validate move
-        oldBoard: list[list[Cell]] = game.board.board
+        oldBoard: list[list[Cell]] = copy.deepcopy(game.board.board)
         pieceNum = await game.board.getPiece(fromPos.x, fromPos.y)
         destPiece = await game.board.getPiece(toPos.x, toPos.y)
         logger.info("pre can move")
@@ -216,6 +217,7 @@ class WebsocketManager(AbstractWebsocketManager):
             is False
         ):
             logger.info("move is not valid for piece")
+            game.board.board = oldBoard
             return
         await game.board.makeMove(fromPos, toPos, pieceNum)
         newBoard: list[list[Cell]] = game.board.board
@@ -235,7 +237,7 @@ class WebsocketManager(AbstractWebsocketManager):
     async def makeCastling(self, gameId: int, kingPos: Pos, rookPos: Pos):
         game = self.activeGames[gameId]
         logger.info("makeCastling()")
-        oldBoard: list[list[Cell]] = game.board.board
+        oldBoard: list[list[Cell]] = copy.deepcopy(game.board.board)
         kingPieceNum = await game.board.getPiece(kingPos.x, kingPos.y)
         rookPieceNum = await game.board.getPiece(rookPos.x, rookPos.y)
         king: AbstractPiece = await createPiece(
@@ -245,14 +247,17 @@ class WebsocketManager(AbstractWebsocketManager):
             rookPieceNum, Cell(rookPos.x, rookPos.y, rookPieceNum)
         )
         logger.info("pre can castle")
-        if await VALIDATE_MOVE.testCastle(king, rook, oldBoard, game):
+        if not await VALIDATE_MOVE.testCastle(king, rook, oldBoard, game):
             logger.info("move not valid, new board state invalid")
+            game.board.board = oldBoard
             return
-        # await game.board.makeCastle(kingPos, rookPos)
+        game.board.board = oldBoard
+        await game.board.makeCastle(kingPos, rookPos, king, rook)
         logger.info(f"move done: {await game.getData(game.challenged)}")
-        nextTurn = "black" if game.playerTurn == "white" else "white"
-        game.playerTurn = nextTurn
-        db.updateActiveGame(gameId, nextTurn, json.dumps(game.board.sendFormat()))
+        game.playerTurn = "black" if game.playerTurn == "white" else "white"
+        db.updateActiveGame(
+            gameId, game.playerTurn, json.dumps(game.board.sendFormat())
+        )
         await self.sendGameUpdate(gameId)
 
     async def userResign(self, gameId, username):

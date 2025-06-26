@@ -70,6 +70,36 @@ export const OnlineGame = ({ accountUsername, gameMode, gameData }) => {
 		setSelectedSquare(null)
 		console.log("POST resetting selection")
 	}
+	const isCastlingAttempt = async (squarePos) => {
+		console.log("isCastlingAttempt()")
+		const selectedPos = getPos(selectedSquare)
+		console.log(selectedPos)
+		console.log(squarePos)
+		if (!isPlayerColor(squarePos)) {
+			console.log("is not same player color")
+			return false
+		}
+		const playerRow = gameData["playerColor"] == "white" ? 0 : 7
+		const isKing = gameData["board"][selectedPos.y][selectedPos.x];
+		const playerColor = gameData["playerColor"]
+		console.log(playerColor)
+		console.log(isKing)
+		if ((playerColor == "white" && isKing == "wk") || (playerColor == "black" && isKing == "bk"))
+			console.log("king selected")
+		else {
+			console.log("not king selected")
+			return false
+		}
+		const isRook = gameData["board"][selectedPos.y][selectedPos.x];
+		if ((playerColor == "white" && isRook == "wk") || (playerColor == "black" && isRook == "bk"))
+			console.log("king selected")
+		else {
+			console.log("not rook selected")
+			return false
+		}
+		console.log("!!! IS CASTLING ATTEMPT")
+		return true
+	}
 	const onClickSquare = async (event) => {
 		const clickedSquare = event.target
 		console.log("clicked square: ", clickedSquare)
@@ -79,9 +109,9 @@ export const OnlineGame = ({ accountUsername, gameMode, gameData }) => {
 		console.log("squarePos: ", squarePos)
 
 		const isSamePiece = selectedSquare == clickedSquare.id
+		if (selectedSquare && gameData["playerTurn"] == playerColor && await isCastlingAttempt(squarePos))
+			return resetSelection(), WS.makeCastling(getPos(selectedSquare), squarePos)
 		console.log("PRE resetting selection")
-		console.log("first condition: ", isSamePiece)
-		console.log(!selectedSquare && !isPlayerColor(squarePos))
 		if (isSamePiece || (!selectedSquare && !isPlayerColor(squarePos)))
 			return resetSelection()
 		console.log("PRE setting selection")

@@ -48,7 +48,10 @@ class Cell:
         )
 
     def __str__(self) -> str:
-        return f"Cell {self.x}:{self.y} Piece: {str(self.piece.value)}, color: {self.color}"
+        return f"{self.x},{self.y}: {str(self.piece.value)}"
+
+    def __repr__(self) -> str:
+        return self.__str__()
 
     def changePiece(self, _piece: Piecenum):
         logger.info(f"change piece: {self.__str__()}")

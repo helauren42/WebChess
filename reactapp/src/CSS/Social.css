@@ -51,19 +51,19 @@
 	gap: 1.5rem;
 	overflow: auto;
 	padding-bottom: 1rem;
+	background-color: rgba(60, 42, 95);
 }
 
-#active-users-container::before {
-	position: absolute;
-	content: "";
-	height: 100%;
-	width: 100%;
-	top: 0;
-	left: 0;
-	border-radius: inherit;
-	background-color: rgba(30, 10, 40, 0.5);
-}
-
+/* #active-users-container::before { */
+/* 	position: absolute; */
+/* 	content: ""; */
+/* 	height: 100%; */
+/* 	width: 100%; */
+/* 	top: 0; */
+/* 	left: 0; */
+/* 	border-radius: inherit; */
+/* } */
+/**/
 #active-users-title-container {
 	width: 100%;
 	border-bottom: 0.1rem solid black;
@@ -180,7 +180,7 @@
 	border-right: 0.1rem solid var(--border-color);
 	overflow-y: scroll;
 	font-family: "Chewy";
-	background-color: rgba(155, 155, 255, 0.3);
+	background-color: rgba(65, 50, 120, 1);
 	z-index: 1000;
 }
 

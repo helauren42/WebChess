@@ -18,7 +18,7 @@ class AbstractBoard(ABC):
             (7, 7): False,
             "bk": False,
         }
-        self.board: list[list[Cell]] = self.initialize_board()
+        self.board: list[list[Cell]] = self.initializeCastlingBoard()
 
     def updateHasMoved(self, name: str, pos: Pos) -> None:
         if not (name == "wr" or name == "wk" or name == "br" or name == "bk"):
@@ -41,7 +41,7 @@ class AbstractBoard(ABC):
                 return True
             return self.castlingHasMoved[(pos.x, pos.y)]
 
-    def initialize_board(self) -> list[list[Cell]]:
+    def initializeBoard(self) -> list[list[Cell]]:
         board = []
         white_pieces = [
             Piecenum.WHITE_ROOK,
@@ -80,6 +80,90 @@ class AbstractBoard(ABC):
                 row.append(Cell(x, y, piece))
             board.append(row)
         return board
+
+    def initializeCastlingBoard(self) -> list[list[Cell]]:
+        return [
+            [
+                Cell(0, 0, Piecenum.WHITE_ROOK),
+                Cell(1, 0, Piecenum.EMPTY),
+                Cell(2, 0, Piecenum.EMPTY),
+                Cell(3, 0, Piecenum.EMPTY),
+                Cell(4, 0, Piecenum.WHITE_KING),
+                Cell(5, 0, Piecenum.EMPTY),
+                Cell(6, 0, Piecenum.EMPTY),
+                Cell(7, 0, Piecenum.WHITE_ROOK),
+            ],
+            [
+                Cell(0, 1, Piecenum.WHITE_PAWN),
+                Cell(1, 1, Piecenum.WHITE_PAWN),
+                Cell(2, 1, Piecenum.WHITE_PAWN),
+                Cell(3, 1, Piecenum.WHITE_PAWN),
+                Cell(4, 1, Piecenum.WHITE_PAWN),
+                Cell(5, 1, Piecenum.WHITE_PAWN),
+                Cell(6, 1, Piecenum.WHITE_PAWN),
+                Cell(7, 1, Piecenum.WHITE_PAWN),
+            ],
+            [
+                Cell(0, 2, Piecenum.EMPTY),
+                Cell(1, 2, Piecenum.EMPTY),
+                Cell(2, 2, Piecenum.EMPTY),
+                Cell(3, 2, Piecenum.EMPTY),
+                Cell(4, 2, Piecenum.EMPTY),
+                Cell(5, 2, Piecenum.EMPTY),
+                Cell(6, 2, Piecenum.EMPTY),
+                Cell(7, 2, Piecenum.EMPTY),
+            ],
+            [
+                Cell(0, 3, Piecenum.EMPTY),
+                Cell(1, 3, Piecenum.EMPTY),
+                Cell(2, 3, Piecenum.EMPTY),
+                Cell(3, 3, Piecenum.EMPTY),
+                Cell(4, 3, Piecenum.EMPTY),
+                Cell(5, 3, Piecenum.EMPTY),
+                Cell(6, 3, Piecenum.EMPTY),
+                Cell(7, 3, Piecenum.EMPTY),
+            ],
+            [
+                Cell(0, 4, Piecenum.EMPTY),
+                Cell(1, 4, Piecenum.EMPTY),
+                Cell(2, 4, Piecenum.EMPTY),
+                Cell(3, 4, Piecenum.EMPTY),
+                Cell(4, 4, Piecenum.EMPTY),
+                Cell(5, 4, Piecenum.EMPTY),
+                Cell(6, 4, Piecenum.EMPTY),
+                Cell(7, 4, Piecenum.EMPTY),
+            ],
+            [
+                Cell(0, 5, Piecenum.EMPTY),
+                Cell(1, 5, Piecenum.EMPTY),
+                Cell(2, 5, Piecenum.EMPTY),
+                Cell(3, 5, Piecenum.EMPTY),
+                Cell(4, 5, Piecenum.EMPTY),
+                Cell(5, 5, Piecenum.EMPTY),
+                Cell(6, 5, Piecenum.EMPTY),
+                Cell(7, 5, Piecenum.EMPTY),
+            ],
+            [
+                Cell(0, 6, Piecenum.BLACK_PAWN),
+                Cell(1, 6, Piecenum.BLACK_PAWN),
+                Cell(2, 6, Piecenum.BLACK_PAWN),
+                Cell(3, 6, Piecenum.BLACK_PAWN),
+                Cell(4, 6, Piecenum.BLACK_PAWN),
+                Cell(5, 6, Piecenum.BLACK_PAWN),
+                Cell(6, 6, Piecenum.BLACK_PAWN),
+                Cell(7, 6, Piecenum.BLACK_PAWN),
+            ],
+            [
+                Cell(0, 7, Piecenum.BLACK_ROOK),
+                Cell(1, 7, Piecenum.EMPTY),
+                Cell(2, 7, Piecenum.EMPTY),
+                Cell(3, 7, Piecenum.EMPTY),
+                Cell(4, 7, Piecenum.BLACK_KING),
+                Cell(5, 7, Piecenum.EMPTY),
+                Cell(6, 7, Piecenum.EMPTY),
+                Cell(7, 7, Piecenum.BLACK_ROOK),
+            ],
+        ]
 
     async def getPiece(self, x: int, y: int) -> Piecenum:
         piece = self.board[y][x].piece
@@ -150,8 +234,20 @@ class Board(AbstractBoard):
         return await pieceFrom.canMove(toPos, destPiece, board)
 
     async def makeMove(self, fromPos: Pos, toPos: Pos, pieceNum):
+        logger.info("pre make move")
+        logger.info(self.__str__())
         await self.emptyPos(fromPos)
         await self.assignPos(toPos, pieceNum)
+
+    async def makeCastle(
+        self, kingPos: Pos, rookPos: Pos, king: AbstractPiece, rook: AbstractPiece
+    ):
+        if king.castleDest is None or rook.castleDest is None:
+            logger.info("Not making castle() is None")
+            return
+        logger.info("Making castle()")
+        await self.makeMove(kingPos, king.castleDest, king.cell.piece)
+        await self.makeMove(rookPos, rook.castleDest, rook.cell.piece)
 
 
 if __name__ == "__main__":

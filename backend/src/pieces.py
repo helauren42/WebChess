@@ -16,6 +16,7 @@ class AbstractPiece(ABC):
         self.validDirectionVectors: list[tuple] = []
         self.vectorMove: Optional[Pos] = None
         self.utilizedVector: Optional[Pos] = None
+        self.castleDest: Optional[Pos] = None
 
     async def validVectorMove(self, destPos: Pos) -> bool:
         moveVector = self.currPos.getMove(destPos)
@@ -54,11 +55,15 @@ class AbstractPiece(ABC):
             return False
         pos: Pos = self.currPos
         logger.info(f"utilizedVector: {self.utilizedVector}")
+        logger.info(f"dest pos: {destPos}")
         while True:
+            logger.info(f"pre pos: {pos}")
             pos = pos + self.utilizedVector
+            logger.info(f"pre pos: {pos}")
             if pos.isEqual(destPos.x, destPos.y):
                 break
             if board[pos.y][pos.x].piece.name != "EMPTY":
+                logger.info(f"obstacle: {board[pos.y][pos.x].piece.name}")
                 return False
         return True
 
@@ -151,9 +156,8 @@ class Rook(AbstractPiece):
             return False
         destX = kingPos.x - 1 if self.currPos.x < kingPos.x else kingPos.x + 1
         self.utilizedVector = Pos({"x": 1 if destX > self.currPos.x else -1, "y": 0})
-        return await self.canTravel(
-            Pos({"x": destX, "y": self.currPos.x}), STR_TO_PIECES[""], board
-        )
+        self.castleDest = Pos({"x": destX, "y": self.currPos.y})
+        return await self.canTravel(self.castleDest, STR_TO_PIECES[""], board)
 
 
 class Bishop(AbstractPiece):
