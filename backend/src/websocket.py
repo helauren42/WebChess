@@ -227,10 +227,9 @@ class WebsocketManager(AbstractWebsocketManager):
             game.board.board = oldBoard
             return
         # note if king or rook has moved in case of future castling
-        game.board.updateHasMoved(pieceNum.name, fromPos)
+        game.board.updateHasMoved(pieceNum.value, fromPos)
         logger.info("pre update capture")
         if destPiece.name != "EMPTY":
-            logger.info(f"updating capture {destPiece.name}")
             game.updateCaptured(destPiece.value)
         logger.info(f"move done: {await game.getData(game.challenged)}")
         game.playerTurn = "black" if game.playerTurn == "white" else "white"
@@ -241,6 +240,17 @@ class WebsocketManager(AbstractWebsocketManager):
 
     async def makeCastling(self, gameId: int, kingPos: Pos, rookPos: Pos):
         game = self.activeGames[gameId]
+        if game.board.checkHasMoved(
+            "wk" if game.playerTurn == "white" else "bk", kingPos
+        ):
+            logger.info("King has moved")
+            return
+        if game.board.checkHasMoved(
+            "wr" if game.playerTurn == "white" else "br", rookPos
+        ):
+            logger.info("Rook has moved")
+            return
+        logger.info("king and rook have not moved")
         logger.info("makeCastling()")
         oldBoard: list[list[Cell]] = copy.deepcopy(game.board.board)
         kingPieceNum = await game.board.getPiece(kingPos.x, kingPos.y)

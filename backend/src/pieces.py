@@ -57,9 +57,7 @@ class AbstractPiece(ABC):
         logger.info(f"utilizedVector: {self.utilizedVector}")
         logger.info(f"dest pos: {destPos}")
         while True:
-            logger.info(f"pre pos: {pos}")
             pos = pos + self.utilizedVector
-            logger.info(f"pre pos: {pos}")
             if pos.isEqual(destPos.x, destPos.y):
                 break
             if board[pos.y][pos.x].piece.name != "EMPTY":

@@ -18,25 +18,28 @@ class AbstractBoard(ABC):
             (7, 7): False,
             "bk": False,
         }
-        self.board: list[list[Cell]] = self.initializeBoard()
+        self.board: list[list[Cell]] = self.initializeCastlingBoard()
 
     def updateHasMoved(self, name: str, pos: Pos) -> None:
+        logger.info(f"!!! UPDATE HAS MOVED() {name}")
         if not (name == "wr" or name == "wk" or name == "br" or name == "bk"):
             return
         if name == "bk" or name == "wk":
             self.castlingHasMoved[name] = True
-            return
-        if (pos.x == 0 or pos.x == 7) and (pos.y == 0 or pos.y == 7):
+        elif (pos.x == 0 or pos.x == 7) and (pos.y == 0 or pos.y == 7):
             self.castlingHasMoved[(pos.x, pos.y)] = True
+        logger.info("UPDATING")
+        logger.info(self.castlingHasMoved)
 
-    def hasMoved(self, name: str, pos: Pos):
+    def checkHasMoved(self, name: str, pos: Pos):
+        logger.info("!!! CHECK HAS MOVED()")
         if name == "wk" or name == "bk":
             return self.castlingHasMoved[name]
-        if name == "wr":
+        elif name == "wr":
             if pos.y != 0 or (pos.x != 0 and pos.x != 7):
                 return True
             return self.castlingHasMoved[(pos.x, pos.y)]
-        if name == "wr":
+        elif name == "br":
             if pos.y != 7 or (pos.x != 0 and pos.x != 7):
                 return True
             return self.castlingHasMoved[(pos.x, pos.y)]
@@ -95,13 +98,13 @@ class AbstractBoard(ABC):
             ],
             [
                 Cell(0, 1, Piecenum.WHITE_PAWN),
-                Cell(1, 1, Piecenum.WHITE_PAWN),
-                Cell(2, 1, Piecenum.WHITE_PAWN),
-                Cell(3, 1, Piecenum.WHITE_PAWN),
-                Cell(4, 1, Piecenum.WHITE_PAWN),
-                Cell(5, 1, Piecenum.WHITE_PAWN),
-                Cell(6, 1, Piecenum.WHITE_PAWN),
-                Cell(7, 1, Piecenum.WHITE_PAWN),
+                Cell(1, 1, Piecenum.EMPTY),
+                Cell(2, 1, Piecenum.EMPTY),
+                Cell(3, 1, Piecenum.EMPTY),
+                Cell(4, 1, Piecenum.EMPTY),
+                Cell(5, 1, Piecenum.EMPTY),
+                Cell(6, 1, Piecenum.EMPTY),
+                Cell(7, 1, Piecenum.EMPTY),
             ],
             [
                 Cell(0, 2, Piecenum.EMPTY),
@@ -145,13 +148,13 @@ class AbstractBoard(ABC):
             ],
             [
                 Cell(0, 6, Piecenum.BLACK_PAWN),
-                Cell(1, 6, Piecenum.BLACK_PAWN),
-                Cell(2, 6, Piecenum.BLACK_PAWN),
-                Cell(3, 6, Piecenum.BLACK_PAWN),
-                Cell(4, 6, Piecenum.BLACK_PAWN),
-                Cell(5, 6, Piecenum.BLACK_PAWN),
-                Cell(6, 6, Piecenum.BLACK_PAWN),
-                Cell(7, 6, Piecenum.BLACK_PAWN),
+                Cell(1, 6, Piecenum.EMPTY),
+                Cell(2, 6, Piecenum.EMPTY),
+                Cell(3, 6, Piecenum.EMPTY),
+                Cell(4, 6, Piecenum.EMPTY),
+                Cell(5, 6, Piecenum.EMPTY),
+                Cell(6, 6, Piecenum.EMPTY),
+                Cell(7, 6, Piecenum.EMPTY),
             ],
             [
                 Cell(0, 7, Piecenum.BLACK_ROOK),

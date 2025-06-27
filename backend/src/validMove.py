@@ -67,25 +67,25 @@ class ValidateMove:
         board: list[list[Cell]],
         game: OnlineGame,
     ) -> bool:
+        logger.info("kingCanCastleTravel()")
         destX = king.currPos.x + 2 if king.currPos.x < rookPos.x else king.currPos.x - 2
         destPos = Pos({"x": destX, "y": king.currPos.y})
         king.castleDest = destPos
         self.utilizedVector = Pos({"x": 1 if destX > king.currPos.x else -1, "y": 0})
         pos: Pos = king.currPos
+        self.newBoard = game.board.board
         while True:
-            pos = pos + self.utilizedVector
-            if board[pos.y][pos.x].piece.name != "EMPTY":
-                return False
-            await game.board.makeMove(king.currPos, pos, STR_TO_PIECES[king.type])
-            self.newBoard = game.board.board
-            print("VERIFY THIS BOARD: ")
-            print(self.newBoard.__str__())
             self.kingPos: Pos = await self.getKingPos()
             if await self.isPlayerInCheck():
                 game.board.board = self.oldBoard
                 return False
             if pos.isEqual(destPos.x, destPos.y):
                 break
+            pos = pos + self.utilizedVector
+            if board[pos.y][pos.x].piece.name != "EMPTY":
+                return False
+            await game.board.makeMove(king.currPos, pos, STR_TO_PIECES[king.type])
+            self.newBoard = game.board.board
         game.board.board = self.oldBoard
         return True
 
