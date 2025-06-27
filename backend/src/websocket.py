@@ -242,7 +242,10 @@ class WebsocketManager(AbstractWebsocketManager):
         )
         if state == CHECKMATE:
             (winner, loser) = game.findWinnerLoserNamesForOpponentWin()
-            # todo
+            await self.finishGame(game.gameId, winner, loser, False)
+        elif state == DRAW:
+            (winner, loser) = game.findWinnerLoserNamesForOpponentWin()
+            await self.finishGame(game.gameId, winner, loser, True)
 
     async def makeCastling(self, gameId: int, kingPos: Pos, rookPos: Pos):
         game = self.activeGames[gameId]
@@ -281,10 +284,10 @@ class WebsocketManager(AbstractWebsocketManager):
         )
         await self.sendGameUpdate(gameId)
 
-    async def finishGame(self, gameId, winner, loser):
-        db.storeGameResult(gameId, winner, loser)
+    async def finishGame(self, gameId, winner, loser, draw=False):
+        db.storeGameResult(gameId, winner, loser, draw)
         db.removeActiveGame(gameId)
-        self.activeGames[gameId].setGameFinished(winner)
+        self.activeGames[gameId].setGameFinished(winner, draw)
         await self.sendGameUpdate(gameId)
         self.activeGames.pop(gameId)
 

@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS users (
         email VARCHAR(255) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         total_wins INT DEFAULT 0,
-        total_loss INT DEFAULT 0
+        total_loss INT DEFAULT 0,
+        total_draws INT DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS email_verification (
         email VARCHAR(255) NOT NULL PRIMARY KEY,

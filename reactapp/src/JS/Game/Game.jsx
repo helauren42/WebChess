@@ -60,11 +60,13 @@ const GameBoard = ({ accountUsername, playerColor, opponentName, opponentColor, 
 			const img = makeImage("bp")
 			if (playerColor == "white") {
 				userCaptures.append(img)
-				userCaptures.append(num)
+				if (countBlackPawn > 1)
+					userCaptures.append(num)
 			}
 			else {
 				opponentCaptures.append(img)
-				opponentCaptures.append(num)
+				if (countBlackPawn > 1)
+					opponentCaptures.append(num)
 			}
 		}
 		for (let i = 0; i < whitePieces.length; i++) {
@@ -86,11 +88,13 @@ const GameBoard = ({ accountUsername, playerColor, opponentName, opponentColor, 
 			const img = makeImage("wp")
 			if (playerColor == "black") {
 				userCaptures.append(img)
-				userCaptures.append(num)
+				if (countWhitePawn > 1)
+					userCaptures.append(num)
 			}
 			else {
 				opponentCaptures.append(img)
-				opponentCaptures.append(num)
+				if (countWhitePawn > 1)
+					opponentCaptures.append(num)
 			}
 		}
 	}, [gameData, playerColor])
@@ -113,9 +117,9 @@ const GameOver = ({ gameWinner }) => {
 	return (
 		<div id="results-container">
 			{gameWinner !== "" ? (
-				<h2 className="winner-name">Winner: {gameWinner}</h2>
+				<h2 className="game-result">Winner: {gameWinner}</h2>
 			) : (
-				<h2 id="draw-results">Draw</h2>
+				<h2 className="game-result" id="draw-results">Draw</h2>
 			)}
 		</div>
 	);

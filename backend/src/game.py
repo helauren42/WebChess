@@ -104,6 +104,8 @@ class OnlineGame:
             json.dumps(self.board.sendFormat()),
         )
 
-    def setGameFinished(self, winner):
+    def setGameFinished(self, winner, draw=False):
         self.finished = True
         self.winner = winner
+        if draw:
+            self.winner = ""
