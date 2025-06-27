@@ -18,7 +18,7 @@ class AbstractBoard(ABC):
             (7, 7): False,
             "bk": False,
         }
-        self.board: list[list[Cell]] = self.initializeOneMoveToCheckmateBoard()
+        self.board: list[list[Cell]] = self.initializeBoard()
 
     def updateHasMoved(self, name: str, pos: Pos) -> None:
         logger.info(f"!!! UPDATE HAS MOVED() {name}")
