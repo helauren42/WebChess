@@ -1,6 +1,7 @@
 import json
 import random
 import time
+from const import Piecenum
 from utils import logger
 from abc import ABC
 from typing import Optional
@@ -219,7 +220,7 @@ class WebsocketManager(AbstractWebsocketManager):
             logger.info("move is not valid for piece")
             game.board.board = oldBoard
             return
-        captured = await game.board.makeMove(fromPos, toPos, pieceNum)
+        await game.board.makeMove(fromPos, toPos, pieceNum)
         newBoard: list[list[Cell]] = game.board.board
         if not await VALIDATE_MOVE.test(oldBoard, newBoard, game.playerTurn):
             logger.info("move not valid, new board state invalid")
@@ -227,7 +228,10 @@ class WebsocketManager(AbstractWebsocketManager):
             return
         # note if king or rook has moved in case of future castling
         game.board.updateHasMoved(pieceNum.name, fromPos)
-        game.updateCaptured(captured)
+        logger.info("pre update capture")
+        if destPiece.name != "EMPTY":
+            logger.info(f"updating capture {destPiece.name}")
+            game.updateCaptured(destPiece.value)
         logger.info(f"move done: {await game.getData(game.challenged)}")
         game.playerTurn = "black" if game.playerTurn == "white" else "white"
         db.updateActiveGame(

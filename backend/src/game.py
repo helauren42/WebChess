@@ -1,4 +1,5 @@
 import json
+import logging
 from utils import logger
 import random
 
@@ -15,6 +16,8 @@ class OnlineGame:
         )
 
     def updateCaptured(self, captured: str):
+        logger.info("really updating capture")
+        logger.info(f"!!! CAPTURED: {captured}")
         if self.playerTurn == WHITE:
             self.capturedBlackPieces.append(captured)
         elif self.playerTurn == BLACK:

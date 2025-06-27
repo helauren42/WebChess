@@ -180,7 +180,6 @@ class AbstractBoard(ABC):
         logger.info(
             f"post assign pos x: {pos.x}, y: {pos.y}: {self.board[pos.y][pos.x]}"
         )
-        return previousPiece
 
 
 class Board(AbstractBoard):
@@ -233,12 +232,11 @@ class Board(AbstractBoard):
         logger.info(f"created piece from: {pieceFrom.type}")
         return await pieceFrom.canMove(toPos, destPiece, board)
 
-    async def makeMove(self, fromPos: Pos, toPos: Pos, pieceNum) -> str:
+    async def makeMove(self, fromPos: Pos, toPos: Pos, pieceNum):
         logger.info("pre make move")
         logger.info(self.__str__())
         await self.emptyPos(fromPos)
-        previousPiece = await self.assignPos(toPos, pieceNum)
-        return previousPiece.piece.value
+        await self.assignPos(toPos, pieceNum)
 
     async def makeCastle(
         self, kingPos: Pos, rookPos: Pos, king: AbstractPiece, rook: AbstractPiece
