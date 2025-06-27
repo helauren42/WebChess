@@ -1,6 +1,8 @@
+import copy
+
 from utils import logger
 from cell import Cell, Pos
-from const import BLACK, STR_TO_PIECES, WHITE, Piecenum
+from const import BLACK, STR_TO_PIECES, WHITE, Piecenum, CHECKMATE, DRAW, UNFINISHED
 from pieces import AbstractPiece, createPiece
 from game import OnlineGame
 
@@ -9,7 +11,7 @@ class ValidateMove:
     def __init__(self) -> None:
         pass
 
-    async def test(
+    async def isValidMove(
         self,
         _oldBoard: list[list[Cell]],
         _newBoard: list[list[Cell]],
@@ -18,18 +20,73 @@ class ValidateMove:
         # opponent is analyzed for immobility and checkmate after current player makes move as those two would signal end of game
         # for player we only look at conditions that could invalidate his move like if after move he still in check
         # so before make move we look at conditions invalidating move and after make move we check for end game
+        logger.critical("!!!!! isValidMove()")
+        self.oldBoard: list[list[Cell]] = _oldBoard
+        self.newBoard: list[list[Cell]] = _newBoard
+        logger.critical(f"old board: {self.oldBoard.__str__()}")
+        logger.critical(f"new board: {self.newBoard.__str__()}")
+        self.playerColor: str = _playerColor
+        self.opponentColor: str = BLACK if _playerColor == WHITE else WHITE
+        self.kingPos: Pos = await self.getKingPos()
+        logger.critical(f"kingPos: {self.kingPos}")
+        self.playerInCheck: bool = await self.isPlayerInCheck()
+        ret = True if not self.playerInCheck else False
+        logger.critical(f"!!!!! isValidMove() END: {ret}")
+        return ret
+
+    async def createAllUserPieces(self, board: list[list[Cell]]):
+        found: list[AbstractPiece] = []
+        for y in range(8):
+            for x in range(8):
+                cell = board[y][x]
+                if cell.color == self.playerColor:
+                    pieceObject = await createPiece(cell.piece, cell)
+                    found.append(pieceObject)
+        return found
+
+    async def playerCanMove(self, game: OnlineGame) -> bool:
+        userPieces = await self.createAllUserPieces(game.board.board)
+        oldBoard = copy.deepcopy(game.board.board)
+        for y in range(8):
+            for x in range(8):
+                toPos = Pos({"x": x, "y": y})
+                destPiece = await game.board.getPiece(x, y)
+                for piece in userPieces:
+                    game.board.board = copy.deepcopy(oldBoard)
+                    if not await game.board.canMove(
+                        piece.currPos, toPos, piece.cell.piece, destPiece, oldBoard
+                    ):
+                        continue
+                    await game.board.makeMove(piece.currPos, toPos, piece.cell.piece)
+                    if await self.isValidMove(
+                        oldBoard, game.board.board, self.playerColor
+                    ):
+                        print("can move: ", piece.currPos, ", to: ", toPos)
+                        return True
+        game.board.board = oldBoard
+        return False
+
+    async def isFinished(
+        self,
+        _oldBoard: list[list[Cell]],
+        _newBoard: list[list[Cell]],
+        _playerColor: str,
+        game: OnlineGame,
+    ):
         self.oldBoard: list[list[Cell]] = _oldBoard
         self.newBoard: list[list[Cell]] = _newBoard
         self.playerColor: str = _playerColor
         self.opponentColor: str = BLACK if _playerColor == WHITE else WHITE
         self.kingPos: Pos = await self.getKingPos()
         self.playerInCheck: bool = await self.isPlayerInCheck()
-        self.opponentIsCheckMate: bool = False
-        self.opponentIsImmobilized: bool = False
-        self.isGameOver: bool = (
-            True if self.opponentIsImmobilized or self.opponentIsCheckMate else False
-        )
-        return True if not self.playerInCheck else False
+        if await self.playerCanMove(game):
+            logger.info("PLAYER CAN MOVE")
+            return UNFINISHED
+        if await self.isPlayerInCheck():
+            logger.info("PLAYER IS CHECKMATED")
+            return CHECKMATE
+        logger.info("PLAYER IS IMMOBILIZED => DRAW")
+        return DRAW
 
     async def getKingPos(self) -> Pos:
         kingPiecenum = (
@@ -48,10 +105,11 @@ class ValidateMove:
                 cell: Cell = self.newBoard[y][x]
                 if cell.color == self.opponentColor:
                     piece: AbstractPiece = await createPiece(cell.piece, cell)
+                    logger.info(f"is player in check with piece: {piece.type}")
+                    logger.info(f"at pos: {piece.currPos}")
                     logger.info(f"kingPos: {self.kingPos}")
-                    logger.info(f"type(kingPos): {type(self.kingPos)}")
                     if await piece.canMove(
-                        self.kingPos, STR_TO_PIECES["wk"], self.oldBoard
+                        self.kingPos, STR_TO_PIECES["wk"], self.newBoard
                     ):
                         logger.info(
                             f"player is being checked by {piece.type} {piece.cell}"

@@ -1,5 +1,4 @@
 import json
-import logging
 from utils import logger
 import random
 
@@ -14,6 +13,15 @@ class OnlineGame:
             + f"playerTurn: {self.playerTurn}\n"
             + f"board:\n{self.board}"
         )
+
+    def findWinnerLoserNamesForOpponentWin(self):
+        loser = (
+            self.challenged
+            if self.challengedColor == self.playerTurn
+            else self.challenger
+        )
+        winner = self.challenger if loser == self.challenged else self.challenged
+        return (winner, loser)
 
     def updateCaptured(self, captured: str):
         logger.info("really updating capture")

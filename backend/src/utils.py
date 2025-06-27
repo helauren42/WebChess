@@ -1,6 +1,7 @@
 import logging
 import os
 
+
 def setup_logging():
     log_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "logs"))
     os.makedirs(log_dir, exist_ok=True)
@@ -8,11 +9,11 @@ def setup_logging():
 
     logger = logging.getLogger("chess_app")
     logger.setLevel(logging.DEBUG)
-    logger.propagate = False  
+    logger.propagate = False
 
     logger.handlers.clear()
 
-    file_handler = logging.FileHandler(log_file, mode='a')
+    file_handler = logging.FileHandler(log_file, mode="a")
     file_handler.setLevel(logging.DEBUG)
     file_formatter = logging.Formatter(
         "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
@@ -31,5 +32,6 @@ def setup_logging():
 
     logger.info("Logging initialized for chess_app")
     return logger
+
 
 logger = setup_logging()

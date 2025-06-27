@@ -2,11 +2,9 @@ from uuid import uuid4
 
 import fastapi
 import uvicorn
-from sys import argv
 from fastapi import WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
 from schemas import (
     BothTokens,
     LoginRequest,
@@ -20,13 +18,12 @@ from schemas import (
 from cell import Pos
 from emailManager import EmailManager
 from utils import logger
-from websocket import Matchmaker, MatchmakerConnection, WebsocketManager
+from websocket import Matchmaker, MatchmakerConnection, websocketManager
 from const import ORG_LOCAL, ORG_NPMSTART, PORT, HOST
 from databaseObject import db
 
 app = fastapi.FastAPI()
 emailManager = EmailManager()
-websocketManager = WebsocketManager()
 matchMaker = Matchmaker()
 
 origins = [ORG_NPMSTART, ORG_LOCAL]

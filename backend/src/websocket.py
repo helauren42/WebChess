@@ -1,7 +1,6 @@
 import json
 import random
 import time
-from const import Piecenum
 from utils import logger
 from abc import ABC
 from typing import Optional
@@ -14,6 +13,7 @@ from game import OnlineGame
 from validMove import ValidateMove
 from databaseObject import db
 from pieces import createPiece, AbstractPiece
+from const import CHECKMATE, DRAW, UNFINISHED
 
 VALIDATE_MOVE = ValidateMove()
 
@@ -222,7 +222,7 @@ class WebsocketManager(AbstractWebsocketManager):
             return
         await game.board.makeMove(fromPos, toPos, pieceNum)
         newBoard: list[list[Cell]] = game.board.board
-        if not await VALIDATE_MOVE.test(oldBoard, newBoard, game.playerTurn):
+        if not await VALIDATE_MOVE.isValidMove(oldBoard, newBoard, game.playerTurn):
             logger.info("move not valid, new board state invalid")
             game.board.board = oldBoard
             return
@@ -237,6 +237,12 @@ class WebsocketManager(AbstractWebsocketManager):
             gameId, game.playerTurn, json.dumps(game.board.sendFormat())
         )
         await self.sendGameUpdate(gameId)
+        state = await VALIDATE_MOVE.isFinished(
+            game.board.board, game.board.board, game.playerTurn, game
+        )
+        if state == CHECKMATE:
+            (winner, loser) = game.findWinnerLoserNamesForOpponentWin()
+            # todo
 
     async def makeCastling(self, gameId: int, kingPos: Pos, rookPos: Pos):
         game = self.activeGames[gameId]
@@ -275,16 +281,18 @@ class WebsocketManager(AbstractWebsocketManager):
         )
         await self.sendGameUpdate(gameId)
 
-    async def userResign(self, gameId, username):
-        game = self.activeGames[gameId]
-        # todo
-        winner = game.challenger if game.challenger != username else game.challenged
-        loser = game.challenger if game.challenger == username else game.challenged
+    async def finishGame(self, gameId, winner, loser):
         db.storeGameResult(gameId, winner, loser)
         db.removeActiveGame(gameId)
         self.activeGames[gameId].setGameFinished(winner)
         await self.sendGameUpdate(gameId)
         self.activeGames.pop(gameId)
+
+    async def userResign(self, gameId, username):
+        game = self.activeGames[gameId]
+        winner = game.challenger if game.challenger != username else game.challenged
+        loser = game.challenger if game.challenger == username else game.challenged
+        await self.finishGame(gameId, winner, loser)
 
     async def resignOtherGames(self, player: str):
         toResign = []
@@ -310,3 +318,6 @@ class WebsocketManager(AbstractWebsocketManager):
         game = self.activeGames[gameId]
         await self.sendGameUpdate(gameId, True)
         db.addActiveGame(game)
+
+
+websocketManager = WebsocketManager()

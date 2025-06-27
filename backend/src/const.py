@@ -1,6 +1,9 @@
 from enum import Enum
-from sys import argv
 import os
+
+CHECKMATE = "chechmate"
+DRAW = "draw"
+UNFINISHED = "undone"
 
 CWD = os.getcwd()
 ENV_PATH = os.path.abspath(os.path.join(CWD, "../../.env"))

@@ -295,13 +295,21 @@ class Database(AbstractDb):
             parsed_games[onlineGame.gameId] = onlineGame
         return parsed_games
 
-    def storeGameResult(self, gameId, winner, loser):
-        query = "update users set total_wins=total_wins+1 where username=%s"
-        values = (winner,)
-        self.executeQueryValues(query, values)
-        query = "update users set total_loss=total_loss+1 where username=%s"
-        values = (loser,)
-        self.executeQueryValues(query, values)
+    def storeGameResult(self, gameId, winner, loser, draw=False):
+        if not draw:
+            query = "update users set total_wins=total_wins+1 where username=%s"
+            values = (winner,)
+            self.executeQueryValues(query, values)
+            query = "update users set total_loss=total_loss+1 where username=%s"
+            values = (loser,)
+            self.executeQueryValues(query, values)
+        else:
+            query = "update users set total_draws=total_draws+1 where username=%s"
+            values = (winner,)
+            self.executeQueryValues(query, values)
+            query = "update users set total_draws=total_draws+1 where username=%s"
+            values = (loser,)
+            self.executeQueryValues(query, values)
 
     def removeActiveGame(self, gameId):
         query = "DELETE FROM active_games WHERE gameId=%s"

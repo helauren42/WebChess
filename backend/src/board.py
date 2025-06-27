@@ -18,7 +18,7 @@ class AbstractBoard(ABC):
             (7, 7): False,
             "bk": False,
         }
-        self.board: list[list[Cell]] = self.initializeCastlingBoard()
+        self.board: list[list[Cell]] = self.initializeOneMoveToCheckmateBoard()
 
     def updateHasMoved(self, name: str, pos: Pos) -> None:
         logger.info(f"!!! UPDATE HAS MOVED() {name}")
@@ -106,46 +106,7 @@ class AbstractBoard(ABC):
                 Cell(6, 1, Piecenum.EMPTY),
                 Cell(7, 1, Piecenum.EMPTY),
             ],
-            [
-                Cell(0, 2, Piecenum.EMPTY),
-                Cell(1, 2, Piecenum.EMPTY),
-                Cell(2, 2, Piecenum.EMPTY),
-                Cell(3, 2, Piecenum.EMPTY),
-                Cell(4, 2, Piecenum.EMPTY),
-                Cell(5, 2, Piecenum.EMPTY),
-                Cell(6, 2, Piecenum.EMPTY),
-                Cell(7, 2, Piecenum.EMPTY),
-            ],
-            [
-                Cell(0, 3, Piecenum.EMPTY),
-                Cell(1, 3, Piecenum.EMPTY),
-                Cell(2, 3, Piecenum.EMPTY),
-                Cell(3, 3, Piecenum.EMPTY),
-                Cell(4, 3, Piecenum.EMPTY),
-                Cell(5, 3, Piecenum.EMPTY),
-                Cell(6, 3, Piecenum.EMPTY),
-                Cell(7, 3, Piecenum.EMPTY),
-            ],
-            [
-                Cell(0, 4, Piecenum.EMPTY),
-                Cell(1, 4, Piecenum.EMPTY),
-                Cell(2, 4, Piecenum.EMPTY),
-                Cell(3, 4, Piecenum.EMPTY),
-                Cell(4, 4, Piecenum.EMPTY),
-                Cell(5, 4, Piecenum.EMPTY),
-                Cell(6, 4, Piecenum.EMPTY),
-                Cell(7, 4, Piecenum.EMPTY),
-            ],
-            [
-                Cell(0, 5, Piecenum.EMPTY),
-                Cell(1, 5, Piecenum.EMPTY),
-                Cell(2, 5, Piecenum.EMPTY),
-                Cell(3, 5, Piecenum.EMPTY),
-                Cell(4, 5, Piecenum.EMPTY),
-                Cell(5, 5, Piecenum.EMPTY),
-                Cell(6, 5, Piecenum.EMPTY),
-                Cell(7, 5, Piecenum.EMPTY),
-            ],
+            *[[Cell(x, y, Piecenum.EMPTY) for x in range(8)] for y in range(2, 6)],
             [
                 Cell(0, 6, Piecenum.BLACK_PAWN),
                 Cell(1, 6, Piecenum.EMPTY),
@@ -165,6 +126,51 @@ class AbstractBoard(ABC):
                 Cell(5, 7, Piecenum.EMPTY),
                 Cell(6, 7, Piecenum.EMPTY),
                 Cell(7, 7, Piecenum.BLACK_ROOK),
+            ],
+        ]
+
+    def initializeOneMoveToCheckmateBoard(self) -> list[list[Cell]]:
+        return [
+            [  # 0 = a1 ... 7 = h1 (bottom rank is white's 1st rank)
+                Cell(0, 0, Piecenum.WHITE_ROOK),
+                Cell(1, 0, Piecenum.EMPTY),
+                Cell(2, 0, Piecenum.EMPTY),
+                Cell(3, 0, Piecenum.EMPTY),
+                Cell(4, 0, Piecenum.WHITE_KING),
+                Cell(5, 0, Piecenum.EMPTY),
+                Cell(6, 0, Piecenum.EMPTY),
+                Cell(7, 0, Piecenum.EMPTY),
+            ],
+            [
+                Cell(0, 1, Piecenum.EMPTY),
+                Cell(1, 1, Piecenum.EMPTY),
+                Cell(2, 1, Piecenum.EMPTY),
+                Cell(3, 1, Piecenum.EMPTY),
+                Cell(4, 1, Piecenum.EMPTY),
+                Cell(5, 1, Piecenum.EMPTY),
+                Cell(6, 1, Piecenum.WHITE_QUEEN),  # Q on g2
+                Cell(7, 1, Piecenum.EMPTY),
+            ],
+            *[[Cell(x, y, Piecenum.EMPTY) for x in range(8)] for y in range(2, 6)],
+            [
+                Cell(0, 6, Piecenum.EMPTY),
+                Cell(1, 6, Piecenum.WHITE_ROOK),
+                Cell(2, 6, Piecenum.EMPTY),
+                Cell(3, 6, Piecenum.EMPTY),
+                Cell(4, 6, Piecenum.EMPTY),
+                Cell(5, 6, Piecenum.EMPTY),
+                Cell(6, 6, Piecenum.EMPTY),
+                Cell(7, 6, Piecenum.EMPTY),
+            ],
+            [
+                Cell(0, 7, Piecenum.EMPTY),
+                Cell(1, 7, Piecenum.EMPTY),
+                Cell(2, 7, Piecenum.EMPTY),
+                Cell(3, 7, Piecenum.EMPTY),
+                Cell(4, 7, Piecenum.BLACK_KING),  # King on e8
+                Cell(5, 7, Piecenum.EMPTY),
+                Cell(6, 7, Piecenum.EMPTY),
+                Cell(7, 7, Piecenum.EMPTY),
             ],
         ]
 

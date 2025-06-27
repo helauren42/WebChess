@@ -51,17 +51,21 @@ class AbstractPiece(ABC):
     async def canTravel(
         self, destPos: Pos, destPiece: Piecenum, board: list[list[Cell]]
     ) -> bool:
-        if self.utilizedVector is None:
-            return False
-        pos: Pos = self.currPos
-        logger.info(f"utilizedVector: {self.utilizedVector}")
+        logger.info(f"can travel() from: {self.currPos}")
         logger.info(f"dest pos: {destPos}")
+        if self.utilizedVector is None:
+            logger.critical("utilizedVector not set")
+            return False
+        logger.info(f"utilizedVector: {self.utilizedVector}")
+        pos: Pos = self.currPos
         while True:
             pos = pos + self.utilizedVector
             if pos.isEqual(destPos.x, destPos.y):
                 break
             if board[pos.y][pos.x].piece.name != "EMPTY":
-                logger.info(f"obstacle: {board[pos.y][pos.x].piece.name}")
+                logger.info(
+                    f"obstacle at {pos.x}:{pos.y} : {board[pos.y][pos.x].piece.name}"
+                )
                 return False
         return True
 
@@ -76,9 +80,7 @@ class AbstractPiece(ABC):
         logger.info(f"{self.color == 'white'}")
         logger.info(f"{destCell.color == 'white'}")
         if self.color == destCell.color:
-            logger.info("ret false")
             return False
-        logger.info("ret true")
         return True
 
     async def canMove(
@@ -88,7 +90,7 @@ class AbstractPiece(ABC):
         destCell = board[destPos.y][destPos.x]
         logger.info(f"destCell: {destCell}")
         if await self.validDestPiece(destCell) is False:
-            logger.info("Dest piece is incompatible")
+            logger.info("Dest piece is incompatible color issue")
             return False
         if await self.validVectorMove(destPos) is False:
             logger.info("move is not a valid vector")
