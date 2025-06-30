@@ -233,19 +233,21 @@ class WebsocketManager(AbstractWebsocketManager):
             game.updateCaptured(destPiece.value)
         logger.info(f"move done: {await game.getData(game.challenged)}")
         game.playerTurn = "black" if game.playerTurn == "white" else "white"
-        db.updateActiveGame(
-            gameId, game.playerTurn, json.dumps(game.board.sendFormat())
-        )
         await self.sendGameUpdate(gameId)
         state = await VALIDATE_MOVE.isFinished(
             game.board.board, game.board.board, game.playerTurn, game
         )
+        state = "a"
         if state == CHECKMATE:
             (winner, loser) = game.findWinnerLoserNamesForOpponentWin()
             await self.finishGame(game.gameId, winner, loser, False)
         elif state == DRAW:
             (winner, loser) = game.findWinnerLoserNamesForOpponentWin()
             await self.finishGame(game.gameId, winner, loser, True)
+        else:
+            db.updateActiveGame(
+                gameId, game.playerTurn, json.dumps(game.board.sendFormat())
+            )
 
     async def makeCastling(self, gameId: int, kingPos: Pos, rookPos: Pos):
         game = self.activeGames[gameId]
@@ -279,10 +281,20 @@ class WebsocketManager(AbstractWebsocketManager):
         await game.board.makeCastle(kingPos, rookPos, king, rook)
         logger.info(f"move done: {await game.getData(game.challenged)}")
         game.playerTurn = "black" if game.playerTurn == "white" else "white"
-        db.updateActiveGame(
-            gameId, game.playerTurn, json.dumps(game.board.sendFormat())
+        state = await VALIDATE_MOVE.isFinished(
+            game.board.board, game.board.board, game.playerTurn, game
         )
         await self.sendGameUpdate(gameId)
+        if state == CHECKMATE:
+            (winner, loser) = game.findWinnerLoserNamesForOpponentWin()
+            await self.finishGame(game.gameId, winner, loser, False)
+        elif state == DRAW:
+            (winner, loser) = game.findWinnerLoserNamesForOpponentWin()
+            await self.finishGame(game.gameId, winner, loser, True)
+        else:
+            db.updateActiveGame(
+                gameId, game.playerTurn, json.dumps(game.board.sendFormat())
+            )
 
     async def finishGame(self, gameId, winner, loser, draw=False):
         db.storeGameResult(gameId, winner, loser, draw)

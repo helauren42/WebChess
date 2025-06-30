@@ -28,7 +28,6 @@ def setup_logging():
     console_handler.setFormatter(console_formatter)
 
     logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
 
     logger.info("Logging initialized for chess_app")
     return logger

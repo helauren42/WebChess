@@ -23,8 +23,6 @@ class ValidateMove:
         logger.critical("!!!!! isValidMove()")
         self.oldBoard: list[list[Cell]] = _oldBoard
         self.newBoard: list[list[Cell]] = _newBoard
-        logger.critical(f"old board: {self.oldBoard.__str__()}")
-        logger.critical(f"new board: {self.newBoard.__str__()}")
         self.playerColor: str = _playerColor
         self.opponentColor: str = BLACK if _playerColor == WHITE else WHITE
         self.kingPos: Pos = await self.getKingPos()
@@ -61,6 +59,7 @@ class ValidateMove:
                     if await self.isValidMove(
                         oldBoard, game.board.board, self.playerColor
                     ):
+                        game.board.board = oldBoard
                         print("can move: ", piece.currPos, ", to: ", toPos)
                         return True
         game.board.board = oldBoard

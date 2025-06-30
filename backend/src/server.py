@@ -347,13 +347,16 @@ async def matchmaking(websocket: WebSocket):
                 await websocket.close()
                 raise Exception("entered wrong session token")
             logger.info(
-                f"current connection matchmaking: {len(matchMaker.connections)}"
+                f"pre current connection matchmaking: {len(matchMaker.connections)}"
             )
             if len(matchMaker.connections) > 0:
                 opponent = matchMaker.connections[0].username
                 await websocketManager.startOnlineGame(username, opponent)
             connection = MatchmakerConnection(sessionToken, websocket, username)
             matchMaker.connections.append(connection)
+            logger.info(
+                f"post current connection matchmaking: {len(matchMaker.connections)}"
+            )
 
     except Exception as e:
         logger.error(f"Matchmaking websocket closed: {e}")
@@ -362,5 +365,4 @@ async def matchmaking(websocket: WebSocket):
 
 
 if __name__ == "__main__":
-    # uvicorn.run("server:app", host=HOST, port=PORT, reload=True, ssl_keyfile="../key.pem", ssl_certfile="../cert.pem")
     uvicorn.run("server:app", host=HOST, port=PORT, reload=True)
