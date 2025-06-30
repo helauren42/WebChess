@@ -1,11 +1,10 @@
 import copy
 
-from utils import logger
+from utils import logger, debugLogger
 from cell import Cell, Pos
 from const import BLACK, STR_TO_PIECES, WHITE, Piecenum, CHECKMATE, DRAW, UNFINISHED
 from pieces import AbstractPiece, createPiece
 from game import OnlineGame
-
 
 class ValidateMove:
     def __init__(self) -> None:
@@ -20,7 +19,7 @@ class ValidateMove:
         # opponent is analyzed for immobility and checkmate after current player makes move as those two would signal end of game
         # for player we only look at conditions that could invalidate his move like if after move he still in check
         # so before make move we look at conditions invalidating move and after make move we check for end game
-        logger.critical("!!!!! isValidMove()")
+        debugLogger.log("!!!!! isValidMove()")
         self.oldBoard: list[list[Cell]] = _oldBoard
         self.newBoard: list[list[Cell]] = _newBoard
         self.playerColor: str = _playerColor
@@ -29,7 +28,7 @@ class ValidateMove:
         logger.critical(f"kingPos: {self.kingPos}")
         self.playerInCheck: bool = await self.isPlayerInCheck()
         ret = True if not self.playerInCheck else False
-        logger.critical(f"!!!!! isValidMove() END: {ret}")
+        debugLogger.log(f"!!!!! isValidMove() END: {ret}")
         return ret
 
     async def createAllUserPieces(self, board: list[list[Cell]]):
@@ -45,23 +44,24 @@ class ValidateMove:
     async def playerCanMove(self, game: OnlineGame) -> bool:
         userPieces = await self.createAllUserPieces(game.board.board)
         oldBoard = copy.deepcopy(game.board.board)
-        for y in range(8):
-            for x in range(8):
+        for piece in userPieces:
+            debugLogger.log(f"piece: {piece.type}")
+            moves = await piece.findMoves(oldBoard)
+            debugLogger.log("moves: " + moves.__repr__())
+            for move in moves:
+                (x, y) = move
                 toPos = Pos({"x": x, "y": y})
                 destPiece = await game.board.getPiece(x, y)
-                for piece in userPieces:
-                    game.board.board = copy.deepcopy(oldBoard)
-                    if not await game.board.canMove(
-                        piece.currPos, toPos, piece.cell.piece, destPiece, oldBoard
-                    ):
-                        continue
-                    await game.board.makeMove(piece.currPos, toPos, piece.cell.piece)
-                    if await self.isValidMove(
-                        oldBoard, game.board.board, self.playerColor
-                    ):
-                        game.board.board = oldBoard
-                        print("can move: ", piece.currPos, ", to: ", toPos)
-                        return True
+                game.board.board = copy.deepcopy(oldBoard)
+                if not await game.board.canMove(
+                    piece.currPos, toPos, piece.cell.piece, destPiece, oldBoard
+                ):
+                    continue
+                await game.board.makeMove(piece.currPos, toPos, piece.cell.piece)
+                if await self.isValidMove(oldBoard, game.board.board, self.playerColor):
+                    game.board.board = oldBoard
+                    print("can move: ", piece.currPos, ", to: ", toPos)
+                    return True
         game.board.board = oldBoard
         return False
 

@@ -237,7 +237,6 @@ class WebsocketManager(AbstractWebsocketManager):
         state = await VALIDATE_MOVE.isFinished(
             game.board.board, game.board.board, game.playerTurn, game
         )
-        state = "a"
         if state == CHECKMATE:
             (winner, loser) = game.findWinnerLoserNamesForOpponentWin()
             await self.finishGame(game.gameId, winner, loser, False)
@@ -297,6 +296,7 @@ class WebsocketManager(AbstractWebsocketManager):
             )
 
     async def finishGame(self, gameId, winner, loser, draw=False):
+        logger.info(f"finishing game, winner: {winner}, loser: {loser}, draw: {draw}")
         db.storeGameResult(gameId, winner, loser, draw)
         db.removeActiveGame(gameId)
         self.activeGames[gameId].setGameFinished(winner, draw)

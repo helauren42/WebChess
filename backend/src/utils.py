@@ -1,7 +1,6 @@
 import logging
 import os
 
-
 def setup_logging():
     log_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "logs"))
     os.makedirs(log_dir, exist_ok=True)
@@ -34,3 +33,12 @@ def setup_logging():
 
 
 logger = setup_logging()
+
+class DebugLogging():
+    def __init__(self) -> None:
+        self.file = open("../logs/debugLogger.log", "a")
+    def log(self, string:str):
+        self.file.write(string + "\n")
+        self.file.flush()
+
+debugLogger = DebugLogging()

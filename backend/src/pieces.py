@@ -1,4 +1,4 @@
-from utils import logger
+from utils import logger, debugLogger
 from abc import ABC
 from cell import Cell, Pos
 from const import BLACK, STR_TO_PIECES, WHITE, Piecenum
@@ -17,6 +17,30 @@ class AbstractPiece(ABC):
         self.vectorMove: Optional[Pos] = None
         self.utilizedVector: Optional[Pos] = None
         self.castleDest: Optional[Pos] = None
+
+    async def findMoves(self, board:list[list[Cell]]) -> list[tuple[int,int]]:
+        moves: list[tuple[int,int]] = []
+        for direction in self.validDirectionVectors:
+            (x, y) = direction
+            moveVector = Pos({"x": x, "y": y})
+            pos = self.cell.getPos()
+            newPos =  pos + moveVector
+            debugLogger.log(f"pos: {pos} + moveVector: {moveVector} = {newPos}")
+            if newPos.x < 0 or newPos.y < 0 or newPos.x > 7 or newPos.y > 7:
+                continue
+            if self.color != board[newPos.y][newPos.x].color:
+                moves.append((newPos.x, newPos.y))
+        for absolute in self.validNormalAbsolutVectors:
+            newPos = self.cell.getPos()
+            (x, y) = absolute
+            moveVector = Pos({"x": x, "y": y})
+            while True:
+                newPos += moveVector
+                if newPos.x < 0 or newPos.y < 0 or newPos.x > 7 or newPos.y > 7:
+                    break
+                if self.color != board[newPos.y][newPos.x].color:
+                    moves.append((newPos.x, newPos.y))
+        return moves
 
     async def validVectorMove(self, destPos: Pos) -> bool:
         moveVector = self.currPos.getMove(destPos)
