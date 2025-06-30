@@ -91,6 +91,9 @@ class AbstractWebsocketManager(ABC):
 
     async def sendMessage(self, type: str, data: str, websocket: WebSocket):
         logger.info(f"sending message type: {type}\ndata: {data}")
+        if websocket.client_state != WebSocketState.CONNECTED:
+            logger.info("could not send websocket is disconnected already")
+            return
         await websocket.send_json(data={"type": type, "data": data})
 
     async def sendGameUpdate(self, gameId, first=False):
@@ -159,9 +162,12 @@ class WebsocketManager(AbstractWebsocketManager):
             usernames: list = list(activeUsers)
             usernames.remove(username)
             data = json.dumps(usernames)
-            await self.sendMessage(
-                "activeUsers", data, self.connections[username].websocket
-            )
+            websocket = self.connections[username].websocket
+            if websocket.client_state != WebSocketState.DISCONNECTED:
+                try:
+                    await self.sendMessage("activeUsers", data, websocket)
+                except Exception as e:
+                    logger.error("could not send message update active users: ", e)
 
     async def msgGlobalChat(self, message, sender):
         # time in minutes

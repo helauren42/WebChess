@@ -40,5 +40,7 @@ class DebugLogging():
     def log(self, string:str):
         self.file.write(string + "\n")
         self.file.flush()
+    def close(self):
+        self.file.close()
 
 debugLogger = DebugLogging()

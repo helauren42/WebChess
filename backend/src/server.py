@@ -1,8 +1,9 @@
 from uuid import uuid4
-
+from typing import Optional
 import fastapi
+from fastapi.websockets import WebSocketState
 import uvicorn
-from fastapi import WebSocket
+from fastapi import WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from schemas import (
@@ -17,7 +18,7 @@ from schemas import (
 
 from cell import Pos
 from emailManager import EmailManager
-from utils import logger
+from utils import logger, debugLogger
 from websocket import Matchmaker, MatchmakerConnection, websocketManager
 from const import ORG_LOCAL, ORG_NPMSTART, PORT, HOST
 from databaseObject import db
@@ -290,6 +291,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 # todo case "disconnect"
                 case "disconnect":
                     await websocketManager.disconnect(username)
+                    await websocketManager.removeClosedSockets()
                 case "challengeUser":
                     challenger = data["challenger"]
                     challenged = data["challenged"]
@@ -333,36 +335,55 @@ async def websocket_endpoint(websocket: WebSocket):
 @app.websocket("/matchmaking")
 async def matchmaking(websocket: WebSocket):
     sessionToken = ""
+    connection: Optional[MatchmakerConnection] = None
     try:
         await websocket.accept()
-        logger.info("accepted new matchmaking websocket connection")
+        logger.info("Accepted new matchmaking websocket connection")
         while True:
-            sessionToken = await websocket.receive_text()
-            logger.debug(f"websocket recv: {sessionToken}")
-            if sessionToken == "":
-                continue
-            username = db.fetchUsername(sessionToken)
-            if username is None:
-                logger.error("invalid sessionToken")
-                await websocket.close()
-                raise Exception("entered wrong session token")
-            logger.info(
-                f"pre current connection matchmaking: {len(matchMaker.connections)}"
-            )
-            if len(matchMaker.connections) > 0:
-                opponent = matchMaker.connections[0].username
-                await websocketManager.startOnlineGame(username, opponent)
-            connection = MatchmakerConnection(sessionToken, websocket, username)
-            matchMaker.connections.append(connection)
-            logger.info(
-                f"post current connection matchmaking: {len(matchMaker.connections)}"
-            )
-
+            try:
+                sessionToken = await websocket.receive_text()
+                logger.debug(f"websocket recv: {sessionToken}")
+                
+                if not sessionToken:
+                    logger.warning("Empty sessionToken received")
+                    continue
+                
+                username = db.fetchUsername(sessionToken)
+                if username is None:
+                    logger.error("Invalid sessionToken")
+                    await websocket.send_text("Invalid session token")
+                    await websocket.close(code=1008)
+                    return
+                
+                logger.info(f"Pre-connection matchmaking: {len(matchMaker.connections)}")
+                
+                if matchMaker.connections:
+                    opponent = matchMaker.connections[0].username
+                    await websocketManager.startOnlineGame(username, opponent)
+                    matchMaker.removeConnection(matchMaker.connections[0].sessionToken)
+                
+                connection = MatchmakerConnection(sessionToken, websocket, username)
+                matchMaker.connections.append(connection)
+                logger.info(f"Post-connection matchmaking: {len(matchMaker.connections)}")
+                
+                await websocket.receive_text()
+            except fastapi.WebSocketDisconnect:
+                logger.info("Client disconnected from matchmaking")
+                break
+            except Exception as e:
+                logger.error(f"Error in matchmaking loop: {e}")
+                break
+                
     except Exception as e:
-        logger.error(f"Matchmaking websocket closed: {e}")
-        if sessionToken != "":
+        logger.error(f"Matchmaking websocket failed: {e}")
+    finally:
+        if connection:
             matchMaker.removeConnection(sessionToken)
+            logger.info(f"Removed connection for sessionToken: {sessionToken}")
+        if websocket.client_state != WebSocketState.DISCONNECTED:
+            await websocket.close()
 
 
 if __name__ == "__main__":
     uvicorn.run("server:app", host=HOST, port=PORT, reload=True)
+    debugLogger.close()
