@@ -59,8 +59,10 @@ export const LoginPage = ({ sessionToken, setSessionToken, persistentToken, setP
 		const cookies = document.cookie
 		console.log("cookies: ", cookies)
 		if (data["stayLoggedIn"]) {
-			setPersistentToken(data["persistentToken"])
-			document.cookie = `persistentToken=${persistentToken}; max-age=${3600 * 24 * 365}; path=/; `;
+			const longToken = data["persistentToken"]
+			console.log("setting persistenToken cookie: ", longToken)
+			setPersistentToken(longToken)
+			document.cookie = `persistentToken=${longToken}; max-age=${3600 * 24 * 365}; path=/; `;
 		}
 		navigate("/")
 		setSignedIn(true)

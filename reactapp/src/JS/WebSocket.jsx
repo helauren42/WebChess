@@ -32,6 +32,7 @@ export class MainWebSocketManager {
 	}
 	disconnect() {
 		if (this.WS) {
+			console.log("disconnection websocket")
 			this.WS.close()
 			this.WS = null
 		}
@@ -44,9 +45,10 @@ export class MainWebSocketManager {
 export class WebSocketManager extends MainWebSocketManager {
 	init(_sessionToken, _setActiveUsers, _globalChatHistory, _setGlobalChatHistory, _navigate, _setGameData) {
 		this.baseInit(_sessionToken, _setActiveUsers, _globalChatHistory, _setGlobalChatHistory, _navigate, _setGameData)
+		console.log("Initializing websocket")
 		this.WS.addEventListener("close", () => {
-			console.log("websocket closed")
-			displayDialogWebsocketDisconnectionError()
+			console.log("main websocket closed")
+			// displayDialogWebsocketDisconnectionError()
 		})
 		this.WS.onmessage = (event) => {
 			console.log("WS on message:", event.data)
