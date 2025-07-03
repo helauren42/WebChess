@@ -17,7 +17,7 @@ dockerDown:
 
 dockerRe: clean dockerUp
 
-deploy: fclean buildFront dockerUp
+deploy: fclean dockerUp
 
 deployBack: clean dockerUp
 
