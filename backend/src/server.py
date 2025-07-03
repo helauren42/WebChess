@@ -343,29 +343,33 @@ async def matchmaking(websocket: WebSocket):
             try:
                 sessionToken = await websocket.receive_text()
                 logger.debug(f"websocket recv: {sessionToken}")
-                
+
                 if not sessionToken:
                     logger.warning("Empty sessionToken received")
                     continue
-                
+
                 username = db.fetchUsername(sessionToken)
                 if username is None:
                     logger.error("Invalid sessionToken")
                     await websocket.send_text("Invalid session token")
                     await websocket.close(code=1008)
                     return
-                
-                logger.info(f"Pre-connection matchmaking: {len(matchMaker.connections)}")
-                
+
+                logger.info(
+                    f"Pre-connection matchmaking: {len(matchMaker.connections)}"
+                )
+
                 if matchMaker.connections:
                     opponent = matchMaker.connections[0].username
                     await websocketManager.startOnlineGame(username, opponent)
                     matchMaker.removeConnection(matchMaker.connections[0].sessionToken)
-                
+
                 connection = MatchmakerConnection(sessionToken, websocket, username)
                 matchMaker.connections.append(connection)
-                logger.info(f"Post-connection matchmaking: {len(matchMaker.connections)}")
-                
+                logger.info(
+                    f"Post-connection matchmaking: {len(matchMaker.connections)}"
+                )
+
                 await websocket.receive_text()
             except fastapi.WebSocketDisconnect:
                 logger.info("Client disconnected from matchmaking")
@@ -373,7 +377,7 @@ async def matchmaking(websocket: WebSocket):
             except Exception as e:
                 logger.error(f"Error in matchmaking loop: {e}")
                 break
-                
+
     except Exception as e:
         logger.error(f"Matchmaking websocket failed: {e}")
     finally:

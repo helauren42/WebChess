@@ -31,6 +31,7 @@ function getCookie(name) {
 }
 
 const App = () => {
+	console.log("start cookies: ", document.cookie)
 	const [signedIn, setSignedIn] = useState(getCookie("sessionToken") != null ? true : getCookie("persistentToken") != null ? true : false)
 	const [accountUsername, setAccountUsername] = useState("")
 	const [globalChatHistory, setGlobalChatHistory] = useState([])
@@ -40,8 +41,13 @@ const App = () => {
 	const [sessionToken, setSessionToken] = useState(getCookie("sessionToken"))
 	const [persistentToken, setPersistentToken] = useState(getCookie("persistentToken"))
 	const navigate = useNavigate()
-	console.log("start cookies: ", document.cookie)
 
+	useEffect(() => {
+		console.log("changed sessiontToken: ", sessionToken)
+	}, [sessionToken])
+	useEffect(() => {
+		console.log("changed persistentToken: ", persistentToken)
+	}, [persistentToken])
 	useEffect(() => {
 		console.log("gameData: ", gameData)
 	}, [gameData])
@@ -64,13 +70,13 @@ const App = () => {
 			return
 		}
 		// persistent token valid so let's set session token
-		setSessionToken(crypto.randomUUID())
-		console.log("sessionToken created: ", sessionToken)
-		document.cookie = `sessionToken=${sessionToken}; path=/;`;
+		const createdToken = crypto.randomUUID()
+		console.log("sessionToken created: ", createdToken)
+		document.cookie = `sessionToken=${createdToken}; path=/;`;
 		const resp = await fetch(`${SOCKET_ADDRESS}/addSessionToken`, {
 			method: "POST",
 			headers: { "Content-type": "application/json" },
-			body: JSON.stringify({ sessionToken, persistentToken })
+			body: JSON.stringify({ sessionToken: createdToken, persistentToken: persistentToken })
 		}).then((resp) => {
 			return resp
 		}).catch((e) => {
@@ -80,7 +86,9 @@ const App = () => {
 		if (!resp || resp.status !== 200) {
 			console.log("error adding session token: ", resp)
 			displayDialogServerConnectionError()
+			return
 		}
+		setSessionToken(createdToken)
 		console.log("added session token from persistent token")
 	}
 	const fetchUsername = async () => {
