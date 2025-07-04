@@ -4,11 +4,12 @@ import mysql
 import mysql.connector
 from mysql.connector.abstracts import MySQLCursorAbstract
 from typing import Optional
+import subprocess
 
 from schemas import LoginRequest, SignupRequest
 from game import OnlineGame
 
-from const import ENV_PATH, DB_DIR, DB_PORT
+from const import ENV_PATH, DB_DIR, DB_PORT, getEnv
 
 
 class AbstractDb:
@@ -25,7 +26,6 @@ class AbstractDb:
         self.table_active_games: str = ""
         self.fetchCredentials()
         self.connectCursor()
-        # self.createDb()
 
     def connectCursor(self):
         self.cnx = mysql.connector.connect(
@@ -39,41 +39,38 @@ class AbstractDb:
         self.cursor = self.cnx.cursor()
 
     def createBuildFile(self):
-        # subprocess.run(["touch build.sql"], shell=True, cwd=DB_DIR)
-        lines: list[str] = []
         with open(f"{DB_DIR}create.sql", "r") as readfile:
-            lines = readfile.readlines()
-            for i in range(len(lines)):
-                lines[i] = lines[i].replace("DB_HOST", self.host)
-                lines[i] = lines[i].replace("DB_USER", self.user)
-                lines[i] = lines[i].replace("DB_PASSWORD", self.password)
-                lines[i] = lines[i].replace("DB_NAME", self.name)
-                lines[i] = lines[i].replace("DB_TABLE_USERS", self.table_users)
-                lines[i] = lines[i].replace(
-                    "DB_TABLE_EMAIL_VERIFICATION", self.table_email_verification
-                )
-                lines[i] = lines[i].replace(
-                    "DB_TABLE_SESSION_TOKEN", self.table_session_token
-                )
-                lines[i] = lines[i].replace(
-                    "DB_TABLE_PERSISTENT_TOKEN", self.table_persistent_token
-                )
-                lines[i] = lines[i].replace(
-                    "DB_TABLE_GLOBAL_CHAT", self.table_global_chat
-                )
-                lines[i] = lines[i].replace(
-                    "DB_TABLE_ACTIVE_GAMES", self.table_active_games
-                )
-        return lines
+            content = readfile.read()
+            content = content.replace("DB_HOST", self.host)
+            content = content.replace("DB_USER", self.user)
+            content = content.replace("DB_PASSWORD", self.password)
+            content = content.replace("DB_NAME", self.name)
+            content = content.replace("DB_TABLE_USERS", self.table_users)
+            content = content.replace(
+                "DB_TABLE_EMAIL_VERIFICATION", self.table_email_verification
+            )
+            content = content.replace(
+                "DB_TABLE_SESSION_TOKEN", self.table_session_token
+            )
+            content = content.replace(
+                "DB_TABLE_PERSISTENT_TOKEN", self.table_persistent_token
+            )
+            content = content.replace("DB_TABLE_GLOBAL_CHAT", self.table_global_chat)
+            content = content.replace("DB_TABLE_ACTIVE_GAMES", self.table_active_games)
+        return content
 
     def createDb(self):
         logger.info("creating database")
-        lines = self.createBuildFile()
-        for line in lines:
-            cmd = line.strip("; \n")
-            self.execute(cmd)
-        logger.info("running subprocess excecuting mysql build")
-        # subprocess.run(f"mysql -u {getEnv('SYSTEM_USER')} < {DB_DIR}build.sql", shell=True)
+        content = self.createBuildFile()
+        subprocess.run(["rm init.sql"], shell=True, cwd=DB_DIR)
+        subprocess.run(["touch init.sql"], shell=True, cwd=DB_DIR)
+        with open(f"{DB_DIR}init.sql", "w") as file:
+            file.write(content)
+        logger.info("built init.sql")
+        # logger.info("running subprocess excecuting mysql build")
+        # subprocess.run(
+        #     f"mysql -u {getEnv('SYSTEM_USER')} < {DB_DIR}build.sql", shell=True
+        # )
         # subprocess.run(["rm build.sql"], shell=True, cwd=DB_DIR)
 
     def fetchCredentials(self):
@@ -315,3 +312,8 @@ class Database(AbstractDb):
         query = "DELETE FROM active_games WHERE gameId=%s"
         values = (gameId,)
         self.executeQueryValues(query, values)
+
+
+if __name__ == "__main__":
+    builderDb: Database = Database()
+    builderDb.createDb()
