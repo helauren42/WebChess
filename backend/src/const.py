@@ -26,7 +26,7 @@ def getEnv(variable: str) -> str:
     raise Exception(f"Variable {variable} not found in .env")
 
 
-DB_PORT = 3306
+DB_PORT = getEnv("DB_PORT")
 PORT = 3458
 ORG_NPMSTART = "http://localhost:3000"
 ORG_LOCAL = "http://localhost:6453"
