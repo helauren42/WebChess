@@ -8,6 +8,9 @@ UNFINISHED = "undone"
 CWD = os.getcwd()
 ENV_PATH = os.path.abspath(os.path.join(CWD, "../../.env"))
 DB_DIR = os.path.join(os.path.dirname(CWD), "database/")
+DOCKER_MYSQL_DIR = (
+    os.path.abspath(os.path.join(os.path.dirname(CWD), "../docker/mysql/")) + "/"
+)
 
 
 def getEnv(variable: str) -> str:

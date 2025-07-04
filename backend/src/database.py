@@ -8,12 +8,11 @@ import subprocess
 
 from schemas import LoginRequest, SignupRequest
 from game import OnlineGame
-
-from const import ENV_PATH, DB_DIR, DB_PORT, getEnv
+from const import ENV_PATH, DB_DIR, DB_PORT, DOCKER_MYSQL_DIR
 
 
 class AbstractDb:
-    def __init__(self):
+    def __init__(self, buildInit: bool = False):
         self.host: str = ""
         self.user: str = ""
         self.password: str = ""
@@ -25,7 +24,10 @@ class AbstractDb:
         self.table_global_chat: str = ""
         self.table_active_games: str = ""
         self.fetchCredentials()
-        self.connectCursor()
+        if buildInit:
+            self.createDb()
+        else:
+            self.connectCursor()
 
     def connectCursor(self):
         self.cnx = mysql.connector.connect(
@@ -62,16 +64,15 @@ class AbstractDb:
     def createDb(self):
         logger.info("creating database")
         content = self.createBuildFile()
-        subprocess.run(["rm init.sql"], shell=True, cwd=DB_DIR)
-        subprocess.run(["touch init.sql"], shell=True, cwd=DB_DIR)
-        with open(f"{DB_DIR}init.sql", "w") as file:
+        subprocess.run(
+            ["rm", "init.sql"],
+            cwd=DOCKER_MYSQL_DIR,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        with open(f"{DOCKER_MYSQL_DIR}init.sql", "w") as file:
             file.write(content)
         logger.info("built init.sql")
-        # logger.info("running subprocess excecuting mysql build")
-        # subprocess.run(
-        #     f"mysql -u {getEnv('SYSTEM_USER')} < {DB_DIR}build.sql", shell=True
-        # )
-        # subprocess.run(["rm build.sql"], shell=True, cwd=DB_DIR)
 
     def fetchCredentials(self):
         with open(ENV_PATH, "r") as file:
@@ -315,5 +316,4 @@ class Database(AbstractDb):
 
 
 if __name__ == "__main__":
-    builderDb: Database = Database()
-    builderDb.createDb()
+    builderDb: AbstractDb = AbstractDb(True)

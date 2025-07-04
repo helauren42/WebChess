@@ -1,3 +1,6 @@
+initSql:
+	make initSql -C backend
+
 devFront:
 	npm cache clean --force
 	(cd reactapp/ && npm start)
@@ -15,20 +18,13 @@ dockerUp:
 dockerDown:
 	docker compose down
 
-dockerRe: clean dockerUp
+dockerRe: clean dockerDown dockerUp
 
-deploy: fclean dockerUp
-
-deployBack: clean dockerUp
+deploy: clean initSql dockerUp
 
 clean:
 	docker compose down --rmi local
 	docker system prune -f
 
-fclean:
-	docker compose down -v --rmi local
-	docker system prune -f
-	rm -rf reactapp/build/
-
-.PHONY: devFront devBack buildFront dockerUp production clean fclean
+.PHONY: devFront devBack buildFront dockerUp production clean initSql
 

@@ -13,7 +13,10 @@ all: pymodules
 dev: pymodules
 	cd src && ../$(VENV_DIR)/bin/python3 server.py development
 
+initSql: pymodules
+	cd src && ../$(VENV_DIR)/bin/python3 database.py
+
 fclean: clearPyVenv
 	rm -rf $(VENV_DIR)
 
-.PHONY: all fclean
+.PHONY: all dev fclean initSql
