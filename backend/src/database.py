@@ -33,8 +33,8 @@ class AbstractDb:
         self.cnx = mysql.connector.connect(
             host=self.host,
             port=DB_PORT,
-            user=self.user,
-            password=self.password,
+            user="root",
+            password="ehrui@)!ew?/||r32u&)niwe23423",
             database=self.name,
             autocommit=True,
         )

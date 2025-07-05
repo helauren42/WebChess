@@ -27,9 +27,10 @@ def getEnv(variable: str) -> str:
 
 
 DB_PORT = getEnv("DB_PORT")
-PORT = 3458
+PORT = 6453
 ORG_NPMSTART = "http://localhost:3000"
 ORG_LOCAL = "http://localhost:6453"
+ORG_SERVER = "http://188.68.57.140:6453"
 
 HOST = getEnv("SERVER_HOST")
 WHITE = "white"

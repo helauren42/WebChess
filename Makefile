@@ -26,5 +26,8 @@ clean:
 	docker compose down --rmi local
 	docker system prune -f
 
+fclean: clean
+	rm -rf /home/${USER}/.volumes/db-vol
+
 .PHONY: devFront devBack buildFront dockerUp production clean initSql
 
