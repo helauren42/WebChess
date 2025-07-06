@@ -89,7 +89,7 @@
 	justify-content: space-evenly;
 	padding: 1rem 1rem;
 	background-color: var(--primary-color);
-	border-radius: 3rem;
+	border-radius: 1.5rem;
 	border: 0.09rem solid var(--border-color);
 	box-shadow: 0px 0px 0.2rem var(--border-color);
 }

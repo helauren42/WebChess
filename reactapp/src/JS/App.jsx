@@ -36,7 +36,7 @@ const App = () => {
 	const [globalChatHistory, setGlobalChatHistory] = useState([])
 	const [activeUsers, setActiveUsers] = useState([])
 	const [gameData, setGameData] = useState({})
-	const [screenWidth, setScreenWidth] = useState()
+	const [screenWidth, setScreenWidth] = useState(window.innerWidth)
 	const [sessionToken, setSessionToken] = useState(getCookie("sessionToken"))
 	const [persistentToken, setPersistentToken] = useState(getCookie("persistentToken"))
 	const navigate = useNavigate()
@@ -136,6 +136,9 @@ const App = () => {
 	if (persistentToken && !sessionToken)
 		createSessionTokenFromPersistentToken()
 	useEffect(() => {
+		console.log("NEW SCREEN WIDTH: ", screenWidth)
+	}, [screenWidth])
+	useEffect(() => {
 		const handleResize = () => {
 			setScreenWidth(window.innerWidth)
 		};
@@ -157,7 +160,7 @@ const App = () => {
 			<SocialContext.Provider value={[activeUsers, setActiveUsers, globalChatHistory, setGlobalChatHistory]}>
 				<AccountContext.Provider value={[accountUsername, setAccountUsername]}>
 					<section id="App">
-						<NavBar />
+						<NavBar screenWidth={screenWidth} />
 						<Routes>
 							<Route path="/" element={<HomePage />} />
 							<Route path="/play" element={<PlayPage />} />
