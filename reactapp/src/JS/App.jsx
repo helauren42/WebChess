@@ -12,10 +12,10 @@ import { SignupPage } from './Signup.jsx'
 import { SocialPage } from './Social.jsx'
 import { AccountPage } from './Account.jsx'
 import { SOCKET_ADDRESS, WS } from './Const.jsx';
-import { WebSocketManager } from './WebSocket.jsx'
 import { AlertBox, DialogServerConnectionError, DialogWebsocketDisconnectionError, DialogGameInvitation, displayDialogServerConnectionError } from './Dialogs.jsx';
 import { GAME_MODE_HOTSEAT, GAME_MODE_ONLINE } from './Game/Game.jsx';
 import { MatchMaking } from './MatchMaking';
+import { PIECE_IMAGES } from './Game/Images';
 
 export const AppContext = createContext()
 export const AccountContext = createContext()
@@ -41,6 +41,16 @@ const App = () => {
 	const [persistentToken, setPersistentToken] = useState(getCookie("persistentToken"))
 	const navigate = useNavigate()
 
+	// preload images
+	useEffect(() => {
+		console.log("pre loading images")
+		console.log(structuredClone(PIECE_IMAGES))
+		for (const key of Object.keys(PIECE_IMAGES)) {
+			console.log(key)
+			const img = new Image()
+			img.src = PIECE_IMAGES[key]
+		}
+	}, [])
 	useEffect(() => {
 		console.log("changed sessiontToken: ", sessionToken)
 	}, [sessionToken])
