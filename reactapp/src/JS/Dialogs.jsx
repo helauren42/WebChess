@@ -59,6 +59,11 @@ export const displayDialogWebsocketDisconnectionError = () => {
 	elem.showModal()
 }
 
+export const hideDialogWebsocketDisconnectionError = () => {
+	const elem = document.getElementById("dialog-websocket-disconnection-error")
+	elem.close()
+}
+
 export const DialogWebsocketDisconnectionError = () => {
 	return (
 		<dialog className="dialog" id="dialog-websocket-disconnection-error">

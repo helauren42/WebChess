@@ -1,5 +1,5 @@
 import { WEBSOCKET_URL } from "./Const"
-import { displayAlertBox, displayDialogGameInvitation, displayDialogWebsocketDisconnectionError } from "./Dialogs"
+import { displayAlertBox, displayDialogGameInvitation, displayDialogWebsocketDisconnectionError, hideDialogWebsocketDisconnectionError } from "./Dialogs"
 
 export class MainWebSocketManager {
 	constructor() {
@@ -20,7 +20,12 @@ export class MainWebSocketManager {
 		this.navigate = _navigate
 		this.setGameData = _setGameData
 		this.WS = new WebSocket(`${WEBSOCKET_URL}`)
+		console.log("websocket created:")
+		console.log(this.WS.readyState)
 		this.WS.addEventListener('open', () => {
+			console.log("Websocket opened")
+			console.log(this.WS.readyState)
+			hideDialogWebsocketDisconnectionError()
 			this.websocketSendMessage("newConnection", {})
 			this.websocketSendMessage("getGameData", {})
 		})
@@ -45,10 +50,11 @@ export class MainWebSocketManager {
 export class WebSocketManager extends MainWebSocketManager {
 	init(_sessionToken, _setActiveUsers, _globalChatHistory, _setGlobalChatHistory, _navigate, _setGameData) {
 		this.baseInit(_sessionToken, _setActiveUsers, _globalChatHistory, _setGlobalChatHistory, _navigate, _setGameData)
-		console.log("Initializing websocket")
 		this.WS.addEventListener("close", () => {
-			console.log("main websocket closed")
-			// displayDialogWebsocketDisconnectionError()
+			console.log("!!! main websocket closed")
+			console.log(this.WS.readyState)
+			if (this.WS.readyState != 1)
+				displayDialogWebsocketDisconnectionError()
 		})
 		this.WS.onmessage = (event) => {
 			console.log("WS on message:", event.data)
