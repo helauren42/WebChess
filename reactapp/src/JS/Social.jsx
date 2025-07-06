@@ -1,7 +1,7 @@
 import { useEffect, useContext, useState } from 'react'
 import '../CSS/Social.css'
-import { SocialContext, WS, AccountContext } from './App'
-import { SOCKET_ADDRESS } from './Const'
+import { SocialContext, AccountContext } from './App'
+import { SOCKET_ADDRESS, WS } from './Const'
 import { displayDialogServerConnectionError, displayAlertBox } from './Dialogs'
 
 const chatMessageContainer = (message, pos) => {

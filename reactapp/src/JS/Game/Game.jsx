@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { BoardWhite } from './BoardWhite.jsx'
 import { BoardBlack } from './BoardBlack.jsx'
 import { resetSquareColor, getPos, changeSquareColor } from './BoardActions.jsx';
-import { WS } from '../App.jsx';
+import { WS } from '../Const.jsx';
 import { PIECE_IMAGES } from './Images.jsx';
 
 export const GAME_MODE_ONLINE = 0

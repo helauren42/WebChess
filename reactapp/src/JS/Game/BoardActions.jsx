@@ -1,4 +1,3 @@
-import { WS } from '../WebSocket.jsx'
 import { SOCKET_ADDRESS } from '../Const.jsx';
 import { PIECE_IMAGES } from './Images.jsx';
 import { displayDialogServerConnectionError } from '../Dialogs.jsx'

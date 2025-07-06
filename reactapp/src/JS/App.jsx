@@ -11,7 +11,7 @@ import { LoginPage } from './Login.jsx'
 import { SignupPage } from './Signup.jsx'
 import { SocialPage } from './Social.jsx'
 import { AccountPage } from './Account.jsx'
-import { SOCKET_ADDRESS } from './Const.jsx';
+import { SOCKET_ADDRESS, WS } from './Const.jsx';
 import { WebSocketManager } from './WebSocket.jsx'
 import { AlertBox, DialogServerConnectionError, DialogWebsocketDisconnectionError, DialogGameInvitation, displayDialogServerConnectionError } from './Dialogs.jsx';
 import { GAME_MODE_HOTSEAT, GAME_MODE_ONLINE } from './Game/Game.jsx';
@@ -20,7 +20,6 @@ import { MatchMaking } from './MatchMaking';
 export const AppContext = createContext()
 export const AccountContext = createContext()
 export const SocialContext = createContext()
-export const WS = new WebSocketManager()
 
 function getCookie(name) {
 	const value = `; ${document.cookie}`;
