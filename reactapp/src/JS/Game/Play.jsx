@@ -33,11 +33,11 @@ export const PlayPage = () => {
 						<button className="rs-buttons classic-btn" id="button-play-online" onClick={(e) => {
 							console.log("clicked play online");
 							navigate("/play/matchmaking")
-						}}>Online</button>
+						}}><h3 className='subtitle'>Online</h3></button>
 						<button className="rs-buttons classic-btn" id="button-play-online" onClick={(e) => {
 							console.log("clicked play hotseat");
 							navigate("/play/matchmaking")
-						}}>Hotseat</button>
+						}}><h3 className='subtitle'>Hotseat</h3></button>
 					</div>
 					<div className="ghost"><p></p></div>
 				</div>

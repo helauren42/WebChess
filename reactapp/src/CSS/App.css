@@ -116,36 +116,23 @@ lighter-reflection * {
 	padding: 0.5rem;
 	border-radius: 1rem;
 	border-style: solid;
-	border-width: 0.1rem;
+	border-width: 1px;
 	border-color: var(--board-border);
 	background: var(--button-color);
 	z-index: 1;
 	font-size: 1.2rem;
+	box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.3);
+	z-index: 0;
+	padding: 0.5rem 1rem;
 }
-
-.classic-btn::before {
-	content: "";
-	position: absolute;
-	background: linear-gradient(135deg, rgba(0, 0, 0, 0.2), rgba(20, 10, 20, 0.15));
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	border-radius: inherit;
-	z-index: 6;
-	pointer-events: none;
-	display: block;
-	text-align: center;
-}
-
 
 .classic-btn * {
-	z-index: 3;
+	z-index: 30;
 }
 
 button:hover {
 	cursor: pointer;
-	transform: scale(1.1);
+	transform: scale(1.02);
 	filter: brightness(0.9);
 }
 
@@ -164,6 +151,7 @@ h1 {
 
 h2 {
 	font-size: 2rem;
+	font-weight: 500;
 }
 
 .subtitle {

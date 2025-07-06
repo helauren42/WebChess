@@ -25,13 +25,14 @@ const createUserMessage = (message, sender, date) => {
 	elem.id = "chat-message-user"
 }
 const createOtherMessage = (message, sender, date) => {
-	const elem = chatMessageContainer(sender + ":\n" + message, "left")
+	const elem = chatMessageContainer(sender + ": " + message, "left")
 	elem.id = "chat-message-other"
 }
 
 const createMessageBlock = (messageObject, accountUsername) => {
 	const message = messageObject["message"]
-	const sender = messageObject["sender"]
+	let sender = messageObject["sender"]
+	sender = sender.length < 10 ? sender : sender.substring(0, 10)
 	const time = parseInt(messageObject["time"])
 	const date = new Date(time)
 	if (sender == accountUsername)
@@ -122,7 +123,7 @@ export const SocialPage = ({ screenWidth }) => {
 		const message_history = document.getElementById("message-history")
 		const elem = document.getElementById("global-message-title")
 		const styles = getComputedStyle(elem, "::after")
-		const height = message_history.clientHeight + "px";
+		const height = message_history.clientHeight + 5 + "px";
 		elem.style.setProperty('--after-height', height);
 	}, [screenWidth])
 	useEffect(() => {
@@ -208,7 +209,7 @@ export const SocialPage = ({ screenWidth }) => {
 				</div>
 				<section id='active-users-container' >
 					<div id="active-users-title-container" className="navbar-pseudo">
-						<h1 id='active-users-title' >Online Users</h1>
+						<h3 id='active-users-title' >Online Users</h3>
 					</div>
 					<div id='active-users-list'></div>
 				</section>
