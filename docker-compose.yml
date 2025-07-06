@@ -13,7 +13,6 @@ services:
     restart: always
     volumes:
       - ./backend:/app/backend
-      - ./reactapp:/app/reactapp
       - ./.env:/app/.env
 
   db:
