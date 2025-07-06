@@ -44,9 +44,7 @@ const App = () => {
 	// preload images
 	useEffect(() => {
 		console.log("pre loading images")
-		console.log(structuredClone(PIECE_IMAGES))
 		for (const key of Object.keys(PIECE_IMAGES)) {
-			console.log(key)
 			const img = new Image()
 			img.src = PIECE_IMAGES[key]
 		}

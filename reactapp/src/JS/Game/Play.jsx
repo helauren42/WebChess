@@ -14,8 +14,10 @@ export const PlayPage = () => {
 		return
 	}
 	useEffect(() => {
-		if (WS.gameData && !WS.gameData.finished)
+		if (WS.gameData && WS.gameData.finished == false) {
+			console.log("game apparently not finished!!!!: ", WS.gameData.finished)
 			navigate("/play/online")
+		}
 	}, [])
 	return (
 		<div id="game-page-container">

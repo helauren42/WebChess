@@ -25,7 +25,6 @@ const GameBoard = ({ accountUsername, playerColor, opponentName, opponentColor, 
 		return img
 	}
 	useEffect(() => {
-		console.log(gameData.length)
 		if (!gameData || Object.keys(gameData) <= 0)
 			return
 		const opponentCaptures = document.getElementById("opponent-captures")
@@ -135,6 +134,13 @@ export const OnlineGame = ({ accountUsername, gameMode, gameData }) => {
 	const [gameWinner, setGameWinner] = useState(false)
 	const [selectedSquare, setSelectedSquare] = useState(null)
 	const navigate = useNavigate()
+	useEffect(() => {
+		console.log("game state: ", gameData.finished)
+		if (!gameData || gameData.finished == undefined || gameData.finished == true) {
+			console.log("game apparently finished!!!!: ", gameData.finished)
+			navigate("/play")
+		}
+	}, [])
 	const userResign = async () => {
 		WS.sendUserResign()
 	}
