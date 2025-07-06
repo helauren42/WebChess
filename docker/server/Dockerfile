@@ -2,10 +2,6 @@ FROM debian:bookworm
 
 WORKDIR /app
 
-COPY .env .env
-COPY backend/ backend/
-COPY reactapp/ reactapp/
-
 EXPOSE 6453
 
 RUN apt update && apt install -y \
