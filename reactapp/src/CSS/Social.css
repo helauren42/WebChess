@@ -1,8 +1,8 @@
 #social-page-container {
 	position: relative;
 	display: flex;
-	width: 90%;
-	height: 90%;
+	width: 100%;
+	height: 100vh;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-evenly;
@@ -17,7 +17,9 @@
 }
 
 #global-message-page-container {
-	justify-content: space-evenly;
+	padding-top: 5%;
+	display: flex;
+	justify-content: space-around;
 	align-items: center;
 }
 
@@ -26,11 +28,13 @@
 	flex-direction: column;
 	justify-content: space-around;
 	align-items: center;
+	z-index: 1000;
 }
 
 #global-message-section {
 	height: 80vh;
 	width: 80vh;
+	max-width: 100%;
 	aspect-ratio: 1/1;
 	display: flex;
 	flex-direction: column;
@@ -41,7 +45,7 @@
 #active-users-container {
 	position: relative;
 	max-height: 50vh;
-	width: 18%;
+	width: 20%;
 	border: 0.1rem solid black;
 	box-shadow: 0px 0px 0.3rem var(--dark-shadow);
 	border-radius: 1rem;
@@ -52,18 +56,9 @@
 	overflow: auto;
 	padding-bottom: 1rem;
 	background-color: rgba(60, 42, 95);
+	z-index: 120;
 }
 
-/* #active-users-container::before { */
-/* 	position: absolute; */
-/* 	content: ""; */
-/* 	height: 100%; */
-/* 	width: 100%; */
-/* 	top: 0; */
-/* 	left: 0; */
-/* 	border-radius: inherit; */
-/* } */
-/**/
 #active-users-title-container {
 	width: 100%;
 	border-bottom: 0.1rem solid black;
@@ -140,12 +135,16 @@
 #global-message-title {
 	display: grid;
 	place-items: center;
-	background-color: var(--primary-color);
+	/* background-color: var(--primary-color); */
 	font-size: 1.6rem;
 	padding: 0.2rem;
 	border-top: 0.1rem solid var(--border-color);
 	border-left: 0.1rem solid var(--border-color);
 	border-right: 0.1rem solid var(--border-color);
+}
+
+#global-message-title {
+	z-index: 100;
 }
 
 #global-message-title::after {
@@ -179,7 +178,7 @@
 	border-left: 0.1rem solid var(--border-color);
 	border-right: 0.1rem solid var(--border-color);
 	overflow-y: scroll;
-	font-family: "Chewy";
+	font-family: "Mono";
 	background-color: rgba(65, 50, 120, 1);
 	z-index: 1000;
 }
@@ -236,4 +235,30 @@
 #chat-message-other {
 	background-color: rgba(105, 95, 185, 0.1);
 	left: 0%;
+}
+
+@media (max-width: 800px) {
+	#global-message-page-container {
+		padding-top: 8%;
+	}
+
+	#global-message-section {
+		width: 70vw;
+		height: 80vh;
+	}
+}
+
+@media (max-width: 700px) {
+	#global-message-page-container {
+		padding-top: 15%;
+	}
+
+	#global-message-section {
+		width: 85vw;
+		height: 80vh;
+	}
+
+	#active-users-container {
+		display: none;
+	}
 }

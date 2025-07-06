@@ -4,18 +4,19 @@ import { AppContext } from './App';
 import '../CSS/NavBar.css'
 
 export const NavBar = () => {
-  const [signedIn, setSignedIn] = useContext(AppContext)
-  useEffect(() => {
-  }, [signedIn])
-  return (
-    <div id="navbar" className='navbar-pseudo'>
-      <h1 id="nav-title"><Link to="/">Chess</Link></h1>
-      <ul id="nav-links">
-        <li><Link to="/">Home</Link></li>
-        <li><Link to="/play">Play</Link></li>
-        <li><Link to="/social">Social</Link></li>
-      </ul>
-      <button id="nav-login"><Link to={signedIn ? "/account" : "/login"}>{signedIn ? 'account' : 'login'}</Link></button>
-    </div >
-  )
+	const [signedIn, setSignedIn] = useContext(AppContext)
+	useEffect(() => {
+	}, [signedIn])
+	return (
+		<div id="navbar">
+			<h3 id="nav-title" className='subtitle'><Link to="/">Chess</Link></h3>
+			<ul id="nav-links">
+				<li><Link to="/"><h3 className='subtitle'>Home</h3></Link></li>
+				<li><Link to="/play"><h3 className='subtitle'>Play</h3></Link></li>
+				<li><Link to="/social"><h3 className='subtitle'>Social</h3></Link></li>
+			</ul>
+			{/* <Link to={signedIn ? "/account" : "/login"}><h3 classname='subtitle' id="nav-login">{signedIn ? 'account' : 'login'}</h3></Link> */}
+			<Link to={signedIn ? "/account" : "/login"}>{signedIn ? <p className='subtitle' >Account</p> : <p className='subtitle' >Login</p>}</Link>
+		</div >
+	)
 }

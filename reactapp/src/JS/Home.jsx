@@ -14,7 +14,7 @@ const SigninSection = ({ navigate }) => {
 const PlayGame = ({ navigate }) => {
 	return (
 		<section id="playgame-section">
-			<button className="home-btn" onClick={() => navigate("/play/matchmaking")}><p>Play now</p></button>
+			<button className="home-btn classic-btn" onClick={() => navigate("/play/matchmaking")}><p>Play now</p></button>
 		</section>
 	)
 }
@@ -24,9 +24,11 @@ export const HomePage = () => {
 	const navigate = useNavigate()
 	return (
 		<section id="home-page">
-			<h1 id="home-title" >Welcome to the best online chess platform</h1>
-			<h2 id="home-subtitle">Play against other top chess players and chat with them</h2>
-			{signedIn ? <PlayGame navigate={navigate} /> : <SigninSection navigate={navigate} />}
+			<div id="home-page-sub">
+				<h1 id="home-title" >Welcome to the best online chess platform</h1>
+				<h3 id="home-subtitle" className='subtitle'>Play and chat with other top chess players</h3>
+				{signedIn ? <PlayGame navigate={navigate} /> : <SigninSection navigate={navigate} />}
+			</div>
 		</section>
 	)
 }

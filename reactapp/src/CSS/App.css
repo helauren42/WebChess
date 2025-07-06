@@ -1,13 +1,15 @@
 @font-face {
-	font-family: 'Chewy';
-	src: url('../Fonts/Chewy/Chewy-Regular.ttf');
+	font-family: 'Mono';
+	src: url('../Fonts/JetBrainsMono[wght].ttf');
 }
 
 :root {
-	--button-color: rgb(35, 15, 50);
+	--gradient-bg: linear-gradient(180deg, rgba(42, 40, 70), rgba(35, 30, 60));
+	--button-color: linear-gradient(180deg, rgba(40, 40, 75), rgba(45, 40, 75));
 	--primary-color: rgb(15, 15, 30);
 	--secondary-color: rgb(40, 40, 58);
-	--background-color: rgb(50, 50, 71);
+	/* --main-bg: linear-gradient(315deg, rgba(50, 45, 75), rgba(40, 40, 65)); */
+	--main-bg: linear-gradient(315deg, rgba(60, 55, 85), rgba(58, 50, 80), rgba(60, 50, 85));
 	--border-color: rgb(28, 20, 35);
 	--light-border: rgb(150, 150, 190);
 	--board-border: rgb(15, 15, 35);
@@ -41,7 +43,7 @@ html {
 body {
 	height: 100vh;
 	width: 100vw;
-	font-family: "Chewy";
+	font-family: "Mono";
 }
 
 #root {
@@ -55,53 +57,7 @@ body {
 	min-width: 100%;
 	min-height: 100%;
 	z-index: 0;
-	background: linear-gradient(315deg, rgba(60, 45, 85), rgba(35, 30, 65));
-}
-
-a {
-	text-decoration: none;
-}
-
-button {
-	position: relative;
-	display: block;
-	padding: 0.5rem;
-	border-radius: 1rem;
-	border-style: solid;
-	border-width: 0.1rem;
-	border-color: var(--light-border);
-	background-color: var(--button-color);
-	/* color: white; */
-	font-family: 'Chewy';
-	z-index: 1;
-}
-
-button::before {
-	content: "";
-	position: absolute;
-	background: linear-gradient(135deg, rgba(200, 200, 220, 0.1), rgba(20, 10, 50, 0.1));
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	border-radius: inherit;
-	z-index: 6;
-	pointer-events: none;
-}
-
-button * {
-	z-index: 3;
-}
-
-button:hover {
-	cursor: pointer;
-	transform: scale(1.1);
-	filter: brightness(0.9);
-}
-
-button:active {
-	transform: scale(0.95);
-	filter: brightness(0.8);
+	background: var(--main-bg);
 }
 
 .centerx-container {
@@ -134,7 +90,7 @@ lighter-reflection * {
 .navbar-pseudo {
 	position: relative;
 	z-index: 10;
-	background-color: var(--primary-color);
+	background-color: rgb(40, 30, 60);
 }
 
 .navbar-pseudo::before {
@@ -145,7 +101,7 @@ lighter-reflection * {
 	top: 0;
 	left: 0;
 	border-radius: inherit;
-	background: linear-gradient(0deg, rgba(150, 40, 140, 0.2), rgba(125, 105, 205, 0.22));
+	background: linear-gradient(0deg, rgba(60, 40, 80, 0.5), rgba(60, 52, 100, 0.62));
 	z-index: 11;
 	pointer-events: none;
 }
@@ -154,24 +110,89 @@ lighter-reflection * {
 	z-index: 15;
 }
 
-.block-bg {
+.classic-btn {
 	position: relative;
-	z-index: 0;
-	background-color: var(--background-color);
-	border: 0.1rem solid var(--border-color);
+	display: block;
+	padding: 0.5rem;
+	border-radius: 1rem;
+	border-style: solid;
+	border-width: 0.1rem;
+	border-color: var(--board-border);
+	background: var(--button-color);
+	z-index: 1;
+	font-size: 1.2rem;
 }
 
-.block-bg::before {
-	position: absolute;
+.classic-btn::before {
 	content: "";
+	position: absolute;
+	background: linear-gradient(135deg, rgba(0, 0, 0, 0.2), rgba(20, 10, 20, 0.15));
+	top: 0;
+	left: 0;
 	width: 100%;
 	height: 100%;
-	background: radial-gradient(circle, rgba(50, 50, 150, 0.1), rgba(220, 220, 255, 0.15));
-	z-index: 1;
+	border-radius: inherit;
+	z-index: 6;
+	pointer-events: none;
+	display: block;
+	text-align: center;
 }
 
-.block-bg * {
-	z-index: 15;
+
+.classic-btn * {
+	z-index: 3;
+}
+
+button:hover {
+	cursor: pointer;
+	transform: scale(1.1);
+	filter: brightness(0.9);
+}
+
+button:active {
+	transform: scale(0.95);
+	filter: brightness(0.8);
+}
+
+a {
+	text-decoration: none;
+}
+
+h1 {
+	font-size: 3rem;
+}
+
+h2 {
+	font-size: 2rem;
+}
+
+.subtitle {
+	font-size: 1.3rem;
+	font-weight: 500;
+}
+
+@media(max-width: 1000px) {
+	h1 {
+		font-size: 2.5rem;
+	}
+
+	h2 {
+		font-size: 1.5rem;
+	}
+
+	.subtitle {
+		font-size: 1.1rem;
+	}
+}
+
+@media(max-width: 800px) {
+	h1 {
+		font-size: 2.1rem;
+	}
+
+	.subtitle {
+		font-size: 1rem;
+	}
 }
 
 @media (max-width: 700px) {

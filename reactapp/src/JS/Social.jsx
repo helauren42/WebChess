@@ -195,10 +195,9 @@ export const SocialPage = ({ screenWidth }) => {
 	return (
 		<div id='social-page-container' >
 			<div className="whole-width" id="global-message-page-container">
-				<div id="ghost"></div>
 				<div id="center-message-section">
 					<section id="global-message-section">
-						<h3 id="global-message-title" className='navbar-pseudo'>Global Chat</h3>
+						<div id="global-message-title" className='navbar-pseudo'><h3>Global Chat</h3></div>
 						<section id="message-history">
 						</section>
 						<input id="input-message" type="text" onInput={(e) => updateInput(e)} onKeyDown={(e) => {

@@ -1,6 +1,6 @@
 #navbar {
 	top: 0%;
-	position: relative;
+	position: absolute;
 	width: 100%;
 	display: flex;
 	flex-direction: row;
@@ -10,9 +10,10 @@
 	border-style: solid;
 	border-bottom-width: 0.1rem;
 	border-color: var(--border-color);
-	box-shadow: 0rem 0.1rem 0.2rem var(--border-color);
-	text-shadow: 0px 0px 1px black;
+	padding: 0rem 5rem;
+	box-shadow: 0rem 0px 3px var(--border-color);
 	z-index: 10;
+	background: var(--gradient-bg);
 }
 
 #navbar * {
@@ -22,7 +23,6 @@
 
 #nav-title {
 	margin-left: 1rem;
-	font-size: 2rem;
 }
 
 #nav-title:hover {
@@ -36,7 +36,6 @@
 
 #nav-links {
 	display: flex;
-	font-size: 1.8rem;
 	justify-content: space-between;
 	flex-direction: row;
 	gap: 1.5rem;
@@ -56,22 +55,11 @@
 }
 
 #nav-login {
-	display: block;
-	padding: 0.5rem;
-	font-family: "Chewy";
-	margin-right: 1rem;
-	text-align: center;
-	font-size: 1.8rem;
+	font-family: "Mono";
 }
 
 @media (max-width: 600px) {
 	#navbar {
 		gap: 1.5rem;
-	}
-
-	#nav-title,
-	#nav-login,
-	#nav-links {
-		font-size: 1.2rem;
 	}
 }

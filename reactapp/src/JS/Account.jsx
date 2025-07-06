@@ -14,12 +14,12 @@ export const AccountPage = () => {
 		<div id="account-page-container">
 			<Link to={"/login"}>
 				<h1>{accountUsername}</h1>
-				<button onClick={() => {
+				<button className="classic-btn" onClick={() => {
 					makeSignoutRequest()
 					setSignedIn(false)
 					document.cookie = `persistentToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
 					document.cookie = `sessionToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
-				}}>Log out </button>
+				}}>Log out</button>
 			</Link>
 		</div>
 	)

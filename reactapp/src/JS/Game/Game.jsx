@@ -233,11 +233,10 @@ export const OnlineGame = ({ accountUsername, gameMode, gameData }) => {
 				<div id="active-game">
 					<GameBoard accountUsername={accountUsername} playerColor={playerColor} opponentName={opponentName} opponentColor={opponentColor} gameData={gameData} />
 					{gameFinished == false ? null : <GameOver gameWinner={gameWinner} />}
-					{gameFinished == false ? <button className='rs-buttons' onClick={() => userResign()}>resign</button>
+					{gameFinished == false ? <button className='rs-buttons classic-btn' onClick={() => userResign()}>resign</button>
 						:
-						<button className='rs-buttons' onClick={() => playAgain()}>Play again</button>
+						<button className='rs-buttons classic-btn' onClick={() => playAgain()}>Play again</button>
 					}
-
 				</div>
 			</div>
 		</div >
