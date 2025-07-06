@@ -167,7 +167,7 @@ class WebsocketManager(AbstractWebsocketManager):
                 try:
                     await self.sendMessage("activeUsers", data, websocket)
                 except Exception as e:
-                    logger.error("could not send message update active users: ", e)
+                    logger.error(f"could not send message update active users: {e}")
 
     async def msgGlobalChat(self, message, sender):
         # time in minutes
