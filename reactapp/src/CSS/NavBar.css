@@ -38,6 +38,20 @@
 	place-items: center;
 }
 
+.nav-fr:first-child {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: center;
+}
+
+.nav-fr:last-child {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: center;
+}
+
 .nav-svg-cont {
 	height: 2rem;
 	width: auto;

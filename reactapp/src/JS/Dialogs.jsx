@@ -56,12 +56,14 @@ export const DialogServerConnectionError = () => {
 
 export const displayDialogWebsocketDisconnectionError = () => {
 	const elem = document.getElementById("dialog-websocket-disconnection-error")
-	elem.showModal()
+	if (elem)
+		elem.showModal()
 }
 
 export const hideDialogWebsocketDisconnectionError = () => {
 	const elem = document.getElementById("dialog-websocket-disconnection-error")
-	elem.close()
+	if (elem)
+		elem.close()
 }
 
 export const DialogWebsocketDisconnectionError = () => {

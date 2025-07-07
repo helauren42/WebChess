@@ -178,7 +178,7 @@ const App = () => {
 							<Route path="/social" element={<SocialPage screenWidth={screenWidth} />} />
 							<Route path="/signup" element={<SignupPage />} />
 							<Route path="/login" element={<LoginPage sessionToken={sessionToken} setSessionToken={setSessionToken} persistentToken={persistentToken} setPersistentToken={setPersistentToken} />} />
-							<Route path="/account" element={<AccountPage />} />
+							<Route path="/account" element={<AccountPage sessionToken={sessionToken} />} />
 						</Routes>
 						<DialogServerConnectionError />
 						<DialogWebsocketDisconnectionError />

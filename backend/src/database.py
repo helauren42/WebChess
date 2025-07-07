@@ -11,6 +11,20 @@ from game import OnlineGame
 from const import ENV_PATH, DB_DIR, DB_PORT, DOCKER_MYSQL_DIR
 
 
+class UserData:
+    def __init__(
+        self, _username, _email, _total_wins, _total_loss, _total_draws
+    ) -> None:
+        self.username = _username
+        self.email = _email
+        self.total_wins = _total_wins
+        self.total_loss = _total_loss
+        self.total_draws = _total_draws
+
+    def __repr__(self) -> str:
+        return f"username: {self.username}, email: {self.email}, total_wins: {self.total_wins}, total_loss: {self.total_loss}, total_draws: {self.total_draws}"
+
+
 class AbstractDb:
     def __init__(self, buildInit: bool = False):
         self.host: str = ""
@@ -128,9 +142,9 @@ class AbstractDb:
         self.executeQueryValues(
             f"SELECT * FROM {self.table_users} WHERE username=%s", (username,)
         )
-        columns = self.cursor.fetchone()
-        # todo
-        # return userData
+        c = self.cursor.fetchone()
+        userData = UserData(c[0], c[2], c[4], c[5], c[6])
+        return userData
 
     def fetchUserFromToken(self, token: str):
         logger.info(f"searching for token: {token}")

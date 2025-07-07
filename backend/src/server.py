@@ -139,6 +139,23 @@ async def fetchUsername(req: Token):
     )
 
 
+@app.post("/fetchUserData")
+async def fetchUserData(req: SessionToken):
+    logger.info(f"fetchUserData request: {req.sessionToken}")
+    username = db.fetchUsername(req.sessionToken)
+    logger.info(f"found username: {username}")
+    if username is None:
+        return fastapi.responses.JSONResponse(status_code=401, content={})
+    userData = db.fetchUserData(username)
+    print("USER DATA: ", userData)
+    return fastapi.responses.JSONResponse(
+        status_code=200,
+        content={
+            "userData": userData,
+        },
+    )
+
+
 @app.post("/validateForm")
 async def validateForm(req: SignupRequest):
     logger.info("validateForm request received")
