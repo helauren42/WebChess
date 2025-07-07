@@ -32,6 +32,12 @@
 	z-index: 15;
 }
 
+.nav-fr {
+	flex: 1;
+	display: grid;
+	place-items: center;
+}
+
 .nav-svg-cont {
 	height: 2rem;
 	width: auto;

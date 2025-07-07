@@ -15,6 +15,7 @@
 
 .account-block {
 	padding: 1rem 5rem;
+	max-width: 95%;
 	border-color: var(--border-color);
 	border-style: solid;
 	border-width: 0.13rem;
