@@ -27,11 +27,9 @@ const GameBoard = ({ accountUsername, playerColor, opponentName, opponentColor, 
 	useEffect(() => {
 		if (!gameData || Object.keys(gameData).length <= 0) return;
 
-		// Fetch only this instance's elements using unique names
 		const opponentCaptures = document.getElementsByName(`opponent-captures-${instanceId}`);
 		const userCaptures = document.getElementsByName(`user-captures-${instanceId}`);
 
-		// Clear only this instance's elements
 		opponentCaptures.forEach(el => {
 			while (el.lastChild) {
 				el.removeChild(el.lastChild);

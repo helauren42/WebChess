@@ -136,9 +136,6 @@ const App = () => {
 	if (persistentToken && !sessionToken)
 		createSessionTokenFromPersistentToken()
 	useEffect(() => {
-		console.log("NEW SCREEN WIDTH: ", screenWidth)
-	}, [screenWidth])
-	useEffect(() => {
 		const handleResize = () => {
 			setScreenWidth(window.innerWidth)
 		};
@@ -165,7 +162,7 @@ const App = () => {
 							<Route path="/" element={<HomePage />} />
 							<Route path="/play" element={<PlayPage gameData={gameData} />} />
 							<Route path="/play/online" element={<OnlineGame accountUsername={accountUsername} gameMode={GAME_MODE_ONLINE} gameData={gameData} />} />
-							<Route path="/play/matchmaking" element={<MatchMaking sessionToken={sessionToken} />} />
+							<Route path="/play/matchmaking" element={<MatchMaking sessionToken={sessionToken} gameData={gameData} />} />
 							<Route path="/social" element={<SocialPage screenWidth={screenWidth} />} />
 							<Route path="/signup" element={<SignupPage />} />
 							<Route path="/login" element={<LoginPage sessionToken={sessionToken} setSessionToken={setSessionToken} persistentToken={persistentToken} setPersistentToken={setPersistentToken} />} />

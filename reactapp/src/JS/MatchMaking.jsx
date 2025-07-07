@@ -4,9 +4,15 @@ import { useNavigate } from "react-router-dom"
 import { SOCKET_ADDRESS } from "./Const";
 import { useEffect } from "react";
 
-export const MatchMaking = ({ sessionToken }) => {
+export const MatchMaking = ({ sessionToken, gameData }) => {
 	const navigate = useNavigate()
 	const ws = new WebSocket(`${SOCKET_ADDRESS}/matchmaking`)
+	useEffect(() => {
+		if (gameData && gameData.finished == false) {
+			console.log("game apparently not finished!!!!: ", gameData.finished)
+			navigate("/play/online")
+		}
+	}, [gameData])
 	useEffect(() => {
 		ws.addEventListener("open", () => {
 			ws.send(sessionToken)

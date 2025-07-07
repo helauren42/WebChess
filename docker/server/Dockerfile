@@ -4,8 +4,6 @@ WORKDIR /app
 
 EXPOSE 6453
 
-COPY reactapp/ reactapp/
-
 RUN apt update && apt install -y \
 	python3  \
 	python3-pip \
@@ -19,6 +17,8 @@ RUN apt update && apt install -y \
 	npm -y
 
 RUN npm install react@19.1.0 react-dom@19.1.0 react-router-dom@6.30.0 react-scripts@5.0.1
+
+COPY reactapp/ reactapp/
 
 WORKDIR /app/reactapp/
 
