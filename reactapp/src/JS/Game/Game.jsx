@@ -9,109 +9,105 @@ import { PIECE_IMAGES } from './Images.jsx';
 export const GAME_MODE_ONLINE = 0
 export const GAME_MODE_HOTSEAT = 1
 
-const GameBoard = ({ accountUsername, playerColor, opponentName, opponentColor, gameData }) => {
+const GameBoard = ({ accountUsername, playerColor, opponentName, opponentColor, gameData, instanceId }) => {
 	const makePawnNumber = (num) => {
-		console.log("making pawn number")
-		const elem = document.createElement('p')
-		elem.className = "captured-num"
-		elem.innerText = num
-		return elem
-	}
+		const elem = document.createElement('p');
+		elem.className = "captured-num";
+		elem.innerText = num;
+		return elem;
+	};
+
 	const makeImage = (pieceName) => {
-		console.log("making image: ", pieceName)
-		const img = document.createElement('img')
-		img.className = "captured-img"
-		img.src = PIECE_IMAGES[pieceName]
-		return img
-	}
+		const img = document.createElement('img');
+		img.className = "captured-img";
+		img.src = PIECE_IMAGES[pieceName];
+		return img;
+	};
+
 	useEffect(() => {
-		if (!gameData || Object.keys(gameData) <= 0)
-			return
-		const opponentCaptures = document.getElementById("opponent-captures")
-		const userCaptures = document.getElementById("user-captures")
-		while (opponentCaptures.lastChild) {
-			opponentCaptures.removeChild(opponentCaptures.lastChild)
-		}
-		while (userCaptures.lastChild) {
-			userCaptures.removeChild(userCaptures.lastChild)
-		}
-		const blackPieces = gameData["capturedBlackPieces"]
-		const whitePieces = gameData["capturedWhitePieces"]
-		console.log("black pieces: ", blackPieces)
-		console.log("white pieces: ", whitePieces)
-		let countBlackPawn = 0
-		let countWhitePawn = 0
-		console.log(blackPieces)
+		if (!gameData || Object.keys(gameData).length <= 0) return;
+
+		// Fetch only this instance's elements using unique names
+		const opponentCaptures = document.getElementsByName(`opponent-captures-${instanceId}`);
+		const userCaptures = document.getElementsByName(`user-captures-${instanceId}`);
+
+		// Clear only this instance's elements
+		opponentCaptures.forEach(el => {
+			while (el.lastChild) {
+				el.removeChild(el.lastChild);
+			}
+		});
+		userCaptures.forEach(el => {
+			while (el.lastChild) {
+				el.removeChild(el.lastChild);
+			}
+		});
+
+		const blackPieces = gameData["capturedBlackPieces"] || [];
+		const whitePieces = gameData["capturedWhitePieces"] || [];
+
+		let countBlackPawn = 0;
+		let countWhitePawn = 0;
+
 		for (let i = 0; i < blackPieces.length; i++) {
-			const pieceName = blackPieces[i]
-			if (pieceName == "bp")
-				countBlackPawn++
-			else {
-				const img = makeImage(pieceName)
-				if (playerColor == "white")
-					userCaptures.append(img)
-				else if (playerColor == "black")
-					opponentCaptures.append(img)
+			const pieceName = blackPieces[i];
+			if (pieceName === "bp") {
+				countBlackPawn++;
+			} else {
+				const img = makeImage(pieceName);
+				const target = playerColor === "white" ? userCaptures : opponentCaptures;
+				target.forEach(el => el.appendChild(img));
 			}
 		}
-		if (countBlackPawn) {
-			const num = makePawnNumber(countBlackPawn)
-			const img = makeImage("bp")
-			if (playerColor == "white") {
-				userCaptures.append(img)
-				if (countBlackPawn > 1)
-					userCaptures.append(num)
-			}
-			else {
-				opponentCaptures.append(img)
-				if (countBlackPawn > 1)
-					opponentCaptures.append(num)
+
+		if (countBlackPawn > 0) {
+			const img = makeImage("bp");
+			const num = makePawnNumber(countBlackPawn);
+			const target = playerColor === "white" ? userCaptures : opponentCaptures;
+			target.forEach(el => el.appendChild(img));
+			if (countBlackPawn > 1) {
+				target.forEach(el => el.appendChild(num));
 			}
 		}
+
 		for (let i = 0; i < whitePieces.length; i++) {
-			const pieceName = whitePieces[i]
-			console.log("white piece name: ", pieceName)
-			if (pieceName == "wp")
-				countWhitePawn++
-			else {
-				const img = makeImage(pieceName)
-				if (playerColor == "black")
-					userCaptures.append(img)
-				else
-					opponentCaptures.append(img)
+			const pieceName = whitePieces[i];
+			if (pieceName === "wp") {
+				countWhitePawn++;
+			} else {
+				const img = makeImage(pieceName);
+				const target = playerColor === "black" ? userCaptures : opponentCaptures;
+				target.forEach(el => el.appendChild(img));
 			}
 		}
-		console.log("countWhitePawn: ", countWhitePawn)
-		if (countWhitePawn) {
-			const num = makePawnNumber(countWhitePawn)
-			const img = makeImage("wp")
-			if (playerColor == "black") {
-				userCaptures.append(img)
-				if (countWhitePawn > 1)
-					userCaptures.append(num)
-			}
-			else {
-				opponentCaptures.append(img)
-				if (countWhitePawn > 1)
-					opponentCaptures.append(num)
+
+		if (countWhitePawn > 0) {
+			const img = makeImage("wp");
+			const num = makePawnNumber(countWhitePawn);
+			const target = playerColor === "black" ? userCaptures : opponentCaptures;
+			target.forEach(el => el.appendChild(img));
+			if (countWhitePawn > 1) {
+				target.forEach(el => el.appendChild(num));
 			}
 		}
-	}, [gameData, playerColor])
+	}, [gameData, playerColor, instanceId]);
+
 	return (
-		<div id="players-container">
-			<div className='player-data' id="opponent-data">
-				<h2 className='player-name'>{opponentName}</h2>
-				<p className='player-color'>{opponentColor}</p>
+		<div className="players-container">
+			<div className="player-data" id="opponent-data">
+				<h2 className="player-name">{opponentName}</h2>
+				<p className="player-color">{opponentColor}</p>
 			</div>
-			<div className='captured-pieces' id="opponent-captures"></div>
-			<div className='player-data' id="user-data">
-				<h2 className='player-name'>{accountUsername}</h2>
-				<p className='player-color'>{playerColor}</p>
+			<div className="captured-pieces" name={`opponent-captures-${instanceId}`}></div>
+			<div className="player-data" id="user-data">
+				<h2 className="player-name">{accountUsername}</h2>
+				<p className="player-color">{playerColor}</p>
 			</div>
-			<div className='captured-pieces' id="user-captures"></div>
+			<div className="captured-pieces" name={`user-captures-${instanceId}`}></div>
 		</div>
-	)
+	);
 }
+
 const GameOver = ({ gameWinner }) => {
 	return (
 		<div id="results-container">
@@ -134,6 +130,7 @@ export const OnlineGame = ({ accountUsername, gameMode, gameData }) => {
 	const [gameWinner, setGameWinner] = useState(false)
 	const [selectedSquare, setSelectedSquare] = useState(null)
 	const navigate = useNavigate()
+
 	useEffect(() => {
 		console.log("game state: ", gameData.finished)
 		if (!gameData || gameData.finished == undefined || gameData.finished == true) {
@@ -227,16 +224,30 @@ export const OnlineGame = ({ accountUsername, gameMode, gameData }) => {
 
 	}, [gameData])
 	return (
-		<div id="game-page-container">
-			{playerColor == "white" ? <BoardWhite gameData={gameData} onClickSquare={onClickSquare} /> : <BoardBlack gameData={gameData} onClickSquare={onClickSquare} />}
-			<div className="navbar-pseudo" id="right-side">
-				<div id="active-game">
-					<GameBoard accountUsername={accountUsername} playerColor={playerColor} opponentName={opponentName} opponentColor={opponentColor} gameData={gameData} />
-					{gameFinished == false ? null : <GameOver gameWinner={gameWinner} />}
-					{gameFinished == false ? <button className='rs-buttons classic-btn' onClick={() => userResign()}>resign</button>
-						:
-						<button className='rs-buttons classic-btn' onClick={() => playAgain()}>Play again</button>
-					}
+		<div id="game-page-container-wrapper">
+			<div id="game-page-container">
+				{playerColor == "white" ? <BoardWhite gameData={gameData} onClickSquare={onClickSquare} /> : <BoardBlack gameData={gameData} onClickSquare={onClickSquare} />}
+				<div className="navbar-pseudo" id="right-side">
+					<div id="active-game">
+						<GameBoard accountUsername={accountUsername} playerColor={playerColor} opponentName={opponentName} opponentColor={opponentColor} gameData={gameData} />
+						{gameFinished == false ? null : <GameOver gameWinner={gameWinner} instanceId="right" />}
+						{gameFinished == false ? <button className='rs-buttons classic-btn' onClick={() => userResign()}>resign</button>
+							:
+							<button className='rs-buttons classic-btn' onClick={() => playAgain()}>Play again</button>
+						}
+					</div>
+				</div>
+			</div>
+			<div id="bottom-game-board">
+				<div className="navbar-pseudo" id="bottom-side">
+					<div id="active-game">
+						<GameBoard accountUsername={accountUsername} playerColor={playerColor} opponentName={opponentName} opponentColor={opponentColor} gameData={gameData} instanceId="bottom" />
+						{gameFinished == false ? null : <GameOver gameWinner={gameWinner} />}
+						{gameFinished == false ? <button className='rs-buttons classic-btn' onClick={() => userResign()}>resign</button>
+							:
+							<button className='rs-buttons classic-btn' onClick={() => playAgain()}>Play again</button>
+						}
+					</div>
 				</div>
 			</div>
 		</div >

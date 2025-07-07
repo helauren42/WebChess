@@ -90,6 +90,7 @@ li {
 }
 
 .navbar-pseudo * {
+	position: relative;
 	z-index: 15;
 }
 
