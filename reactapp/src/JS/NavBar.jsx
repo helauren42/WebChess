@@ -36,7 +36,7 @@ const TextAccount = ({ signedIn }) => {
 
 export const NavBar = ({ screenWidth }) => {
 	const [signedIn, setSignedIn] = useContext(AppContext)
-	const [openMenu, setOpenMenu] = useState(true)
+	const [openMenu, setOpenMenu] = useState(false)
 	useEffect(() => {
 	}, [signedIn])
 	useEffect(() => {

@@ -31,16 +31,23 @@ function getCookie(name) {
 
 const App = () => {
 	console.log("start cookies: ", document.cookie)
-	const [signedIn, setSignedIn] = useState(getCookie("sessionToken") != null ? true : getCookie("persistentToken") != null ? true : false)
+	const [sessionToken, setSessionToken] = useState(getCookie("sessionToken"))
+	const [persistentToken, setPersistentToken] = useState(getCookie("persistentToken"))
 	const [accountUsername, setAccountUsername] = useState("")
+	const [signedIn, setSignedIn] = useState(false)
+	// const [signedIn, setSignedIn] = useState(getCookie("sessionToken") != null ? true : getCookie("persistentToken") != null ? true : false)
 	const [globalChatHistory, setGlobalChatHistory] = useState([])
 	const [activeUsers, setActiveUsers] = useState([])
 	const [gameData, setGameData] = useState({})
 	const [screenWidth, setScreenWidth] = useState(window.innerWidth)
-	const [sessionToken, setSessionToken] = useState(getCookie("sessionToken"))
-	const [persistentToken, setPersistentToken] = useState(getCookie("persistentToken"))
 	const navigate = useNavigate()
 
+	useEffect(() => {
+		console.log("changed username: ", accountUsername)
+		if (accountUsername.length > 0) {
+			setSignedIn(true)
+		}
+	}, [accountUsername])
 	// preload images
 	useEffect(() => {
 		console.log("pre loading images")
@@ -115,7 +122,7 @@ const App = () => {
 		})
 		if (!resp) {
 			console.log("Error response")
-			return
+			return null
 		}
 		const data = await resp.json()
 		console.log("username req data: ", data)
@@ -123,14 +130,15 @@ const App = () => {
 			console.log("wrong username clearing cookies")
 			document.cookie = `sessionToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
 			document.cookie = `persistentToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
-			setSignedIn(false)
+			return false
 		}
 		else {
 			const username = data["username"]
 			console.log("found username: ", username)
 			setAccountUsername(username)
-			setSignedIn(true)
+			return true
 		}
+		return false
 	}
 	// create sessionToken if persistentToken is found
 	if (persistentToken && !sessionToken)
@@ -144,10 +152,14 @@ const App = () => {
 	}, []);
 	useEffect(() => {
 		if (sessionToken) {
-			WS.init(sessionToken, setActiveUsers, globalChatHistory, setGlobalChatHistory, navigate, setGameData)
 			fetchUsername()
 		}
 	}, [sessionToken])
+	useEffect(() => {
+		if (signedIn) {
+			WS.init(sessionToken, setActiveUsers, globalChatHistory, setGlobalChatHistory, navigate, setGameData)
+		}
+	}, [signedIn])
 	useEffect(() => {
 		setSessionToken(getCookie("sessionToken"))
 		setPersistentToken(getCookie("persistentToken"))

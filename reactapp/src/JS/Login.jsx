@@ -92,7 +92,7 @@ export const LoginPage = ({ sessionToken, setSessionToken, persistentToken, setP
 						</div>
 					</div>
 					<div className='centerx-container'>
-						<button className='classic-btn account-submit-btn'>submit</button>
+						<button className='account-submit-btn classic-btn'>submit</button>
 					</div>
 					<div className='centerx-container'>
 						<p id="signup-error-message" className='account-error-message'>{errorMessage}</p>

@@ -33,6 +33,10 @@ export class MainWebSocketManager {
 	websocketSendMessage(type, data) {
 		const message = JSON.stringify({ "sessionToken": this.sessionToken, type, data })
 		console.log("websocket sending message: ", message)
+		if (!this.WS || !this.WS.send) {
+			console.log("could not send message")
+			return
+		}
 		this.WS.send(message)
 	}
 	disconnect() {

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"
 import { SOCKET_ADDRESS } from "./Const";
 import { useEffect } from "react";
 
-export const MatchMaking = ({ sessionToken, gameData }) => {
+export const MatchMaking = ({ sessionToken, gameData, signedIn }) => {
 	const navigate = useNavigate()
 	const ws = new WebSocket(`${SOCKET_ADDRESS}/matchmaking`)
 	useEffect(() => {
@@ -24,11 +24,17 @@ export const MatchMaking = ({ sessionToken, gameData }) => {
 	}, [])
 	return (
 		<div className="matchmaking-main">
-			<div id="dialog">
-				<h2 id="dialog-text">Looking for an opponent</h2>
-				<div className="loader"></div>
-				<button className="classic-btn" id="dialog-btn" onClick={(e) => { navigate("/play") }}>Stop</button>
-			</div>
+			{signedIn ?
+				<div id="dialog">
+					<h1 id="dialog-text">Looking for an opponent</h1>
+					<div className="loader"></div>
+					<button className="classic-btn" id="dialog-btn" onClick={(e) => { navigate("/play") }}>Stop</button>
+				</div>
+				:
+				<div id="dialog">
+					<h1 id="dialog-text">You need to log in to play online</h1>
+				</div>
+			}
 		</div>
 	)
 }
