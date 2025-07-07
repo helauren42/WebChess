@@ -28,7 +28,7 @@
 	flex-direction: column;
 	justify-content: space-around;
 	align-items: center;
-	z-index: 1000;
+	z-index: 30;
 }
 
 #global-message-section {
@@ -56,7 +56,7 @@
 	overflow: auto;
 	padding-bottom: 1rem;
 	background-color: rgba(60, 42, 95);
-	z-index: 120;
+	z-index: 30;
 }
 
 #active-users-title-container {
@@ -128,7 +128,7 @@
 	width: 100%;
 	border: 0.1rem solid var(--border-color);
 	overflow-y: overlay;
-	z-index: 100;
+	z-index: 50;
 	/* background: linear-gradient(160deg, rgba(50, 25, 80), rgba(65, 30, 75)); */
 }
 
@@ -142,7 +142,7 @@
 }
 
 #global-message-title {
-	z-index: 100;
+	z-index: 50;
 }
 
 #global-message-title::after {
@@ -156,7 +156,7 @@
 }
 
 #message-history * {
-	z-index: 101;
+	z-index: 50;
 }
 
 #message-history-blurr::before {

@@ -4,9 +4,8 @@ import { displayDialogServerConnectionError } from '../Dialogs.jsx'
 import { useNavigate } from 'react-router-dom'
 import '../../CSS/Play.css'
 import { BoardWhite } from './BoardWhite.jsx'
-import { WS } from '../Const.jsx';
 
-export const PlayPage = () => {
+export const PlayPage = ({ gameData }) => {
 	const [playerColor, setPlayerColor] = useState("white")
 	const navigate = useNavigate()
 	const onClickSquare = () => {
@@ -14,11 +13,11 @@ export const PlayPage = () => {
 		return
 	}
 	useEffect(() => {
-		if (WS.gameData && WS.gameData.finished == false) {
-			console.log("game apparently not finished!!!!: ", WS.gameData.finished)
+		if (gameData && gameData.finished == false) {
+			console.log("game apparently not finished!!!!: ", gameData.finished)
 			navigate("/play/online")
 		}
-	}, [])
+	}, [gameData])
 	return (
 		<div id="game-page-container">
 			<div className="board-container">

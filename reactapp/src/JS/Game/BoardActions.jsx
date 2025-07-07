@@ -8,10 +8,12 @@ export const changeSquareColor = (square, setSelectedSquare) => {
 	console.log("changing square color: ", square.id)
 	const elem = square.id.length <= 11 ? square : square.parentElement
 	const color = elem.className.search("white") >= 0 ? "white" : "black"
+	console.log("prev color: ", elem.style.backgroundColor)
 	if (color == "white")
 		elem.style.backgroundColor = "var(--selected-square)"
 	else
 		elem.style.backgroundColor = "var(--selected-square)"
+	console.log("post color: ", elem.style.backgroundColor)
 }
 
 export const resetSquareColor = (square) => {
@@ -20,10 +22,12 @@ export const resetSquareColor = (square) => {
 	const elem = square.id.length <= 11 ? square : square.parentElement
 	const color = elem.className.search("white") >= 0 ? "white" : "black"
 	console.log("resetSquareColor id: ", elem)
+	console.log("pre reset color: ", elem.style.backgroundColor)
 	if (color == "white")
 		elem.style.backgroundColor = "var(--white-square)"
 	else
 		elem.style.backgroundColor = "var(--black-square)"
+	console.log("post reset color: ", elem.style.backgroundColor)
 }
 export const getPos = (square) => {
 	console.log("clicked ID: ", square.id)

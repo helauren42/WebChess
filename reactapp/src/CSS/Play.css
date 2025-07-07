@@ -68,8 +68,8 @@
 }
 
 .white-square {
-	background: linear-gradient(var(--white-square), var(--white-square));
-	/* background-color: var(--white-square); */
+	background: none;
+	background-color: var(--white-square);
 }
 
 .black-square {
