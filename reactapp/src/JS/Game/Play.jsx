@@ -21,20 +21,42 @@ export const PlayPage = () => {
 	}, [])
 	return (
 		<div id="game-page-container">
-			<BoardWhite gameData={null} onClickSquare={onClickSquare} />
-			<div className="navbar-pseudo" id="right-side">
-				<div id="select-mode">
-					<div id="select-mode-title-container">
+			<div className="board-container">
+				<BoardWhite gameData={null} onClickSquare={onClickSquare}>
+				</BoardWhite>
+				<div className="navbar-pseudo" id="on-top">
+					<div className="select-mode">
+						<div className="select-mode-title-container">
+							<h2 className="select-mode-title">Select your game mode</h2>
+						</div>
+						<div className="ghost"><p></p></div>
+						<div className="play-buttons-container">
+							<button className="rs-buttons classic-btn button-play-online" onClick={(e) => {
+								console.log("clicked play online");
+								navigate("/play/matchmaking")
+							}}><h3 className='subtitle'>Online</h3></button>
+							<button className="rs-buttons classic-btn button-play-online" onClick={(e) => {
+								console.log("clicked play hotseat");
+								navigate("/play/matchmaking")
+							}}><h3 className='subtitle'>Hotseat</h3></button>
+						</div>
+						<div className="ghost"><p></p></div>
+					</div>
+				</div>
+			</div>
+			<div className=" navbar-pseudo" id="right-side">
+				<div className="select-mode">
+					<div className="select-mode-title-container">
 						<h2 className="select-mode-title">Select your game mode</h2>
 					</div>
 					<div className="ghost"><p></p></div>
-					<div id="play-buttons-container">
-						{/* <button className="rs-buttons" id="button-play-hotseat">Play Hotseat</button> */}
-						<button className="rs-buttons classic-btn" id="button-play-online" onClick={(e) => {
+					<div className="play-buttons-container">
+						{/* <button className="rs-buttons" className="button-play-hotseat">Play Hotseat</button> */}
+						<button className="rs-buttons classic-btn button-play-online" onClick={(e) => {
 							console.log("clicked play online");
 							navigate("/play/matchmaking")
 						}}><h3 className='subtitle'>Online</h3></button>
-						<button className="rs-buttons classic-btn" id="button-play-online" onClick={(e) => {
+						<button className="rs-buttons classic-btn button-play-online" onClick={(e) => {
 							console.log("clicked play hotseat");
 							navigate("/play/matchmaking")
 						}}><h3 className='subtitle'>Hotseat</h3></button>
@@ -42,7 +64,7 @@ export const PlayPage = () => {
 					<div className="ghost"><p></p></div>
 				</div>
 			</div>
-		</div >
+		</div>
 	)
 }
 

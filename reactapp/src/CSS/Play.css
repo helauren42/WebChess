@@ -10,7 +10,7 @@
 	gap: 2%;
 }
 
-#board-container {
+.board-container {
 	height: 100%;
 	width: 100%;
 	display: flex;
@@ -77,6 +77,22 @@
 	background-color: var(--black-square);
 }
 
+#on-top {
+	position: absolute;
+	height: auto;
+	width: auto;
+	max-width: 80%;
+	display: none;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-evenly;
+	padding: 1rem 1rem;
+	background-color: var(--primary-color);
+	border-radius: 1.5rem;
+	border: 0.09rem solid var(--border-color);
+	box-shadow: 0px 0px 0.2rem var(--border-color);
+	z-index: 150;
+}
 
 #right-side {
 	height: auto;
@@ -94,15 +110,16 @@
 	box-shadow: 0px 0px 0.2rem var(--border-color);
 }
 
-#select-mode {
+.select-mode {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-evenly;
 	align-items: center;
 	gap: 1rem;
+	border-radius: inherit;
 }
 
-#select-mode-title-container {
+.select-mode-title-container {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-evenly;
@@ -114,7 +131,7 @@
 	text-align: center;
 }
 
-#play-buttons-container {
+.play-buttons-container {
 	width: 100%;
 	height: 100%;
 	display: flex;
@@ -130,30 +147,46 @@
 	max-width: 80%;
 }
 
-#button-play-hotseat {
-	grid-row: 4/5;
-}
-
-#button-play-online {
-	grid-row: 5/6;
-}
-
-@media (max-width: 700px) {
+@media (max-width: 550px) {
 	#game-page-container {
-		flex-direction: column-reverse;
+		flex-direction: column;
 		height: 100vh;
 		max-height: 100%;
+		gap: 0%;
 	}
 
-	#select-mode {
-		flex-direction: column;
+	#right-side {
+		display: none;
+	}
+
+	#on-top {
+		display: flex;
+	}
+
+	.select-mode {
+		gap: 0.5rem;
+	}
+
+	.select-mode-title {
+		font-size: 1rem;
+	}
+
+	.rs-buttons {
+		width: 6rem;
+		max-width: 80%;
+	}
+
+	.play-buttons-container {
+		flex-direction: row;
 	}
 
 	.board {
 		height: auto;
-		width: 90%;
-		max-width: none;
+		width: 100%;
+		/* max-width: 60vh; */
+		max-width: 75vh;
 		max-height: none;
 		aspect-ratio: 1/1;
 	}
+
 }
