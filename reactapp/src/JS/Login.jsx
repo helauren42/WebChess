@@ -73,26 +73,26 @@ export const LoginPage = ({ sessionToken, setSessionToken, persistentToken, setP
 	return (
 		<div className="account-base-container">
 			<div className="account-block navbar-pseudo">
-				<h1 className='account-title'>Login</h1>
+				<h3 className='account-title'>Login</h3>
 				<form className="account-form" onSubmit={(e) => { submitLogin(e) }}>
 					<div className='input-block'>
-						<h2 className='input-header'>username</h2>
+						<h3 className='input-header'>username</h3>
 						<input className='input-input' required type="text" onChange={(e) => setUsername(inputChange(e))} />
 					</div>
 					<div className='input-block'>
-						<h2 className='input-header'>password</h2>
+						<h3 className='input-header'>password</h3>
 						<input className='input-input' required type="text" onChange={(e) => setPassword(inputChange(e))} />
 					</div>
 					<div className='input-block'>
 						<div className='account-same-line'>
-							<h3>Stay Connected</h3>
+							<h3>stay connected</h3>
 							<input type="checkbox" id="stay-connected-checkbox" onClick={(e) => {
 								setStayConnected(!stayLoggedIn);
 							}} ></input>
 						</div>
 					</div>
 					<div className='centerx-container'>
-						<button className='account-submit-btn classic-btn'>submit</button>
+						<button className='classic-btn account-submit-btn'>submit</button>
 					</div>
 					<div className='centerx-container'>
 						<p id="signup-error-message" className='account-error-message'>{errorMessage}</p>

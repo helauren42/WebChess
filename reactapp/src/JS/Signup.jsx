@@ -15,28 +15,28 @@ export const SignupForm = () => {
 	} = useContext(SignupContext)
 	return (
 		<div className="account-block navbar-pseudo">
-			<h1 className='account-title'>Signup</h1>
+			<h3 className='account-title'>Signup</h3>
 			<form className="account-form" onSubmit={(e) => { signupProcess(e) }}>
 				<div className='input-block'>
-					<h2 className='input-header'>username</h2>
+					<h3 className='input-header'>username</h3>
 					<input className='input-input' required type="text" pattern="^[\w]+$" minLength={5} title="Username must be at least 5 characters long and can only container alphanumerical characters or underscore" onChange={(e) => setUsername(inputChange(e))} />
 				</div>
 				<div className='input-block'>
-					<h2 className='input-header'>password</h2>
+					<h3 className='input-header'>password</h3>
 					<input className='input-input' required type="password" min={8} pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}" title="Password must have min 8 characters, a lowercase, an uppercase, a digit and a special character" onChange={(e) => setPassword(inputChange(e))} />
 					{/* <input className='input-input' required type="text" pattern="^[\w]+$" minLength={5} title="Username must be at least 5 characters long and can only container alphanumerical characters or underscore" onChange={(e) => setPassword(inputChange(e))} /> */}
 				</div>
 				<div className='input-block'>
-					<h2 className='input-header'>confirm password</h2>
+					<h3 className='input-header'>confirm password</h3>
 					<input className='input-input' required type="password" min={8} pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}" title="Password must have min 8 characters, a lowercase, an uppercase, a digit and a special character" onChange={(e) => setConfirmPassword(inputChange(e))} />
 					{/* <input className='input-input' required type="text" pattern="^[\w]+$" minLength={5} title="Username must be at least 5 characters long and can only container alphanumerical characters or underscore" onChange={(e) => setConfirmPassword(inputChange(e))} /> */}
 				</div>
 				<div className='input-block'>
-					<h2 className='input-header'>email</h2>
+					<h3 className='input-header'>email</h3>
 					<input className='input-input' pattern="[a-z0-9._+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$" required type="email" onChange={(e) => setEmail(inputChange(e))} title="This is not a valid email address" />
 				</div>
 				<div className='centerx-container'>
-					<button className='account-submit-btn'>submit</button>
+					<button className='account-submit-btn classic-btn'>submit</button>
 				</div>
 				<div className='centerx-container'>
 					<p id="signup-error-message" className='account-error-message'>{errorMessage}</p>
@@ -145,7 +145,7 @@ const CodeValidationElement = ({ username, password, email, errorMessage, setErr
 					<p id="signup-error-message" className='account-error-message'>{errorMessage}</p>
 				</div>
 				<div className='centerx-container'>
-					<button className='account-submit-btn'>submit</button>
+					<button className='account-submit-btn classic-btn'>submit</button>
 				</div>
 			</form>
 		</div>

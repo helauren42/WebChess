@@ -90,6 +90,7 @@
 @media (max-width: 750px) {
 	#App {
 		height: auto;
+		min-height: 100vh;
 	}
 
 	#game-page-container-wrapper {
