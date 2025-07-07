@@ -6,7 +6,7 @@ import '../CSS/Home.css'
 const SigninSection = ({ navigate }) => {
 	return (
 		<section id="signin-section">
-			<button className="home-btn" onClick={() => navigate("/login")} ><p>Sign in</p></button>
+			<button className="home-btn classic-btn" onClick={() => navigate("/login")} ><p>Sign in</p></button>
 		</section>
 	)
 }

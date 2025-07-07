@@ -53,9 +53,9 @@ export const NavBar = ({ screenWidth }) => {
 	return (
 		<div id="navbar-wrapper">
 			<div id="navbar">
-				{screenWidth > MOBILE_WIDTH ? <h3 id="nav-title" className='subtitle std-hover'><Link to="/">Chess</Link></h3> : <KingSvg className='subtitle nav-svg-cont' />}
+				{screenWidth > MOBILE_WIDTH ? <h3 id="nav-title" className='subtitle std-hover'><Link to="/">Chess</Link></h3> : <Link to="/"><KingSvg className='subtitle nav-svg-cont' /></Link>}
 				{screenWidth > TABLET_WIDTH ? <ClassicMenu /> : <TabletMenu setOpenMenu={setOpenMenu} openMenu={openMenu} />}
-				{screenWidth > MOBILE_WIDTH ? <TextAccount signedIn={signedIn} /> : <AccountSvg className='subtitle nav-svg-cont' />}
+				{screenWidth > MOBILE_WIDTH ? <TextAccount signedIn={signedIn} /> : <Link to={signedIn ? "/account" : "/login"}><AccountSvg className='subtitle nav-svg-cont' /></Link>}
 			</div >
 			<div id="open-menu">
 				<div id="open-menu-links">
