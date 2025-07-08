@@ -88,7 +88,7 @@ export const LoginPage = ({ sessionToken, setSessionToken, persistentToken, setP
 					</div>
 					<div className='input-block'>
 						<h3 className='input-header'>password</h3>
-						<input className='input-input' required type="text" onChange={(e) => setPassword(inputChange(e))} />
+						<input className='input-input' required type="password" onChange={(e) => setPassword(inputChange(e))} />
 					</div>
 					<div className='input-block'>
 						<div className='account-same-line'>
