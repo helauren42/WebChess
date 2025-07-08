@@ -37,14 +37,12 @@ export class MainWebSocketManager {
 			console.log("could not send message")
 			return
 		}
-		this.WS.send(message)
+		if (this.WS.readyState == 1)
+			this.WS?.send(message)
 	}
-	disconnect() {
-		if (this.WS) {
-			console.log("disconnection websocket")
-			this.WS.close()
-			this.WS = null
-		}
+	logout() {
+		console.log("logout websocket")
+		this.websocketSendMessage("logout", {})
 	}
 	updateGlobalChat(newChat) {
 		this.globalChatHistory = newChat
@@ -69,6 +67,7 @@ export class WebSocketManager extends MainWebSocketManager {
 			console.log("data: ", data)
 			switch (type) {
 				case "activeUsers":
+					console.log("setting active users: ", data)
 					this.setActiveUsers(data)
 					break
 				case "globalChat":

@@ -130,14 +130,15 @@ export const SocialPage = ({ screenWidth }) => {
 		createChatHistory(setGlobalChatHistory)
 	}, [])
 	useEffect(() => {
+		console.log("updating active users: ", activeUsers)
 		const parent = document.getElementById("active-users-list")
+		const arrayUsersList = Array.from(document.getElementsByClassName("active-users-list-element"))
+		for (let i = 0; i < arrayUsersList.length; i++) {
+			const element = arrayUsersList[i]
+			parent.removeChild(element)
+		}
 		for (let i = 0; i < activeUsers.length; i++) {
 			const username = activeUsers[i]
-			const arrayUsersList = Array.from(document.getElementsByClassName("active-users-list-element"))
-			for (let i = 0; i < arrayUsersList.length; i++) {
-				const element = arrayUsersList[i]
-				parent.removeChild(element)
-			}
 			for (let i = 0; i < activeUsers.length; i++) {
 				const username = activeUsers[i]
 				const container = document.createElement('div')

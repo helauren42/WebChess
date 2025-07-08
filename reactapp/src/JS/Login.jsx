@@ -15,6 +15,13 @@ export const LoginPage = ({ sessionToken, setSessionToken, persistentToken, setP
 		return e.target.value
 	}
 
+	useEffect(() => {
+		if (signedIn) {
+			navigate("/account")
+			return
+		}
+	}, [signedIn])
+
 	const errorMessageDisplay = (() => {
 		const elem = document.getElementById('signup-error-message')
 		if (errorMessage === "")

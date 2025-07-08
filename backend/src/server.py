@@ -151,7 +151,7 @@ async def fetchUserData(req: SessionToken):
     return fastapi.responses.JSONResponse(
         status_code=200,
         content={
-            "userData": userData,
+            "userData": userData.__dict__,
         },
     )
 
@@ -182,6 +182,7 @@ async def sendVerificationEmail(req: VerifyEmailRequest):
 @app.post("/validateCode")
 async def validateCode(req: VerifyCodeRequest):
     logger.info("validateCode request received")
+    print("validateCode request received")
     if db.validateCode(req.email, req.code):
         return fastapi.responses.JSONResponse(
             status_code=200, content={"message": "code is valid"}
@@ -306,6 +307,11 @@ async def websocket_endpoint(websocket: WebSocket):
                     message = data["message"]
                     await websocketManager.msgGlobalChat(message, username)
                 # todo case "disconnect"
+                case "logout":
+                    await websocketManager.logout(username)
+                    print("logged out")
+                    await websocketManager.msgUpdateActiveUsers()
+                    print("messaged updated active users")
                 case "disconnect":
                     await websocketManager.disconnect(username)
                     await websocketManager.removeClosedSockets()

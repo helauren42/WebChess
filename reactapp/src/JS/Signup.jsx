@@ -1,11 +1,11 @@
-import { useState, createContext, useContext } from "react";
+import { useState, useEffect, createContext, useContext } from "react";
 import { Link, useNavigate } from 'react-router-dom'
 import { SOCKET_ADDRESS } from "./Const";
 import { AppContext } from "./App.jsx"
 
 export const SignupContext = createContext()
 
-export const SignupForm = () => {
+export const SignupForm = ({ signedIn }) => {
 	const { username, setUsername,
 		password, setPassword,
 		confirmPassword, setConfirmPassword,
@@ -13,6 +13,14 @@ export const SignupForm = () => {
 		errorMessage, setErrorMessage,
 		signupProcess, inputChange
 	} = useContext(SignupContext)
+	const navigate = useNavigate()
+	useEffect(() => {
+		if (signedIn) {
+			navigate("/account")
+			return
+		}
+	}, [signedIn])
+
 	return (
 		<div className="account-block navbar-pseudo">
 			<h3 className='account-title'>Signup</h3>
@@ -23,13 +31,13 @@ export const SignupForm = () => {
 				</div>
 				<div className='input-block'>
 					<h3 className='input-header'>password</h3>
-					<input className='input-input' required type="password" min={8} pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}" title="Password must have min 8 characters, a lowercase, an uppercase, a digit and a special character" onChange={(e) => setPassword(inputChange(e))} />
-					{/* <input className='input-input' required type="text" pattern="^[\w]+$" minLength={5} title="Username must be at least 5 characters long and can only container alphanumerical characters or underscore" onChange={(e) => setPassword(inputChange(e))} /> */}
+					{/* <input className='input-input' required type="password" min={8} pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}" title="Password must have min 8 characters, a lowercase, an uppercase, a digit and a special character" onChange={(e) => setPassword(inputChange(e))} /> */}
+					<input className='input-input' required type="text" pattern="^[\w]+$" minLength={5} title="Username must be at least 5 characters long and can only container alphanumerical characters or underscore" onChange={(e) => setPassword(inputChange(e))} />
 				</div>
 				<div className='input-block'>
 					<h3 className='input-header'>confirm password</h3>
-					<input className='input-input' required type="password" min={8} pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}" title="Password must have min 8 characters, a lowercase, an uppercase, a digit and a special character" onChange={(e) => setConfirmPassword(inputChange(e))} />
-					{/* <input className='input-input' required type="text" pattern="^[\w]+$" minLength={5} title="Username must be at least 5 characters long and can only container alphanumerical characters or underscore" onChange={(e) => setConfirmPassword(inputChange(e))} /> */}
+					{/* <input className='input-input' required type="password" min={8} pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}" title="Password must have min 8 characters, a lowercase, an uppercase, a digit and a special character" onChange={(e) => setConfirmPassword(inputChange(e))} /> */}
+					<input className='input-input' required type="text" pattern="^[\w]+$" minLength={5} title="Username must be at least 5 characters long and can only container alphanumerical characters or underscore" onChange={(e) => setConfirmPassword(inputChange(e))} />
 				</div>
 				<div className='input-block'>
 					<h3 className='input-header'>email</h3>
@@ -152,7 +160,7 @@ const CodeValidationElement = ({ username, password, email, errorMessage, setErr
 	)
 }
 
-export const SignupPage = () => {
+export const SignupPage = ({ signedIn }) => {
 	const [username, setUsername] = useState("")
 	const [password, setPassword] = useState("")
 	const [confirmPassword, setConfirmPassword] = useState("")
@@ -225,7 +233,6 @@ export const SignupPage = () => {
 
 	const signupProcess = async (e) => {
 		e.preventDefault()
-		e.target.reset()
 		console.log("submitting signup: ", e)
 		if (checkPasswordMatch() == false)
 			return
@@ -245,6 +252,7 @@ export const SignupPage = () => {
 
 		// verify email verification code entered is valid and then create account if valid in code validation form
 		setElem("code")
+		e.target.reset()
 	}
 	const errorMessageDisplay = (() => {
 		const elem = document.getElementById('signup-error-message')
@@ -265,7 +273,7 @@ export const SignupPage = () => {
 			<div className="account-base-container">
 				{
 					elem == "form" ?
-						<SignupForm /> : <CodeValidationElement
+						<SignupForm signedIn={signedIn} /> : <CodeValidationElement
 							username={username}
 							password={password}
 							email={email}

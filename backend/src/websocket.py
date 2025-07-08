@@ -139,6 +139,9 @@ class WebsocketManager(AbstractWebsocketManager):
             await self.disconnect(username)
         await self.msgUpdateActiveUsers()
 
+    async def logout(self, username):
+        self.connections.pop(username)
+
     async def newConnection(
         self, username: str, websocket: WebSocket, sessionToken: str
     ):
@@ -158,7 +161,9 @@ class WebsocketManager(AbstractWebsocketManager):
     # messages
     async def msgUpdateActiveUsers(self):
         activeUsers: tuple = tuple(await self.getActiveUsers())
-        for username in self.connections:
+        logger.info(f"active users msg update: {activeUsers}")
+        print("active users msg update: ", activeUsers)
+        for username in self.connections.keys():
             usernames: list = list(activeUsers)
             usernames.remove(username)
             data = json.dumps(usernames)
@@ -167,7 +172,9 @@ class WebsocketManager(AbstractWebsocketManager):
                 try:
                     await self.sendMessage("activeUsers", data, websocket)
                 except Exception as e:
-                    logger.error(f"could not send message update active users: {e}")
+                    logger.error(
+                        f"could not send message of type update active users: {e}"
+                    )
 
     async def msgGlobalChat(self, message, sender):
         # time in minutes

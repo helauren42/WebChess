@@ -7,6 +7,7 @@ import { useEffect } from "react";
 export const MatchMaking = ({ sessionToken, gameData, signedIn }) => {
 	const navigate = useNavigate()
 	const ws = new WebSocket(`${SOCKET_ADDRESS}/matchmaking`)
+	console.log("signedIn inside matchmaking: ", signedIn)
 	useEffect(() => {
 		if (gameData && gameData.finished == false) {
 			console.log("game apparently not finished!!!!: ", gameData.finished)

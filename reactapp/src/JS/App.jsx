@@ -44,9 +44,10 @@ const App = () => {
 
 	useEffect(() => {
 		console.log("changed username: ", accountUsername)
-		if (accountUsername.length > 0) {
+		if (accountUsername.length > 0)
 			setSignedIn(true)
-		}
+		else
+			setSignedIn(false)
 	}, [accountUsername])
 	// preload images
 	useEffect(() => {
@@ -159,10 +160,11 @@ const App = () => {
 		if (signedIn) {
 			WS.init(sessionToken, setActiveUsers, globalChatHistory, setGlobalChatHistory, navigate, setGameData)
 		}
-	}, [signedIn])
+	}, [signedIn, sessionToken])
 	useEffect(() => {
 		setSessionToken(getCookie("sessionToken"))
 		setPersistentToken(getCookie("persistentToken"))
+		console.log("signedIn value changed: ", signedIn)
 	}, [signedIn])
 	return (
 		<AppContext.Provider value={[signedIn, setSignedIn]}>
@@ -174,9 +176,9 @@ const App = () => {
 							<Route path="/" element={<HomePage />} />
 							<Route path="/play" element={<PlayPage gameData={gameData} />} />
 							<Route path="/play/online" element={<OnlineGame accountUsername={accountUsername} gameMode={GAME_MODE_ONLINE} gameData={gameData} />} />
-							<Route path="/play/matchmaking" element={<MatchMaking sessionToken={sessionToken} gameData={gameData} />} />
+							<Route path="/play/matchmaking" element={<MatchMaking sessionToken={sessionToken} gameData={gameData} signedIn={signedIn} />} />
 							<Route path="/social" element={<SocialPage screenWidth={screenWidth} />} />
-							<Route path="/signup" element={<SignupPage />} />
+							<Route path="/signup" element={<SignupPage signedIn={signedIn} />} />
 							<Route path="/login" element={<LoginPage sessionToken={sessionToken} setSessionToken={setSessionToken} persistentToken={persistentToken} setPersistentToken={setPersistentToken} />} />
 							<Route path="/account" element={<AccountPage sessionToken={sessionToken} />} />
 						</Routes>
