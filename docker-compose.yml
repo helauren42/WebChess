@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: docker/server/Dockerfile
     ports:
-      - "6453:6453"
+      - "80:6453"
     depends_on:
       db:
         condition: service_healthy
