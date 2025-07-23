@@ -12,7 +12,6 @@ DOCKER_MYSQL_DIR = (
     os.path.abspath(os.path.join(os.path.dirname(CWD), "../docker/mysql/")) + "/"
 )
 
-
 def getEnv(variable: str) -> str:
     with open(ENV_PATH, "r") as file:
         lines = file.readlines()
