@@ -19,7 +19,7 @@ from schemas import (
 from cell import Pos
 from emailManager import EmailManager
 from utils import logger, debugLogger
-from websocket import Matchmaker, MatchmakerConnection, websocketManager
+from my_websocket import Matchmaker, MatchmakerConnection, websocketManager
 from const import ORG_LOCAL, ORG_NPMSTART, PORT, HOST
 from databaseObject import db
 
@@ -45,7 +45,7 @@ app.mount(
 
 
 @app.get("/")
-async def home():
+async def home(resq: fastapi.requests.HTTPConnection):
     return fastapi.responses.FileResponse("../../reactapp/build/index.html")
 
 
@@ -278,7 +278,8 @@ async def websocket_endpoint(websocket: WebSocket):
             if len(websocketManager.activeGames) == 0:
                 await websocketManager.fetchActiveGames()
                 logger.info(
-                    f"fetched active games amount: {len(websocketManager.activeGames)}"
+                    f"fetched active games amount: {
+                        len(websocketManager.activeGames)}"
                 )
                 await websocketManager.printActiveGames()
             recv = await websocket.receive_json()
@@ -379,18 +380,22 @@ async def matchmaking(websocket: WebSocket):
                     return
 
                 logger.info(
-                    f"Pre-connection matchmaking: {len(matchMaker.connections)}"
+                    f"Pre-connection matchmaking: {
+                        len(matchMaker.connections)}"
                 )
 
                 if matchMaker.connections:
                     opponent = matchMaker.connections[0].username
                     await websocketManager.startOnlineGame(username, opponent)
-                    matchMaker.removeConnection(matchMaker.connections[0].sessionToken)
+                    matchMaker.removeConnection(
+                        matchMaker.connections[0].sessionToken)
 
-                connection = MatchmakerConnection(sessionToken, websocket, username)
+                connection = MatchmakerConnection(
+                    sessionToken, websocket, username)
                 matchMaker.connections.append(connection)
                 logger.info(
-                    f"Post-connection matchmaking: {len(matchMaker.connections)}"
+                    f"Post-connection matchmaking: {
+                        len(matchMaker.connections)}"
                 )
 
                 await websocket.receive_text()
