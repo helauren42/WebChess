@@ -1,3 +1,3 @@
 # WebChess
 
-http://188.68.57.140:6453/
+https://www.henrichess.online/
