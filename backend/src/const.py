@@ -9,8 +9,10 @@ CWD = os.getcwd()
 ENV_PATH = os.path.abspath(os.path.join(CWD, "../../.env"))
 DB_DIR = os.path.join(os.path.dirname(CWD), "database/")
 DOCKER_MYSQL_DIR = (
-    os.path.abspath(os.path.join(os.path.dirname(CWD), "../docker/mysql/")) + "/"
+    os.path.abspath(os.path.join(
+        os.path.dirname(CWD), "../docker/mysql/")) + "/"
 )
+
 
 def getEnv(variable: str) -> str:
     with open(ENV_PATH, "r") as file:
@@ -28,8 +30,8 @@ def getEnv(variable: str) -> str:
 DB_PORT = getEnv("DB_PORT")
 PORT = int(getEnv("SERVER_PORT"))
 ORG_NPMSTART = "http://localhost:3000"
-ORG_LOCAL = "http://localhost:6453"
-ORG_SERVER = "http://188.68.57.140:6453"
+ORG_LOCAL = getEnv("ORG_LOCAL")
+ORG_SERVER = getEnv("ORG_SERVER")
 
 HOST = getEnv("SERVER_HOST")
 WHITE = "white"
