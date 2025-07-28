@@ -19,7 +19,7 @@ export class MainWebSocketManager {
 		console.log("setGlobalChatHistory: ", this.setGlobalChatHistory)
 		this.navigate = _navigate
 		this.setGameData = _setGameData
-		this.WS = new WebSocket(`${WEBSOCKET_URL}`)
+		this.WS = new WebSocket(`${WEBSOCKET_URL}/ws`)
 		console.log("websocket created:")
 		console.log(this.WS.readyState)
 		this.WS.addEventListener('open', () => {

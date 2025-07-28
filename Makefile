@@ -13,12 +13,12 @@ buildFront:
 
 dockerUp:
 	docker compose build --parallel
-	docker compose up
+	docker compose up -d
 
 dockerDown:
 	docker compose down
 
-dockerRe: clean dockerDown dockerUp
+dockerRe: dockerDown dockerUp
 
 deploy: clean initSql dockerUp
 

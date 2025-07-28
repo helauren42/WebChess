@@ -1,9 +1,9 @@
 import { WebSocketManager } from "./WebSocket"
 
-export const IP_ADDRESS = process.env.REACT_APP_FRONT_IP_ADDRESS
-console.log("IP_ADDRESS: ", IP_ADDRESS)
+const DEPLOY = process.env.REACT_APP_DEPLOY
+const DOMAIN = "henrichess.online"
 export const PORT = 6453
-export const SOCKET_ADDRESS = "http://" + IP_ADDRESS + ":" + PORT
-console.log("SOCKET_ADDRESS: ", SOCKET_ADDRESS)
-export const WEBSOCKET_URL = "ws://" + IP_ADDRESS + ":" + PORT + "/ws"
+export const IP_ADDRESS = process.env.REACT_APP_FRONT_IP_ADDRESS
+export const SOCKET_ADDRESS = DEPLOY ? "https://www." + DOMAIN : "http://" + IP_ADDRESS + ":" + PORT
+export const WEBSOCKET_URL = DEPLOY ? "wss://" + DOMAIN : "ws://" + IP_ADDRESS + ":" + PORT
 export const WS = new WebSocketManager()
