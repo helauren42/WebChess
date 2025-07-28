@@ -45,7 +45,8 @@ app.mount(
 
 
 @app.get("/")
-async def home():
+async def home(req: fastapi.requests.HTTPConnection):
+    logger.info(f"!!! client: {req.client.host}")
     return fastapi.responses.FileResponse("../../reactapp/build/index.html")
 
 
