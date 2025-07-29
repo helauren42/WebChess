@@ -2,8 +2,9 @@ from uuid import uuid4
 from typing import Optional
 import fastapi
 from fastapi.websockets import WebSocketState
+from starlette.requests import HTTPConnection
 import uvicorn
-from fastapi import WebSocket, WebSocketDisconnect
+from fastapi import WebSocket, WebSocketDisconnect, requests
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from schemas import (
@@ -41,12 +42,16 @@ app.mount(
     "/static", StaticFiles(directory="../../reactapp/build/static"), name="static"
 )
 
+@app.middleware("http")
+async def getIpAddress(req: fastapi.requests.HTTPConnection, nextCall):
+    real_ip = req.headers.get("x-forwarded-for", req.client.host)
+    logger.info(f"!!! Client IP: {real_ip}")
+    return await nextCall(req)
+
 """ ------------------------------------------------------- WEB PAGE ------------------------------------------------------- """
 
-
 @app.get("/")
-async def home(req: fastapi.requests.HTTPConnection):
-    logger.info(f"!!! client: {req.client.host}")
+async def home():
     return fastapi.responses.FileResponse("../../reactapp/build/index.html")
 
 
@@ -148,7 +153,7 @@ async def fetchUserData(req: SessionToken):
     if username is None:
         return fastapi.responses.JSONResponse(status_code=401, content={})
     userData = db.fetchUserData(username)
-    print("USER DATA: ", userData)
+    logger.info("USER DATA: ", userData)
     return fastapi.responses.JSONResponse(
         status_code=200,
         content={

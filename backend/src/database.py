@@ -2,7 +2,6 @@ from datetime import datetime
 from utils import logger
 import mysql
 import mysql.connector
-from mysql.connector.abstracts import MySQLCursorAbstract
 from typing import Optional
 import subprocess
 
@@ -232,8 +231,8 @@ class Database(AbstractDb):
         values = (email,)
         self.executeQueryValues(query, values)
         found = self.cursor.fetchone()
-        if found is not None and found[0] == code:
-            logger.info(f"found code: {found[0]}")
+        if found is not None and found[0] == code: #type: ignore
+            logger.info(f"found code: {found[0]}") #type: ignore
             self.executeQueryValues(
                 f"DELETE FROM {self.table_email_verification} WHERE email=%s", (email,)
             )
@@ -303,7 +302,7 @@ class Database(AbstractDb):
         for game in games:
             logger.info(f"GAME: {game}")
             onlineGame = OnlineGame()
-            onlineGame.parseGame(game)
+            onlineGame.parseGame(game) #pyright: ignore
             parsed_games[onlineGame.gameId] = onlineGame
         return parsed_games
 
