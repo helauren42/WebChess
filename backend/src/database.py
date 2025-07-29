@@ -85,13 +85,9 @@ class AbstractDb:
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
-        logger.info("built init.sql")
         for statement in content.split(";"):
             if statement.strip():
                 self.cursor.execute(statement)
-        logger.info("run init.sql")
-        # with open(f"{DOCKER_MYSQL_DIR}init.sql", "w") as file:
-        #     file.write(content)
 
     def fetchCredentials(self):
         with open(ENV_PATH, "r") as file:
@@ -332,23 +328,49 @@ class Database(AbstractDb):
 
     def storeGameResult(self, winner, loser, draw=False):
         if not draw:
-            query = "update users set total_wins=total_wins+1 where username=%s"
+            query = f"update {
+                self.table_users} set total_wins=total_wins+1 where username=%s"
             values = (winner,)
             self.executeQueryValues(query, values)
-            query = "update users set total_loss=total_loss+1 where username=%s"
+            query = f"update {
+                self.table_users} set total_loss=total_loss+1 where username=%s"
             values = (loser,)
             self.executeQueryValues(query, values)
         else:
-            query = "update users set total_draws=total_draws+1 where username=%s"
+            query = f"update {
+                self.table_users} set total_draws=total_draws+1 where username=%s"
             values = (winner,)
             self.executeQueryValues(query, values)
-            query = "update users set total_draws=total_draws+1 where username=%s"
+            query = f"update {
+                self.table_users} set total_draws=total_draws+1 where username=%s"
             values = (loser,)
             self.executeQueryValues(query, values)
 
     def removeActiveGame(self, gameId):
         query = "DELETE FROM active_games WHERE gameId=%s"
         values = (gameId,)
+        self.executeQueryValues(query, values)
+
+    # table clients
+    #
+    def clientConnection(self, id: str, ip: str):
+        self.cursor.execute(
+            f"SELECT * FROM {self.table_clients} where id=%s", (id,))
+        found = self.cursor.fetchone()
+        if found is None:
+            self.newClientConnection(id, ip)
+        else:
+            self.anotherConnection(id)
+
+    def newClientConnection(self, id: str, ip: str):
+        query = f"INSERT INTO {
+            self.table_clients} (id, ip) VALUES(%s, %s)"
+        values = (id, ip,)
+        self.executeQueryValues(query, values)
+
+    def anotherConnection(self, id: str):
+        query = f"update {self.table_clients} set amount=amount+1 where id=%s"
+        values = (id,)
         self.executeQueryValues(query, values)
 
 
