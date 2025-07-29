@@ -7,14 +7,14 @@ $(VENV_DIR):
 pymodules: $(VENV_DIR) $(REQUIREMENTS)
 	$(VENV_DIR)/bin/python3 $(VENV_DIR)/bin/pip install -r $(REQUIREMENTS)
 
-all: pymodules
-	cd src && ../$(VENV_DIR)/bin/python3 server.py
-
-dev: pymodules
-	cd src && ../$(VENV_DIR)/bin/python3 server.py development
-
 initSql: pymodules
-	cd src && ../$(VENV_DIR)/bin/python3 database.py
+	$(VENV_DIR)/bin/python3 src/database.py
+
+all: pymodules initSql
+	$(VENV_DIR)/bin/python3 src/server.py
+
+dev: pymodules initSql
+	$(VENV_DIR)/bin/python3 src/server.py development
 
 fclean: clearPyVenv
 	rm -rf $(VENV_DIR)

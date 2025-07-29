@@ -3,7 +3,7 @@ from typing import Optional
 import fastapi
 from fastapi.websockets import WebSocketState
 import uvicorn
-from fastapi import WebSocket, WebSocketDisconnect
+from fastapi import WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from schemas import (
@@ -46,7 +46,7 @@ app.mount(
 
 @app.get("/")
 async def home(req: fastapi.requests.HTTPConnection):
-    logger.info(f"!!! client: {req.client.host}")
+    logger.info(f"!!! client: {req.client.host}")  # pyright: ignore
     return fastapi.responses.FileResponse("../../reactapp/build/index.html")
 
 
@@ -279,7 +279,8 @@ async def websocket_endpoint(websocket: WebSocket):
             if len(websocketManager.activeGames) == 0:
                 await websocketManager.fetchActiveGames()
                 logger.info(
-                    f"fetched active games amount: { len(websocketManager.activeGames)}"
+                    f"fetched active games amount: {
+                        len(websocketManager.activeGames)}"
                 )
                 await websocketManager.printActiveGames()
             recv = await websocket.receive_json()
@@ -380,7 +381,8 @@ async def matchmaking(websocket: WebSocket):
                     return
 
                 logger.info(
-                f"Pre-connection matchmaking: { len(matchMaker.connections)}"
+                    f"Pre-connection matchmaking: {
+                        len(matchMaker.connections)}"
                 )
 
                 if matchMaker.connections:
@@ -393,7 +395,8 @@ async def matchmaking(websocket: WebSocket):
                     sessionToken, websocket, username)
                 matchMaker.connections.append(connection)
                 logger.info(
-                    f"Post-connection matchmaking:{ len(matchMaker.connections)}"
+                    f"Post-connection matchmaking:{
+                        len(matchMaker.connections)}"
                 )
 
                 await websocket.receive_text()
