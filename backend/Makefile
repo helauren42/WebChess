@@ -8,12 +8,13 @@ pymodules: $(VENV_DIR) $(REQUIREMENTS)
 	$(VENV_DIR)/bin/python3 $(VENV_DIR)/bin/pip install -r $(REQUIREMENTS)
 
 initSql: pymodules
+	# echo "init sql in makefile"
 	cd src && ../$(VENV_DIR)/bin/python3 database.py
 
-all: pymodules initSql
+all: initSql
 	cd src && ../$(VENV_DIR)/bin/python3 server.py
 
-dev: pymodules initSql
+dev: initSql
 	cd src && ../$(VENV_DIR)/bin/python3 server.py development
 
 fclean: clearPyVenv

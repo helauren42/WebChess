@@ -36,10 +36,9 @@ class AbstractDb:
         self.table_global_chat: str = ""
         self.table_active_games: str = ""
         self.fetchCredentials()
+        self.connectCursor()
         if buildInit:
             self.createDb()
-        else:
-            self.connectCursor()
 
     def connectCursor(self):
         self.cnx = mysql.connector.connect(
@@ -73,6 +72,8 @@ class AbstractDb:
                 "DB_TABLE_GLOBAL_CHAT", self.table_global_chat)
             content = content.replace(
                 "DB_TABLE_ACTIVE_GAMES", self.table_active_games)
+            content = content.replace(
+                "DB_TABLE_CLIENTS", self.table_clients)
         return content
 
     def createDb(self):
@@ -84,9 +85,13 @@ class AbstractDb:
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
-        with open(f"{DOCKER_MYSQL_DIR}init.sql", "w") as file:
-            file.write(content)
         logger.info("built init.sql")
+        for statement in content.split(";"):
+            if statement.strip():
+                self.cursor.execute(statement)
+        logger.info("run init.sql")
+        # with open(f"{DOCKER_MYSQL_DIR}init.sql", "w") as file:
+        #     file.write(content)
 
     def fetchCredentials(self):
         with open(ENV_PATH, "r") as file:
@@ -116,6 +121,8 @@ class AbstractDb:
                         self.table_global_chat = value
                     elif key == "DB_TABLE_ACTIVE_GAMES":
                         self.table_active_games = value
+                    elif key == "DB_TABLE_CLIENTS":
+                        self.table_clients = value
 
     def validLoginPassword(self, user, password):
         self.executeQueryValues(
