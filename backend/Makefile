@@ -8,13 +8,13 @@ pymodules: $(VENV_DIR) $(REQUIREMENTS)
 	$(VENV_DIR)/bin/python3 $(VENV_DIR)/bin/pip install -r $(REQUIREMENTS)
 
 initSql: pymodules
-	$(VENV_DIR)/bin/python3 src/database.py
+	cd src && ../$(VENV_DIR)/bin/python3 database.py
 
 all: pymodules initSql
-	$(VENV_DIR)/bin/python3 src/server.py
+	cd src && ../$(VENV_DIR)/bin/python3 server.py
 
 dev: pymodules initSql
-	$(VENV_DIR)/bin/python3 src/server.py development
+	cd src && ../$(VENV_DIR)/bin/python3 server.py development
 
 fclean: clearPyVenv
 	rm -rf $(VENV_DIR)
