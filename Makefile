@@ -1,11 +1,14 @@
-initSql:
-	make initSql -C backend
+initSqlLocal:
+	make initSqlLocal -C backend
+
+initSqlDeploy:
+	make initSqlDeploy -C backend
 
 devFront:
 	npm cache clean --force
 	(cd reactapp/ && npm start)
 
-devBack:
+devBack: initSqlLocal
 	make dev -C backend
 
 buildFront:
@@ -20,7 +23,7 @@ dockerDown:
 
 dockerRe: dockerDown dockerUp
 
-deploy: dockerDown initSql dockerUp
+deploy: dockerDown initSqlDeploy dockerUp
 
 fclean: clean
 	docker compose down --rmi local
