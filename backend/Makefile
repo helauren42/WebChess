@@ -7,9 +7,11 @@ $(VENV_DIR):
 pymodules: $(VENV_DIR) $(REQUIREMENTS)
 	$(VENV_DIR)/bin/python3 $(VENV_DIR)/bin/pip install -r $(REQUIREMENTS)
 
-initSql: pymodules
-	# echo "init sql in makefile"
-	cd src && ../$(VENV_DIR)/bin/python3 database.py
+initSqlLocal: pymodules
+	cd src && ../$(VENV_DIR)/bin/python3 database.py local
+
+initSqlDeploy: pymodules
+	cd src && ../$(VENV_DIR)/bin/python3 database.py deploy
 
 all: initSql
 	cd src && ../$(VENV_DIR)/bin/python3 server.py

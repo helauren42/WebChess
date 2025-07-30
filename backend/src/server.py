@@ -155,7 +155,7 @@ async def fetchUserData(req: SessionToken):
     if username is None:
         return fastapi.responses.JSONResponse(status_code=401, content={})
     userData = db.fetchUserData(username)
-    logger.info("USER DATA: ", userData)
+    logger.info(f"USER DATA: {userData}")
     return fastapi.responses.JSONResponse(
         status_code=200,
         content={
