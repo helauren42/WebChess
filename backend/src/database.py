@@ -123,8 +123,7 @@ class AbstractDb:
 
     def validLoginPassword(self, user, password):
         self.executeQueryValues(
-            f"SELECT password FROM {
-                self.table_users} WHERE username=%s", (user,)
+            f"SELECT password FROM {self.table_users} WHERE username=%s", (user,)
         )
         fetched = self.cursor.fetchone()
         found = fetched[0]  # pyright: ignore
@@ -135,8 +134,7 @@ class AbstractDb:
     def userExists(self, username):
         logger.info(f"username: {username}")
         self.executeQueryValues(
-            f"SELECT username FROM {
-                self.table_users} WHERE username=%s", (username,)
+            f"SELECT username FROM {self.table_users} WHERE username=%s", (username,)
         )
         fetched = self.cursor.fetchone()
         logger.info(f"fetched: {fetched}")
@@ -163,8 +161,7 @@ class AbstractDb:
             return None
 
     def insertNewUser(self, req: SignupRequest):
-        query = f"INSERT INTO {
-            self.table_users} (username, password, email) VALUES (%s, %s, %s)"
+        query = f"INSERT INTO {self.table_users} (username, password, email) VALUES (%s, %s, %s)"
         values = (req.username, req.password, req.email)
         self.executeQueryValues(query, values)
         logger.info("end")
@@ -196,16 +193,14 @@ class Database(AbstractDb):
 
     def fetchUsername(self, token) -> Optional[str]:
         query = (
-            f"SELECT username FROM {
-                self.table_session_token} WHERE session_token=%s"
+            f"SELECT username FROM {self.table_session_token} WHERE session_token=%s"
         )
         values = (token,)
         self.executeQueryValues(query, values)
         found = self.cursor.fetchone()
         if found is not None:
             return found[0]  # pyright: ignore
-        query = f"SELECT username FROM {
-            self.table_persistent_token} WHERE persistent_token=%s"
+        query = f"SELECT username FROM {self.table_persistent_token} WHERE persistent_token=%s"
         self.executeQueryValues(query, values)
         found = self.cursor.fetchone()
         if found is not None:
@@ -213,40 +208,34 @@ class Database(AbstractDb):
         return None
 
     def addSessionToken(self, username, sessionToken):
-        query = f"""INSERT INTO {self.table_session_token}
-            (session_token, username) VALUES(%s, %s)"""
+        query = f"""INSERT INTO {self.table_session_token}(session_token, username) VALUES(%s, %s)"""
         values = (sessionToken, username)
         self.executeQueryValues(query, values)
 
     def addPersistenceToken(self, username, persistentToken):
-        query = f"""INSERT INTO {self.table_persistent_token}
-            (persistent_token, username) VALUES(%s, %s)"""
+        query = f"""INSERT INTO {self.table_persistent_token}(persistent_token, username) VALUES(%s, %s)"""
         values = (persistentToken, username)
         self.executeQueryValues(query, values)
 
     def insertValidationCode(self, email, code):
         self.executeQueryValues(
-            f"DELETE FROM {
-                self.table_email_verification} WHERE email=%s", (email,)
+            f"DELETE FROM {self.table_email_verification} WHERE email=%s", (email,)
         )
         query = (
-            f"INSERT INTO {
-                self.table_email_verification} (email, code) VALUES(%s, %s)"
+            f"INSERT INTO {self.table_email_verification} (email, code) VALUES(%s, %s)"
         )
         values = (email, code)
         self.executeQueryValues(query, values)
 
     def validateCode(self, email, code) -> bool:
-        query = f"SELECT code FROM {
-            self.table_email_verification} WHERE email=%s"
+        query = f"SELECT code FROM {self.table_email_verification} WHERE email=%s"
         values = (email,)
         self.executeQueryValues(query, values)
         found = self.cursor.fetchone()
         if found is not None and found[0] == code:  # pyright: ignore
             logger.info(f"found code: {found[0]}")  # pyright: ignore
             self.executeQueryValues(
-                f"DELETE FROM {
-                    self.table_email_verification} WHERE email=%s", (email,)
+                f"DELETE FROM {self.table_email_verification} WHERE email=%s", (email,)
             )
             return True
         logger.info(f"did not find code found = {found}")
@@ -279,8 +268,7 @@ class Database(AbstractDb):
         raise Exception("wrong credentials")
 
     def addGlobalChatMessage(self, time: int, sender: str, message: str):
-        query = f"INSERT INTO {
-            self.table_global_chat} (time, sender, message) values(%s,%s,%s)"
+        query = f"INSERT INTO {self.table_global_chat} (time, sender, message) values(%s,%s,%s)"
         values = (time, sender, message)
         self.executeQueryValues(query, values)
 
@@ -299,14 +287,12 @@ class Database(AbstractDb):
 
     def addActiveGame(self, game: OnlineGame):
         logger.info("Adding active game")
-        query = f"INSERT INTO {
-            self.table_active_games} (gameId,challenger,challenged,challengerColor,challengedColor,playerTurn,capturedWhitePieces,capturedBlackPieces,boardStr) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        query = f"INSERT INTO {self.table_active_games} (gameId,challenger,challenged,challengerColor,challengedColor,playerTurn,capturedWhitePieces,capturedBlackPieces,boardStr) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
         values = game.getSqlValue()
         self.executeQueryValues(query, values)
 
     def updateActiveGame(self, gameId: str, playerTurn: str, boardStr: str):
-        query = f"UPDATE {
-            self.table_active_games} SET playerTurn=%s, boardStr=%s WHERE gameId=%s"
+        query = f"UPDATE {self.table_active_games} SET playerTurn=%s, boardStr=%s WHERE gameId=%s"
         values = (playerTurn, boardStr, gameId)
         self.executeQueryValues(query, values)
 
@@ -323,21 +309,17 @@ class Database(AbstractDb):
 
     def storeGameResult(self, winner, loser, draw=False):
         if not draw:
-            query = f"update {
-                self.table_users} set total_wins=total_wins+1 where username=%s"
+            query = f"update {self.table_users} set total_wins=total_wins+1 where username=%s"
             values = (winner,)
             self.executeQueryValues(query, values)
-            query = f"update {
-                self.table_users} set total_loss=total_loss+1 where username=%s"
+            query = f"update {self.table_users} set total_loss=total_loss+1 where username=%s"
             values = (loser,)
             self.executeQueryValues(query, values)
         else:
-            query = f"update {
-                self.table_users} set total_draws=total_draws+1 where username=%s"
+            query = f"update {self.table_users} set total_draws=total_draws+1 where username=%s"
             values = (winner,)
             self.executeQueryValues(query, values)
-            query = f"update {
-                self.table_users} set total_draws=total_draws+1 where username=%s"
+            query = f"update {self.table_users} set total_draws=total_draws+1 where username=%s"
             values = (loser,)
             self.executeQueryValues(query, values)
 
@@ -349,8 +331,7 @@ class Database(AbstractDb):
     # table clients
     #
     def clientConnection(self, id: str, ip: str):
-        self.cursor.execute(
-            f"SELECT * FROM {self.table_clients} where id=%s", (id,))
+        self.cursor.execute(f"SELECT * FROM {self.table_clients} where id=%s", (id,))
         found = self.cursor.fetchone()
         if found is None:
             self.newClientConnection(id, ip)

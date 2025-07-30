@@ -286,8 +286,7 @@ async def websocket_endpoint(websocket: WebSocket):
             if len(websocketManager.activeGames) == 0:
                 await websocketManager.fetchActiveGames()
                 logger.info(
-                    f"fetched active games amount: {
-                        len(websocketManager.activeGames)}"
+                    f"fetched active games amount: {len(websocketManager.activeGames)}"
                 )
                 await websocketManager.printActiveGames()
             recv = await websocket.receive_json()
@@ -388,8 +387,7 @@ async def matchmaking(websocket: WebSocket):
                     return
 
                 logger.info(
-                    f"Pre-connection matchmaking: {
-                        len(matchMaker.connections)}"
+                    f"Pre-connection matchmaking: {len(matchMaker.connections)}"
                 )
 
                 if matchMaker.connections:
@@ -402,8 +400,7 @@ async def matchmaking(websocket: WebSocket):
                     sessionToken, websocket, username)
                 matchMaker.connections.append(connection)
                 logger.info(
-                    f"Post-connection matchmaking:{
-                        len(matchMaker.connections)}"
+                    f"Post-connection matchmaking:{len(matchMaker.connections)}"
                 )
 
                 await websocket.receive_text()
