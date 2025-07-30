@@ -20,13 +20,11 @@ dockerDown:
 
 dockerRe: dockerDown dockerUp
 
-deploy: clean initSql dockerUp
-
-clean:
-	docker compose down --rmi local
-	docker system prune -f
+deploy: dockerDown initSql dockerUp
 
 fclean: clean
+	docker compose down --rmi local
+	docker system prune -af
 	rm -rf /home/${USER}/.volumes/db-vol
 
 .PHONY: devFront devBack buildFront dockerUp production clean initSql

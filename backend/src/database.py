@@ -79,15 +79,11 @@ class AbstractDb:
     def createDb(self):
         logger.info("creating database")
         content = self.createBuildFile()
-        subprocess.run(
-            ["rm", "init.sql"],
-            cwd=DOCKER_MYSQL_DIR,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
         for statement in content.split(";"):
             if statement.strip():
                 self.cursor.execute(statement)
+        with open(DOCKER_MYSQL_DIR + "init.sql", "w") as file:
+            file.write(content)
 
     def fetchCredentials(self):
         with open(ENV_PATH, "r") as file:
