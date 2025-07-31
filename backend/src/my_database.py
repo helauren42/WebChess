@@ -268,7 +268,7 @@ class Database(AbstractDb):
         raise Exception("wrong credentials")
 
     def addGlobalChatMessage(self, time: int, sender: str, message: str):
-        query = f"INSERT INTO {self.table_global_chat} (time, sender, message) values(%s,%s,%s)"
+        query = f"INSERT INTO {self.table_global_chat} (time, sender, message) VALUES (%s,%s,%s)"
         values = (time, sender, message)
         self.executeQueryValues(query, values)
 
@@ -329,23 +329,35 @@ class Database(AbstractDb):
         self.executeQueryValues(query, values)
 
     # table clients
-    #
-    def clientConnection(self, id: str, ip: str):
-        self.cursor.execute(f"SELECT * FROM {self.table_clients} where id=%s", (id,))
+    def clientConnection(self, id: str, session: str, ip: str):
+        values = (id,)
+        query = f"SELECT * FROM {self.table_clients} where id=%s"
+        self.executeQueryValues(query, values)
         found = self.cursor.fetchone()
         if found is None:
-            self.newClientConnection(id, ip)
+            self.newClientConnection(id, session, ip)
         else:
-            self.anotherConnection(id)
+            query = f"SELECT * FROM {self.table_clients} where id=%s AND last_session=%s"
+            values = (id, session, )
+            print(query)
+            print("values: ", values)
+            self.executeQueryValues(query, values)
+            found = self.cursor.fetchone()
+            print(found)
+            if found is None:
+                print("another connection")
+                self.anotherConnection(id, session)
 
-    def newClientConnection(self, id: str, ip: str):
-        query = f"INSERT INTO {self.table_clients} (id, ip) VALUES(%s, %s)"
-        values = (id, ip,)
+    def newClientConnection(self, id: str, session: str, ip: str):
+        query = f"INSERT INTO {self.table_clients} (id, last_session, ip) VALUES (%s, %s, %s)"
+        values = (id, session, ip,)
+        print("query: ", query)
+        print("values: ", values)
         self.executeQueryValues(query, values)
 
-    def anotherConnection(self, id: str):
-        query = f"update {self.table_clients} set amount=amount+1 where id=%s"
-        values = (id,)
+    def anotherConnection(self, id: str, session: str):
+        query = f"UPDATE {self.table_clients} SET amount=amount+1, last_session=%s WHERE id=%s"
+        values = (session, id,)
         self.executeQueryValues(query, values)
 
 

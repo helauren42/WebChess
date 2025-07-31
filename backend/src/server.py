@@ -1,5 +1,5 @@
 from databaseObject import db
-from const import ORG_LOCAL, ORG_NPMSTART, PORT, HOST
+from const import PORT, HOST
 from my_websocket import Matchmaker, MatchmakerConnection, websocketManager
 from utils import logger, debugLogger
 from emailManager import EmailManager
@@ -27,7 +27,7 @@ app = fastapi.FastAPI()
 emailManager = EmailManager()
 matchMaker = Matchmaker()
 
-origins = [ORG_NPMSTART, ORG_LOCAL]
+origins = ["http://localhost:3000", "http://127.0.0.1:3000", "http://127.0.0.1:6453", "http://172.18.0.1:6453"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -42,12 +42,26 @@ app.mount(
 )
 
 
-@app.middleware("http")
-async def getIpAddress(req: fastapi.requests.HTTPConnection, nextCall):
-    real_ip = req.headers.get(
+# @app.middleware("http")
+# async def getIpAddress(req: fastapi.requests.HTTPConnection, nextCall):
+#     real_ip = req.headers.get(
+#         "x-forwarded-for", req.client.host)  # pyright: ignore
+#     logger.info(f"!!! Client IP: {real_ip}")
+#     return await nextCall(req)
+#
+#
+
+
+""" --------------------------------------------------- CLIENT MANAGEMENT ----------------------------------------------------- """
+
+@app.post("/registerNewClient")
+async def registerNewClient(req: fastapi.Request):
+    ip = req.headers.get(
         "x-forwarded-for", req.client.host)  # pyright: ignore
-    logger.info(f"!!! Client IP: {real_ip}")
-    return await nextCall(req)
+    logger.info(f"Client IP: {ip}")
+    content = await req.json()
+    db.clientConnection(content["deviceToken"], content["deviceSessionToken"], ip)
+    return fastapi.responses.HTMLResponse(status_code=200)
 
 """ ------------------------------------------------------- WEB PAGE ------------------------------------------------------- """
 
@@ -115,24 +129,6 @@ async def addSessionToken(req: BothTokens):
             status_code=500, content={"message": str(e)}
         )
     return fastapi.responses.JSONResponse(content={})
-
-
-@app.post("/getPersistentToken")
-async def getPersistentToken(req: SessionToken):
-    try:
-        username = db.fetchUsername(req.sessionToken)
-        db.addPersistenceToken()
-    except Exception as e:
-        logger.error(f"get persistent token error: {e}")
-        return fastapi.responses.JSONResponse(
-            status_code=500, content={"message": str(e)}
-        )
-    if username is None:
-        return fastapi.responses.JSONResponse(status_code=401, content={})
-    persistentToken = str(uuid4())
-    return fastapi.responses.JSONResponse(
-        status_code=200, content={"persistentToken": persistentToken}
-    )
 
 
 @app.post("/fetchUsername")
